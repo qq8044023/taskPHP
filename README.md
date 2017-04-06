@@ -3,7 +3,7 @@ taskPHP基于原生态php开发的定时计划任务框架,利用多进程实现
 ### 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
 oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
-这两个地址都会同步更新。感兴趣，请加QQ群：330403723 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
+这两个地址都会同步更新。感兴趣，请加QQ群：375841535 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
 ## 框架概况
 框架目录结构:
 ``` php
