@@ -1,0 +1,31 @@
+{
+    "name": "taskphp/taskphp",
+    "description": "the new taskphp framework",
+    "type": "project",
+    "keywords": [
+        "taskphp",
+        "task",
+	"framework"
+    ],
+    "authors": [
+        {
+            "name": "cunzhang",
+            "email": "8044023@qq.com"
+        }
+    ],
+     "repositories": {
+    	"packagist": {
+        	"type": "composer",
+        	"url": "https://packagist.phpcomposer.com"
+    	}
+	},
+    "require": {
+        "php": ">=5.3"
+    },
+    "extra": {
+        "think-path": "taskphp"
+    },
+    "config": {
+        "preferred-install": "dist"
+    }
+}
