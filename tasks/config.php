@@ -14,8 +14,5 @@ return array(
             'class_name'=>true,         //class名称,设置true代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
             'timer'     =>'1 * * * * * *', //crontad格式 :秒 分 时 天 月 年 周
         ),
-        'CollectionDomain'=>array(
-            'timer'     =>'1 1 1 * * * *', //crontad格式 :秒 分 时 天 月 年 周
-        ),
     ),
 );
