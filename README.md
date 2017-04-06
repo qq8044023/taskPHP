@@ -1,9 +1,13 @@
 ## taskPHP
-taskPHP基于原生态php开发的定时计划任务框架,利用多进程实现任务的分配和运行,利用原生态php内存共享实现进程间通信,支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。
-### 项目地址
+taskPHP基于原生态php开发的定时计划任务框架,利用多进程实现任务的分配和运行,利用原生态php内存共享实现进程间通信,支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
+## 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
 oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
-这两个地址都会同步更新。感兴趣，请加QQ群：375841535 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
+这两个地址都会同步更新。
+## 在线交流QQ群
+如感兴趣请加QQ群 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
+<a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=2a8520f5c1518df3a796e71d8c993b2f00856a035d59ca46285c4e325116ba4d"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="taskPHP框架交流群" title="taskPHP框架交流群">taskPHP ①群:375841535（空）</a>
+
 ## 框架概况
 框架目录结构:
 ``` php
@@ -37,21 +41,72 @@ taskPHP								根目录
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。
 
 ## 使用说明
-### 系统命令说明:
+
+### 时间配置格式说明:
 
 ``` php
-mian.php start  启动
-mian.php close  结束
+   * * * * * * *    //格式 :秒 分 时 天 月 年 周
+  10 * * * * * *    //表示每一分钟的第10秒运行
+ /10 * * * * * *	//表示每10秒运行
+``` 
+
+### 系统命令说明:
+``` php
+mian.php  [start]  启动 可不带参数
+mian.php  close  结束
 main.php  reload  重新加载任务
 main.php  delete demo   删除任务
 main.php  select  查看任务列表
 ``` 
 
-## Windows 命令操作
+### Windows 命令操作
+## 调试启动程序
 ```
-待完善
+D:\phpStudy\wwwroot\ostaskphp>php main.php
+------------------------- taskPHP ------------------------------
+taskPHP version:1.0      PHP version:5.6.1
+------------------------- taskPHP PROCESS ----------------------
+listen                      processes                     status
+distribute                    N                            [OK]
+worker                        N                            [OK]
+----------------------------------------------------------------
+```
+
+## 结束程序
+``` php
+
+D:\phpStudy\wwwroot\ostaskphp>php main.php close
+runing:no
+close ok
 
 ```
+## 重新加载任务
+
+``` php
+D:\phpStudy\wwwroot\ostaskphp>php ./main.php reload
+taskPHP:demo task load complete
+taskPHP is running..............
+task reload ok
+```
+
+## 删除任务
+
+``` php
+
+D:\phpStudy\wwwroot\ostaskphp>php ./main.php delete demo
+taskPHP:demo task load complete
+taskPHP is running..............
+task reload ok
+```
+## 查看任务列表
+
+``` php
+D:\phpStudy\wwwroot\ostaskphp>php ./main.php select
+task_name:demo
+run_time:1 * * * * * *
+next_time:2017-04-06 10:08:01
+```
+
 ### Liunx 命令操作
 ## 调试启动程序
 ``` php
@@ -116,3 +171,7 @@ run_time:1 * * * * * *
 next_time:2017-04-06 10:08:01
 
 ```
+
+### Mysql数据库操作
+
+

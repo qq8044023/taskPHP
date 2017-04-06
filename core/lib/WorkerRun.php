@@ -3,7 +3,7 @@
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
- * @license    https://git.oschina.net/cqcqphper/TimePhp
+ * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib;
 use core\lib\Worker;

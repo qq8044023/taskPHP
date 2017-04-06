@@ -4,7 +4,7 @@ namespace core\lib;
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
- * @license    https://git.oschina.net/cqcqphper/TimePhp
+ * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 
 /**
@@ -219,6 +219,11 @@ class Queue{
         $data= (array) self::get($key);
         if(!count($data)){
             return false;
+        }
+        foreach ($data as $k=>$v){
+            if($v==$son_key){
+                unset($data[$k]);
+            }
         }
         unset($data[$son_key]);
         return self::set($key, $data);

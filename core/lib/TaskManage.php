@@ -3,7 +3,7 @@
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
- * @license    https://git.oschina.net/cqcqphper/TimePhp
+ * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib;
 use core\lib\Worker;
@@ -40,7 +40,7 @@ class TaskManage{
 	            $timer = Utils::string_to_timer($value['timer']);
 	        }
 	        $worker->set_timer($timer);
-	        $this->set_worker($worker);
+	        $this->set_worker($worker,false);
 	        echo 'taskPHP:'.$key.' task load complete'.PHP_EOL;
 	    }
 	    echo 'taskPHP is running..............'.PHP_EOL;
@@ -132,7 +132,7 @@ class TaskManage{
 	 * @return WorkerRun[]
 	 */
 	public function run_worker_list(){
-		$list=(array) Queue::get(static::$_workerList);
+		$list=(array) Queue::get(static::$_workerList);	
 		$out=array();
 		foreach ($list as $value){
 			$name=static::$_workerPrefix.$value;

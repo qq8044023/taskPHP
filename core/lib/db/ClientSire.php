@@ -5,7 +5,7 @@ namespace core\lib\db;
  * 码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  **/
 abstract class ClientSire{
-    //数据库表
+//数据库表
     protected $name;
     //条件
     protected $where=array();
@@ -19,6 +19,8 @@ abstract class ClientSire{
     protected $sql=null;
     //排序
     protected $order=null;
+    //分组
+    protected $group=null;
     abstract public function find();
     abstract public function select();
     abstract public function add($data=[]);
@@ -51,5 +53,8 @@ abstract class ClientSire{
         $this->order=$order;
         return $this;
     }
-    
+    public function group($group){
+        $this->group=$group;
+        return $this;
+    }
 }
