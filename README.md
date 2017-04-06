@@ -37,7 +37,8 @@ taskPHP								根目录
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。
 
 ## 使用说明
-系统命令说明:
+### 系统命令说明:
+
 ``` php
 mian.php start  启动
 mian.php close  结束
@@ -46,6 +47,72 @@ main.php  delete demo   删除任务
 main.php  select  查看任务列表
 ``` 
 
+## Windows 命令操作
+```
+待完善
 
+```
+### Liunx 命令操作
+## 调试启动程序
+``` php
+[root@FX-DEBUG taskphps]# php ./main.php start
+------------------------- taskPHP ------------------------------
+taskPHP version:1.0      PHP version:5.6.9
+------------------------- taskPHP PROCESS ----------------------
+listen                      processes                     status
+distribute                    N                            [OK] 
+worker                        N                            [OK] 
+----------------------------------------------------------------
+taskPHP:demo task load complete
+taskPHP is running..............
 
+``` 
+## 后台启动程序
 
+``` php
+[root@FX-DEBUG taskphps]# php ./main.php start &
+------------------------- taskPHP ------------------------------
+taskPHP version:1.0      PHP version:5.6.9
+------------------------- taskPHP PROCESS ----------------------
+listen                      processes                     status
+distribute                    N                            [OK] 
+worker                        N                            [OK] 
+----------------------------------------------------------------
+taskPHP:demo task load complete
+taskPHP is running..............
+```
+## 结束程序
+``` php
+
+[root@FX-DEBUG taskphps]# php ./main.php close
+runing:no
+close ok
+
+```
+
+## 重新加载任务
+
+``` php
+[root@FX-DEBUG taskphps]# php ./main.php reload
+taskPHP:demo task load complete
+taskPHP is running..............
+task reload ok
+```
+
+## 删除任务
+
+``` php
+[root@FX-DEBUG taskphps]# php ./main.php  delete demo
+taskPHP:demo task load complete
+taskPHP is running..............
+task reload ok
+```
+## 查看任务列表
+
+``` php
+[root@FX-DEBUG taskphps]# php ./main.php select
+task_name:demo
+run_time:1 * * * * * *
+next_time:2017-04-06 10:08:01
+
+```
