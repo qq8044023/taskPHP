@@ -58,6 +58,10 @@ main.php  reload  重新加载任务
 main.php  delete demo   删除任务
 main.php  select  查看任务列表
 ``` 
+### composer安装taskphp框架:
+``` php
+composer require taskphp/taskphp
+```
 
 ### Windows 命令操作
 ## 调试启动程序
