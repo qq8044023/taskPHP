@@ -9,9 +9,7 @@
 }	
 ],
 "autoload": {
-        "psr-4": { "Task\\Taskphp\\": "core" },
-"psr-4": { "Task\\Taskphp\\": "logs" },
-"psr-4": { "Task\\Taskphp\\": "tasks" },
+        "psr-4": { "Task\\Taskphp\\": "core" }
     },
     "require": {}
 }
