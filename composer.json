@@ -1,5 +1,5 @@
 {
-    "name": "task/taskphp",
+    "name": "taskphp/taskphp",
     "description": "demo",
 "license": "MIT",
     "":[
@@ -9,7 +9,7 @@
 }	
 ],
 "autoload": {
-        "psr-4": { "Task\\Taskphp\\": "core" }
+        "psr-4": { "Taskphp\\Taskphp\\": "core" }
     },
     "require": {}
 }
