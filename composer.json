@@ -1,25 +1,30 @@
 {
-    "name"  : "qq8044023/taskPHP",
-    "keywords": ["event-loop", "asynchronous"],
-    "homepage": "aaa",
-    "license" : "MIT",
-    "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
-    "authors" : [
-        {
-            "name"      : "walkor",
-            "email"     : "walkor@workerman.net",
-            "homepage"  : "http://www.workerman.net",	
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": ">=5.3"
-    },
-    "suggest": {
-	"ext-event": "For better performance."
-    },
-    "autoload": {
-        "psr-4": {"taskPHP\\": "./"}
-    },
-    "minimum-stability":"dev"
+  "name": "task/taskphp",
+  "description": "分页组件可以产生基于当前页面的智能「范围」链接，所产生的 HTML 兼容 Bootstrap CSS 框架.",
+  "type": "project",
+  "keywords": [
+    "houdunwang",
+    "hdphp",
+    "后盾网",
+    "后盾人",
+    "page",
+    "后盾网向军"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "村长",
+      "email": "8044023@qq.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "files": [],
+    "psr-4": {
+      "houdunwang\\page\\": "src"
+    }
+  }
 }
