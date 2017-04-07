@@ -1,5 +1,5 @@
 {
-    "name": "qq8044023/taskPHP",
+    "name": "workerman/workerman",
     "description": "PHP process forking & daemonizing library",
     "license": "MIT",
     "authors": [
