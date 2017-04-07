@@ -1,32 +1,18 @@
 {
-    "name": "taskphp/taskphp",
-    "description": "the new taskphp framework",
-    "type": "project",
-    "keywords": [
-        "taskphp",
-        "task",
-	"framework"
-    ],
+    "name": "qq8044023/taskPHP",
+    "description": "PHP process forking & daemonizing library",
+    "license": "MIT",
     "authors": [
         {
             "name": "cunzhang",
-            "email": "8044023@qq.com"
+            "email": "8044023@qq.com",
+            "role": "developer"
         }
-    ],"autoload": {
-        "psr-4": {
-            "taskphp\\taskphp\\": ""
+    ],
+    "autoload": {
+        "psr-0": {
+            "taskphp": "/"
         }
-    },
-     "extra": {
-        "branch-alias": {
-            "dev-master": "1.0.0-dev"
-        }
-    },
-    "require": {
-        "php": ">=5.3"
-    },
-    
-    "config": {
-        "preferred-install": "dist"
     }
+    
 }
