@@ -1,18 +1,33 @@
 {
-    "name": "workerman/workerman",
-    "description": "PHP process forking & daemonizing library",
-    "license": "MIT",
-    "authors": [
+    "name"  : "taskphp/taskphp",
+    "type"  : "library",
+    "keywords": ["event-loop", "asynchronous"],
+    "homepage": "aaa",
+    "license" : "MIT",
+    "description": "An asynchronous event driven PHP framework for easily building fast, scalable network applications.",
+    "authors" : [
         {
-            "name": "cunzhang",
-            "email": "8044023@qq.com",
-            "role": "developer"
+            "name"      : "walkor",
+            "email"     : "walkor@workerman.net",
+            "homepage"  : "http://www.workerman.net",	
+            "role": "Developer"
         }
     ],
+    "support" : {
+        "email" : "walkor@workerman.net",
+        "issues": "https://github.com/walkor/workerman/issues",
+        "forum" : "http://wenda.workerman.net/",
+        "wiki"  : "http://doc3.workerman.net/index.html",
+        "source": "https://github.com/walkor/workerman"
+    },
+    "require": {
+        "php": ">=5.3"
+    },
+    "suggest": {
+	"ext-event": "For better performance."
+    },
     "autoload": {
-        "psr-0": {
-            "taskphp": "/"
-        }
-    }
-    
+        "psr-4": {"taskPHP\\": "./"}
+    },
+    "minimum-stability":"dev"
 }
