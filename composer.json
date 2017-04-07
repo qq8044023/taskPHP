@@ -13,13 +13,6 @@
             "role": "Developer"
         }
     ],
-    "support" : {
-        "email" : "walkor@workerman.net",
-        "issues": "https://github.com/walkor/workerman/issues",
-        "forum" : "http://wenda.workerman.net/",
-        "wiki"  : "http://doc3.workerman.net/index.html",
-        "source": "https://github.com/walkor/workerman"
-    },
     "require": {
         "php": ">=5.3"
     },
