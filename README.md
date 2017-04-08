@@ -89,8 +89,8 @@ return array(
 composer require taskphp/taskphp
 ```
 
-### Windows 命令操作
-## 调试启动程序
+## Windows 命令操作
+### 调试启动程序
 ```
 D:\phpStudy\wwwroot\ostaskphp>php main.php
 ------------------------- taskPHP ------------------------------
@@ -102,7 +102,7 @@ worker                        N                            [OK]
 ----------------------------------------------------------------
 ```
 
-## 结束程序
+### 结束程序
 ``` php
 
 D:\phpStudy\wwwroot\ostaskphp>php main.php close
@@ -110,7 +110,7 @@ runing:no
 close ok
 
 ```
-## 重新加载任务
+### 重新加载任务
 
 ``` php
 D:\phpStudy\wwwroot\ostaskphp>php ./main.php reload
@@ -119,7 +119,7 @@ taskPHP is running..............
 task reload ok
 ```
 
-## 删除任务
+### 删除任务
 
 ``` php
 
@@ -128,7 +128,7 @@ taskPHP:demo task load complete
 taskPHP is running..............
 task reload ok
 ```
-## 查看任务列表
+### 查看任务列表
 
 ``` php
 D:\phpStudy\wwwroot\ostaskphp>php ./main.php select
@@ -137,8 +137,8 @@ run_time:1 * * * * * *
 next_time:2017-04-06 10:08:01
 ```
 
-### Liunx 命令操作
-## 调试启动程序
+## Liunx 命令操作
+### 调试启动程序
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start
 ------------------------- taskPHP ------------------------------
@@ -152,7 +152,7 @@ taskPHP:demo task load complete
 taskPHP is running..............
 
 ``` 
-## 后台启动程序
+### 后台启动程序
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start &
@@ -166,7 +166,7 @@ worker                        N                            [OK]
 taskPHP:demo task load complete
 taskPHP is running..............
 ```
-## 结束程序
+### 结束程序
 ``` php
 
 [root@FX-DEBUG taskphps]# php ./main.php close
@@ -175,7 +175,7 @@ close ok
 
 ```
 
-## 重新加载任务
+### 重新加载任务
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php reload
@@ -184,7 +184,7 @@ taskPHP is running..............
 task reload ok
 ```
 
-## 删除任务
+### 删除任务
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php  delete demo
@@ -192,7 +192,7 @@ taskPHP:demo task load complete
 taskPHP is running..............
 task reload ok
 ```
-## 查看任务列表
+### 查看任务列表
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php select
@@ -202,9 +202,9 @@ next_time:2017-04-06 10:08:01
 
 ```
 
-### Mysql数据库操作
+## Mysql数据库操作
 
-## 添加
+### 添加
 ``` php
 <?php
 namespace tasks\demo;
@@ -228,7 +228,7 @@ class demoTask extends Task{
 }
 
 ```
-## 删除
+### 删除
 ``` php
 <?php
 namespace tasks\demo;
@@ -247,7 +247,7 @@ class demoTask extends Task{
 }
 
 ```
-## 修改
+### 修改
 ``` php
 <?php
 namespace tasks\demo;
@@ -265,7 +265,7 @@ class demoTask extends Task{
 }
 
 ```
-## 查询单条
+### 查询单条
 ``` php
 <?php
 namespace tasks\demo;
@@ -284,7 +284,7 @@ class demoTask extends Task{
 }
 
 ```
-## 查询多条
+### 查询多条
 ``` php
 <?php
 namespace tasks\demo;
@@ -303,11 +303,11 @@ class demoTask extends Task{
 }
 
 ```
-## 查询总数
+### 查询总数
 ``` php
 
 ```
-## where条件
+### where条件
 ``` php
 <?php
 namespace tasks\demo;
@@ -328,11 +328,11 @@ class demoTask extends Task{
 }
 
 ```
-## in
+### in
 ``` php
 
 ```
-## group by
+### group by
 ``` php
 <?php
 namespace tasks\demo;
@@ -350,11 +350,11 @@ class demoTask extends Task{
 }
 
 ```
-## left join
+### left join
 ``` php
 
 ```
-## 执行底层sql操作
+### 执行底层sql操作
 ``` php
 <?php
 namespace tasks\demo;
