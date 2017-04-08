@@ -40,7 +40,7 @@ class TaskManage{
 	            $timer = Utils::string_to_timer($value['timer']);
 	        }
 	        $worker->set_timer($timer);
-	        $this->set_worker($worker,false);
+	        $this->set_worker($worker);
 	        echo 'taskPHP:'.$key.' task load complete'.PHP_EOL;
 	    }
 	    echo 'taskPHP is running..............'.PHP_EOL;
@@ -69,13 +69,15 @@ class TaskManage{
 		$item['skip']=intval($worker->get_skip());
 		$item['run_time']=$next_run_time;
 		Queue::set($name,$item);
-		$re=Queue::lPush(static::$_workerList,$worker->get_name());
-		if(!$re){
-		    throw new Exception('function lPush error');
-		    return false;
-		} 
-		//添加一个任务
-		$this->un_sleep();
+		if(!in_array($worker->get_name(),$workerlist)){
+		    $re=Queue::lPush(static::$_workerList,$worker->get_name());
+		    if(!$re){
+		        throw new Exception('function lPush error');
+		        return false;
+		    }
+		    //添加一个任务
+		    $this->un_sleep();
+		}
 		return true;
 	}
 	/**

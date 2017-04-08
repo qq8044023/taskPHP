@@ -37,13 +37,13 @@ class Queue{
             self::$_handler=self::_ftok(self::$_options['project']);
             if(self::$_handler==0x00000000)return null;
         }
-        $id = @shmop_open(self::$_handler, 'w', 0600, 0);
-        if ($id !== false) {
-            $size=shmop_size($id);
-            $str=shmop_read($id, 0, $size);
+        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
+        if ($shmid !== false) {
+            $size=shmop_size($shmid);
+            $str=shmop_read($shmid, 0, $size);
             $str=trim($str);
             $ret = unserialize($str);
-            shmop_close($id);
+            shmop_close($shmid);
             if ($name === false) {
                 return $ret;
             }
@@ -124,10 +124,10 @@ class Queue{
             self::$_handler=self::_ftok(self::$_options['project']);
             if(self::$_handler==0x00000000)return null;
         }
-        $id  = shmop_open(self::$_handler, 'c', 0600, self::$_options['size']);
-        if ($id) {
-            $ret = shmop_write($id, $val, 0) == strlen($val);
-            shmop_close($id);
+        $shmid  = shmop_open(self::$_handler, 'c', 0600, self::$_options['size']);
+        if ($shmid) {
+            $ret = shmop_write($shmid, $val, 0) == strlen($val);
+            shmop_close($shmid);
             self::_unlock($lh);
             return $ret;
         }
@@ -169,7 +169,17 @@ class Queue{
             fclose($fp);
         }
     }
-    
+    public function close(){
+        if(self::$_handler==null){
+            self::$_handler=self::_ftok(self::$_options['project']);
+            if(self::$_handler==0x00000000)return null;
+        }
+        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
+        if($shmid){
+            shmop_delete($shmid);
+        }
+        return true;
+    }
     /**
      * 加入
      * @param string $key 表头

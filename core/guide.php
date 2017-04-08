@@ -1,7 +1,10 @@
 <?php
 /**
- * @author 码农<8044023@qq.com>
- * */
+ * taskPHP
+ * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
+ * @copyright  taskPHP
+ * @license    https://git.oschina.net/cqcqphper/taskPHP
+ */
 date_default_timezone_set( 'Asia/Chongqing');
 //版本号
 define('ML_VERSION', '1.0');

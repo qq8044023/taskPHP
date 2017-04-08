@@ -1,7 +1,9 @@
 <?php
 /**
- * 任务执行后台进程
- * @author cqcqphper 小草<cqcqphper@163.com>
+ * taskPHP
+ * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
+ * @copyright  taskPHP
+ * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 use core\lib\WorkerExe;
 if(!defined('IS_CLI')){
