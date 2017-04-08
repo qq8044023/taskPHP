@@ -74,13 +74,19 @@ return array(
         //demo任务 
         'demo'=>array(
             'class_name'=>true,         //class名称,设置true代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
-            'timer'     =>'1 * * * * * *', //crontad格式 :秒 分 时 天 月 年 周
+            'timer'     =>'/5 * * * * * *', //crontad格式 :秒 分 时 天 月 年 周
         ),
-        //demo1任务
-        'demo1'=>array(
-            'class_name'=>true,         //class名称,设置true代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
-            'timer'     =>'1 * * * * * *', //crontad格式 :秒 分 时 天 月 年 周
-        ),
+    ),
+    /**
+     * 数据库配置
+     *   */
+    'DB'=>array(
+        'db_type'       =>'MYSQL',//数据库类型
+        'db_host'       =>'127.0.0.1',//地址
+        'db_username'   =>'root',//账户
+        'db_password'   =>'',//密码
+        'db_prot'       =>'3306',//端口
+        'db_name'       =>'dbname'//选中的数据库
     ),
 );
 ``` 
