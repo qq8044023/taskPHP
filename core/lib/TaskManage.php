@@ -35,10 +35,10 @@ class TaskManage{
 	        }
 	        //设置任务
 	        $worker= new Worker($key,new $class_name());
-	         
+	        
 	        if(is_string($value['timer'])){
 	            $timer = Utils::string_to_timer($value['timer']);
-	        }
+	        };
 	        $worker->set_timer($timer);
 	        $this->set_worker($worker);
 	        echo 'taskPHP:'.$key.' task load complete'.PHP_EOL;
@@ -80,6 +80,34 @@ class TaskManage{
 		}
 		return true;
 	}
+	/**
+	 * 运行任务
+	 */
+	public function run_task($task){
+	    if(is_string($task)){
+	        $task_list=Config::get('task_list');
+	        if(!isset($task_list[$task]))return false;
+	        $class_name=$task;
+	        if(@$task_list[$task]['class_name']===true || empty($task_list[$task]['class_name'])){//转换类名
+	            $class_name='tasks\\'.$task.'\\'.$task.'Task';
+	        }
+	        $task=new $class_name();
+	    }elseif (($task instanceof Task)){
+	        $task;
+		}else{
+		    return false;
+		}
+		try{
+		    ob_start();
+		    $task->run();
+		    $data=ob_get_contents();
+		    ob_end_clean();
+		}catch(Exception $e){
+		    Log::input(array($task,$e->getMessage()),1);
+		}
+	}
+	
+	
 	/**
 	 * 把指定任务修改到下一个执行时间
 	 * @param Worker $worker
@@ -157,6 +185,7 @@ class TaskManage{
 	public function exec_worker(Worker $worker){
 		return WorkerExe::instance()->exec($worker);
 	}
+	
 	/**
 	 * 获取任务执行结果列表
 	 * 默认只保留最后100条结果,可修改 WorkerExe::$_workerLogLimit 

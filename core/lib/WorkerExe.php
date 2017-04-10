@@ -58,24 +58,10 @@ class WorkerExe{
 			}
 		}
 		register_shutdown_function(array($this,'shutdown_function'));
+		$taskManage=new TaskManage();
 		while ($run===true||$run-->0){
 			$this->_worker=Queue::brPop(static::$_worker_exec,0);//取出队列
-			if($this->_worker==null){
-			    continue;
-			}
-			if (!($this->_worker instanceof Task)){
-				unset($this->_worker);
-				continue;
-			}
-			try{
-				ob_start();
-				$this->_worker->run();
-				$data=ob_get_contents();
-				ob_end_clean();
-			}catch(Exception $e){
-				Log::input(array($this->_worker,$e->getMessage()),1);
-			}
-			unset($data);
+			$taskManage->run_task($this->_worker);
 		}
 	}
 	public function shutdown_function(){

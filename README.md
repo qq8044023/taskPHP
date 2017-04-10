@@ -40,6 +40,10 @@ taskPHP								根目录
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。
 
+## 常见问题
+1. Fatal error: Call to undefined function shmop_open()
+windows 打开php.ini 去掉extension=php_shmop.dll 前面的 ;符号
+
 ## 使用说明
 
 ### 时间配置格式说明:
@@ -379,4 +383,5 @@ class demoTask extends Task{
 }
 
 ```
+
 

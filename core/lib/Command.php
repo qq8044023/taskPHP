@@ -33,7 +33,8 @@ class Command{
         'close'=>false,   //关闭
         'reload'=>false,  //重载任务
         'select'=>false,  //列出任务
-        'delete'=>true,   //删除任务  需要带参数值   
+        'delete'=>true,   //删除任务  需要带参数值
+        'exec'=>true,   //运行任务  需要参数
     );
     /**
      * 分解命令
@@ -64,6 +65,9 @@ class Command{
         if(!isset(self::$_cmd_list[self::$_cmd_key])){
             $keys=array_keys(self::$_cmd_list);
             $keys_string=implode('|', $keys);
+            Ui::displayUI("Usage: php ".$_SERVER['argv'][0]." {".$keys_string."}");
+        }
+        if(!method_exists(new static,self::$_cmd_key)){
             Ui::displayUI("Usage: php ".$_SERVER['argv'][0]." {".$keys_string."}");
         }
     }
@@ -130,5 +134,15 @@ class Command{
         $TaskManage = new TaskManage();
         $TaskManage->del_worker(self::$_cmd_value);
         Ui::displayUI(self::$_cmd_value. ' delete ok');
+    }
+    /**
+     * 执行任务
+     */
+    public static function exec(){
+        if(!self::$_cmd_value){
+            Ui::displayUI('specify the name of the task to exec');
+        }
+        $taskManage=new TaskManage();
+        $taskManage->run_task(self::$_cmd_value);
     }
 }
