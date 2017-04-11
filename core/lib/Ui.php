@@ -30,6 +30,17 @@ class Ui{
         self::displayUI($text,false);
     }
     
+    public static function statusTasklist($list){
+        $text='';
+        $text.= "------------------------ taskPHP task_list ---------------------".PHP_EOL;
+        $text.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
+        foreach ($list as $item){
+            $worker=$item->get_worker();
+            $text.= str_pad($worker->get_name(), 20).Utils::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+        }
+        $text.= "----------------------------------------------------------------";
+        self::displayUI($text,false);
+    }
     /**
      * 默认UI
      * @param unknown $text

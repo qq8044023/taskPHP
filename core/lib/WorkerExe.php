@@ -6,7 +6,6 @@
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib;
-use core\lib\Task;
 use core\lib\Exception;
 /**
  * 任务执行类

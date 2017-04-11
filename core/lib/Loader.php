@@ -8,37 +8,29 @@
 namespace core\lib;
 
 /**
- * 类定位器
- *
- * defined(VENDOR_ROOT) define(VENDOR_ROOT, __DIR__ . '/pram3/vendor');
- * require_once __DIR__ . '/pram3/src/Pram/Locator.php';
- * $locator = \Pram\Locator::getInstance();
- * $locator->addNamespace('NotORM', VENDOR_ROOT . '/NotORM');
- * //OR
- * $locator->addClass(VENDOR_ROOT . '/NotORM/NotORM.php',
- *         'NotORM', 'NotORM_Result', 'NotORM_Row', 'NotORM_Literal', 'NotORM_Structure');
- * //Complex
- * $locator->addNamespace('React', array(
- *     '.' => VENDOR_ROOT . '/React/src',
- *     'Promise' => VENDOR_ROOT . '/Promise/src/React',
- * ));
- * spl_autoload_register(array($locator, 'autoload'));
+ * 自动加载类
+ * 为了配合使用composer所以升级支持psr-4
+ * @author cqcqphper 小草<cqcqphper@163.com>
  */
-final class Locator
-{
-    private static $instance = null;
-    private $have_branches = false; //是否允许子命名空间分散在不同分支
-    private $classes = array();  //已注册的class/interface/trait对应的文件
-    private $namespaces = array(); //已注册的namespace对用的起始目录
-
-    private function __construct(){
-        
-    }
-
+final class Locator{
     /**
-     * Locator单例
-     * @return instance of Locator
+     * 实例
+     * @var Locator
      */
+    private static $instance = null;
+    
+    /**
+     * 维护一个命名空间前缀和具体路径对应的映射表
+     * 一个命名空间前缀中可以有多个路径
+     *
+     * @var array
+     */
+    protected $prefixes = array();
+    
+    /**
+    * Locator单例
+    * @return instance of Locator
+    */
     public static function getInstance(){
         if (is_null(self::$instance)) {
             self::$instance = new self();
@@ -46,162 +38,109 @@ final class Locator
         }
         return self::$instance;
     }
-
+    
     /**
-     * 检查指定class/interface/trait是否已存在
-     * @param string $class 要检查的完整class/interface/trait名称
-     * @param bool $autoload 如果当前不存在，是否尝试PHP的自动加载功能
-     * @return bool
-     */
-    public static function exists($class, $autoload = true){
-        return class_exists($class, $autoload)
-                || interface_exists($class, $autoload)
-                || trait_exists($class, $autoload);
-    }
-
-    /**
-     * 自动加载方法，用于spl_autoload_register注册
-     * @param string $class 要寻找的完整class/interface/trait名称
-     * @return bool
-     */
-    public function autoload($class){
-        $class = trim($class, '\\_');
-        if (isset($this->classes[$class])) { //在已知类中查找
-            require_once $this->classes[$class];
-            return self::exists($class, false);
-        }
-        $ns_check = $this->checkNamespace($class); //在已知域名中查找
-        return $ns_check === true ? true : false;
-    }
-
-    /**
-     * 将对象的autoload方法注册到PHP系统
-     * 在这之后往对象中添加的class和namespace也起作用
-     * @return bool
+     * 注册加载函数到自动加载函数栈中
+     * 
+     * @return void
      */
     public function register(){
-        return spl_autoload_register(array($this, 'autoload'));
+        spl_autoload_register(array($this, 'loadClass'));
     }
-
     /**
-     * 当自动加载class,class2,class3,...时，将filename文件包含进来
-     * @param string $filename 这些class/interface/trait所在的文件或入口文件
-     * @param string $class 完整class/interface/trait名称
-     * @param ... 其他class/interface/trait名称
-     * @return this
+     * 给一个命名空间前缀中添加具体的路径.
+     *
+     * @param string $prefix 命名空间前缀
+     * @param string $base_dir 要添加到命名空间中的路径
+     * @param bool $prepend 如果为true，则将该路径添加到命名空间对应数组的
+     * 最前面，而不是添加到末尾；这个会影响自动加载的搜索文件
+     * 
+     * @return void
      */
-    public function addClass($filename, $class){
-        $classes = func_get_args();
-        $filename = array_shift($classes);
-        if (is_readable($filename)) {
-            foreach ($classes as $class) {
-                $this->classes[trim($class, '\\')] = $filename;
-            }
+    public function addNamespace($prefix, $base_dir, $prepend = false){
+        // 正规化命名空间前缀
+        $prefix = trim($prefix, '\\') . '\\';
+        // 正规化命名空间对应的目录
+        $base_dir = rtrim($base_dir, DS) . '/';
+        // 初始化命名空间中该前缀的数组
+        if (isset($this->prefixes[$prefix]) === false) {
+            $this->prefixes[$prefix] = array();
         }
-        ksort($this->classes);
-        return $this;
-    }
-
-    /**
-     * 当自动加载的namespace/class以某个词ns开头时，尝试在dir目录寻找匹配文件
-     * @param string $ns namespace前缀
-     * @param string/array $dir namespace所在顶层目录
-     * @return this
-     */
-    public function addNamespace($ns, $dir){
-        if (is_array($dir)) {
-            $this->have_branches = true;
-        }
-        $this->namespaces[trim($ns, '\\')] = $dir;
-        ksort($this->namespaces);
-        return $this;
-    }
-
-    /**
-     * Namespace/class自动加载时，寻找匹配文件的方式
-     * @param string $class 要寻找的完整class/interface/trait名称
-     * @return bool
-     */
-    public function checknamespace($class){
-        $tok = strtok($class, '\\_');
-        $length = strlen($tok) + 1;
-        if (isset($this->namespaces[$tok])) {
-            $path = $this->namespaces[$tok];
-            //找到子命名空间所在分支
-            if ($this->have_branches) {
-                $length = self::dispatchBranch($path, $tok, $length);
-            }
-            //先试试一步到位，用于符合PSR-0标准的库
-            //$fname = $path . '/' . $tok . '/';
-            $fname = $path . DS;
-            $fname .= str_replace(array('\\', '_'), DS, substr($class, $length));
-            if (file_exists($fname . '.php')) {
-                require_once $fname . '.php';
-                if (self::exists($class, false)) {
-                    return true;
-                }
-            }
-            //尝试循序渐进地检查
-            return self::seekStepByStep($class, $path, $tok);
-        }else{
-            /* $class_=substr($class, $length);
-            if($class_==''){
-                die("Class '".$class."' not found.");
-            } */
-            $class_=str_replace(array('\\', '_'), DS, $class);
-            $fname=APP_ROOT.DS.$class_;
-            require_once $fname . EXT;
-            if (self::exists($class, false)) {
-                return true;
-            }
+        // 将目录添加到命名空间数组中$prefix前缀数组中
+        if ($prepend) {
+            array_unshift($this->prefixes[$prefix], $base_dir);
+        } else {
+            array_push($this->prefixes[$prefix], $base_dir);
         }
     }
-
     /**
-     * 找到子命名空间所在分支
-     * @param string $path 已经探索的路径
-     * @param string $tok 路径中的一段
-     * @param int $length 已探索路径长度
-     * @return int $length 已探索路径长度
+     * 加载给定类的对应的类库文件
+     *
+     * @param string $class 完整的类库名称.
+     * @return mixed 成功时返回类名对应的类库文件路径，失败时返回false.
      */
-    private static function dispatchBranch(&$path, &$tok, $length)
-    {
-        while (is_array($path)) {
-            $prev_tok = $tok;
-            $tok = strtok('\\_');
-            $length += strlen($tok) + 1;
-            if (isset($path[$tok])) {
-                $path = $path[$tok];
-            } else {
-                $path = $path['.'] . '/' . $prev_tok;
-                break;
+    public function loadClass($class){
+        // 当前的命名空间前缀
+        $prefix = $class;
+        //通过命名空间去查找对应的文件
+        while (false !== ($pos = strrpos($prefix, '\\'))) {
+            // 可能存在的命名空间前缀
+            $prefix = substr($class, 0, $pos + 1);
+            // 剩余部分是可能存在的类
+            $relative_class = substr($class, $pos + 1);
+            //试图加载prefix前缀和relitive class对应的文件
+            $mapped_file = $this->loadMappedFile($prefix, $relative_class);
+            if ($mapped_file) {
+                return $mapped_file;
             }
+            // 移动命名空间和relative class分割位置到下一个位置
+            $prefix = rtrim($prefix, '\\');   
         }
-        return $length;
+        // 未找到试图加载的文件
+        return false;
     }
-
+    
     /**
-     * 循序渐进地检查目标对应的路径
-     * @param string $class 要寻找的完整class/interface/trait名称
-     * @param string $path 已经探索的路径
-     * @param string $tok 路径中的一段
-     * @return bool/null class/interface/trait是否存在
+     * 加载命名空间前缀和relative class映射的文件.
+     * @param string $prefix 命名空间前缀.
+     * @param string $relative_class relative class名称.
+     * @return mixed 成功返回映射的文件路径，失败返回false.
      */
-    private static function seekStepByStep($class, $path, $tok)
-    {
-        while ($tok) {
-            $path .= '/' . $tok;
-            //先检查文件，再检查目录，次序不可颠倒
-            if (file_exists($path . '.php')) { //找到文件了
-                require_once $path . '.php';
-                if (self::exists($class, false)) {
-                    return true;
-                }
-            }
-            if (!file_exists($path)) { //目录不对，不要再找了
-                return false;
-            }
-            $tok = strtok('\\_');
+    protected function loadMappedFile($prefix, $relative_class){
+        // 命名空间前缀数组中不存在prefix命名空间前缀，返回false.
+        if (isset($this->prefixes[$prefix]) === false) {
+            return false;
         }
+            
+        // 查看此命名空间前缀的基目录
+        // 遍历命名空间前缀对应的目录数组，知道找到映射的文件
+        foreach ($this->prefixes[$prefix] as $base_dir) {
+            // 用具体路径替换掉命名空间前缀,
+            // 替换relative class中的命名空间分隔符为目录分隔符
+            // 添加.php后缀
+            $file = $base_dir
+                  . str_replace('\\', DS, $relative_class)
+                  . EXT;
+            // 如果映射文件存在加载对应的文件
+            if ($this->requireFile($file)) {
+         		// 返回成功加载的文件路径
+                return $file;
+            }
+        }
+        // 未找到要映射的文件返回false
+        return false;
+    }
+    
+    /**
+     * 如果文件存在，从文件系统中加载他到运行环境中.
+     * @param string $file 要加在的文件.
+     * @return bool 文件存在返回true，否在返回false.
+     */
+    protected function requireFile($file){
+        if (file_exists($file)) {
+            require $file;
+            return true;
+        }
+        return false;
     }
 }

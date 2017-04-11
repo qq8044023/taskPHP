@@ -62,12 +62,9 @@ class Command{
      * 合法验证
      */
     public static function check_legal(){
-        if(!isset(self::$_cmd_list[self::$_cmd_key])){
+        if(!isset(self::$_cmd_list[self::$_cmd_key]) || !method_exists(new static,self::$_cmd_key)){
             $keys=array_keys(self::$_cmd_list);
             $keys_string=implode('|', $keys);
-            Ui::displayUI("Usage: php ".$_SERVER['argv'][0]." {".$keys_string."}");
-        }
-        if(!method_exists(new static,self::$_cmd_key)){
             Ui::displayUI("Usage: php ".$_SERVER['argv'][0]." {".$keys_string."}");
         }
     }
@@ -113,15 +110,7 @@ class Command{
     */
     static public function select(){
         $TaskManage = new TaskManage();
-        $message='';
-        //获取待执行任务列表
-        foreach ($TaskManage->run_worker_list() as $v){
-            $worker=$v->get_worker();
-            $message.= "task_name:".$worker->get_name().PHP_EOL;
-            $message.= "run_time:".Utils::timer_to_string($worker->get_timer()).PHP_EOL;
-            $message.= "next_time:".date("Y-m-d H:i:s",$v->get_run_time()).PHP_EOL;
-        }
-        Ui::displayUI($message);
+        Ui::statusTasklist($TaskManage->run_worker_list());
     }
     
     /**
@@ -145,4 +134,5 @@ class Command{
         $taskManage=new TaskManage();
         $taskManage->run_task(self::$_cmd_value);
     }
+    
 }

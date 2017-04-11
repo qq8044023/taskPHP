@@ -35,10 +35,10 @@ class TaskManage{
 	        }
 	        //设置任务
 	        $worker= new Worker($key,new $class_name());
-	        
+	         
 	        if(is_string($value['timer'])){
 	            $timer = Utils::string_to_timer($value['timer']);
-	        };
+	        }
 	        $worker->set_timer($timer);
 	        $this->set_worker($worker);
 	        echo 'taskPHP:'.$key.' task load complete'.PHP_EOL;

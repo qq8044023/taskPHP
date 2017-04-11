@@ -32,5 +32,9 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
 // 载入Loader类
 require_once CORE_PATH.DS."lib".DS."Loader".EXT;
 $locator = \core\lib\Locator::getInstance();
+//添加框架目录
+$locator->addNamespace("core", CORE_PATH.DS);
+//添加框架用户任务目录
+$locator->addNamespace("tasks", TASKS_PATH.DS);
 //注册
 $locator->register();

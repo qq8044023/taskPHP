@@ -102,7 +102,7 @@ class Queue{
         if (function_exists('ftok')) {
             return ftok(__FILE__, $project);
         }
-        if (DIRECTORY_SEPARATOR == '\\') {
+        if (DS == '\\') {
             $s = stat(__FILE__);
             return sprintf("%u", (($s['ino'] & 0xffff) | (($s['dev'] & 0xff) << 16) |
                 (($project & 0xff) << 24)));
