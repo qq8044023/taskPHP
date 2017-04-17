@@ -58,8 +58,7 @@ class Daemon{
     }
     
     public function exec(){
-        $os='unix';
-        if(DS=='\\')$os='win';
+        $os=Utils::get_os();
         $this->$os();
     }
     /**
@@ -80,13 +79,10 @@ class Daemon{
     }
     
     public function worker_son(){
-        $memory_limit=Config::get('memory_limit');
-        $memory_limit=$memory_limit?$memory_limit:128;
-        ini_set('memory_limit',$memory_limit.'M');
-        $runer_limit=Config::get('runer_limit');
-        define('RUNER_LIMIT',$runer_limit);
-        define("RUNER_FORK", DS != '\\' && function_exists('pcntl_fork'));
-        if(RUNER_FORK){
+        ini_set('memory_limit',Config::get('memory_limit'));
+        define('WORKER_LIMIT',Config::get('worker_limit'));
+        define("WORKER_FORK",Utils::is_worker_fork());
+        if(WORKER_FORK){
             runer_frok:
             $pid = pcntl_fork();
             if ($pid == -1) die(pcntl_get_last_error());
@@ -136,5 +132,55 @@ class Daemon{
     private function start_exec($title){
        include $this->_listen_list[$title];
        exit;
+    }
+    
+    /**
+     * 后台进程是否在运行
+     * @param array $process_name
+     * @return boolean
+     */
+    public static function is_daemon($process_name=array()){
+        $is_windows=DS=='\\';
+        if (count($process_name)==0){
+            if (!$is_windows){
+                $process_name=array("main.php");
+            } else{
+                $process_name=array('distribute_listen.php','worker_listen.php');
+            }
+        }
+        ob_start();
+        if (!$is_windows){
+            system('ps aux');
+        }
+        else{
+            system('wmic  process where caption="php.exe" get caption,commandline /value');
+        }
+        $ps=ob_get_contents();
+        ob_end_clean();
+        $ps = explode("\n", $ps);
+        $out=[];
+        foreach ($ps as $v){
+            $v=trim($v);
+            if (empty($v)){
+                continue;
+            }
+            $p=strrpos($v," ");
+            if ($p===false){
+                continue;
+            }
+            $out[]=trim(substr($v,$p));
+        }
+        foreach ($out as &$item){
+            if(strpos($item, DS)){
+                $item_arr=explode(DS, $item);
+                $item=end($item_arr);
+            }
+            $process_name=array_merge(array_diff($process_name, array($item)));
+        }
+        if(count($process_name)){
+            return false;
+        }
+    
+        return true;
     }
 }

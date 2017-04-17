@@ -1,5 +1,5 @@
 ## taskPHP
-taskPHP基于原生态php开发的定时计划任务框架,利用多进程实现任务的分配和运行,利用原生态php内存共享实现进程间通信,支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
+taskPHP基于php开发的定时计划任务框架,利用多进程实现任务的分配和运行,利用内存共享实现进程间通信,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
 ## 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
 oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
@@ -30,19 +30,20 @@ taskPHP								根目录
 |-- windows_single.cmd				windows快速启动文件
 ``` 
 框架说明
-1. linux下子进程执行任务,修改脚本无需重启后台服务立即生效,windows下修改任务脚本后需重启后台脚本 但往系统添加执行不受影响
-2. 使用内存共享实现进程通信，堵塞式消息队列,整个框架的运行无需第三方扩展。
-3. 任务派发及具体任务执行不在同个进程[distribute_listen.php]和[worker_listen.php],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动
-4. 执行时间语法跟crontab类似实现crontab的运行规则,并有辅助工具在Utils类,且支持秒设置.
-5. 添加任务简单,只需继承Task基类,实现任务入口run方法
-
+1. linux下子进程执行任务,修改脚本无需重启后台服务立即生效,windows下修改任务脚本后需重启后台脚本 但往系统添加执行不受影响。
+2. 框架支持多线程模式,需要安装pthreads扩展(可选)。
+3. 使用内存共享实现进程通信，堵塞式消息队列,整个框架的运行无需第三方扩展。
+4. 任务派发及具体任务执行不在同个进程[distribute_listen.php]和[worker_listen.php],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
+5. 执行时间语法跟crontab类似,且支持秒设置。
+6. 添加任务简单,只需继承Task基类,实现任务入口run方法。
+    
 ## 注意事项
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。
 
-## 常见问题
-1. Fatal error: Call to undefined function shmop_open()
-windows 打开php.ini 去掉extension=php_shmop.dll 前面的 ;符号
+## 文档列表
+-->[MYSQL数据库类使用教程](./docs/mysql.md)<br>
+-->[windows下安装php多线程扩展pthreads教程](./docs/thread_windows.md)<br>
 
 ## 使用说明
 
@@ -61,37 +62,36 @@ mian.php  close  结束
 main.php  reload  重新加载任务
 main.php  delete demo   删除任务
 main.php  select  查看任务列表
+main.php  exec demo 运行任务 主要用于任务开发中调试单个任务
 ``` 
-### 配置文件规范
+### 全局配置文件规范
 ``` php
 <?php
 //系统配置
 return array(
-    
-    'core_user'         =>'nobody',//指定用户  nobody  www
-    'runer_limit'       =>true,    //运行多少次后重启,设置true,将不用子进程执行任务[效率高点,但设置任务将需要重启服务],默认为1 每次都使用子进程执行任务[设置任务立即生效]
-    'memory_limit'      =>512,     //指定任务进程最大内存
-    /**
-     * 任务列表
-     */
+    //指定用户  nobody  www
+    'core_user'         =>'nobody',
+    //指定任务进程最大内存
+    'memory_limit'      =>'256M',
+    //单个进程执行的任务数 0无限  大于0为指定数
+    'worker_limit'       =>0,
+    //worker进程运行模式
+    //0.自动模式 默认
+    //1.多进程模式
+    //2.单进程模式 
+    //3.多线程模式
+    'worker_mode'       =>0,
+    //任务列表
     'task_list'=>array(
         //demo任务 
         'demo'=>array(
-            'class_name'=>true,         //class名称,设置true代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
-            'timer'     =>'/5 * * * * * *', //crontad格式 :秒 分 时 天 月 年 周
+            //class名称,(设置true或者不设置此参数)代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
+            'class_name'=>true,   
+            //crontad格式 :秒 分 时 天 月 年 周
+            'timer'     =>'/1 * * * * * *', 
         ),
     ),
-    /**
-     * 数据库配置
-     *   */
-    'DB'=>array(
-        'db_type'       =>'MYSQL',//数据库类型
-        'db_host'       =>'127.0.0.1',//地址
-        'db_username'   =>'root',//账户
-        'db_password'   =>'',//密码
-        'db_prot'       =>'3306',//端口
-        'db_name'       =>'dbname'//选中的数据库
-    ),
+    
 );
 ``` 
 ### composer安装taskphp框架:
@@ -211,177 +211,3 @@ run_time:1 * * * * * *
 next_time:2017-04-06 10:08:01
 
 ```
-
-## Mysql数据库操作
-
-### 添加
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $data=array(
-            "player_id"=>1,
-            "item_id"=>2,
-            "rows"=>3
-        );
-        $db->table("表名")->add($data);
-	   
-	}
-}
-
-```
-### 删除
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->delete();
-	    var_dump($res);
-	}
-}
-
-```
-### 修改
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $db->table("表名")->where(array("room_id"=>1))->save(array("status"=>1));
-	}
-}
-
-```
-### 查询单条
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->find();
-	    var_dump($res);
-	}
-}
-
-```
-### 查询多条
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->select();
-	    var_dump($res);
-	}
-}
-
-```
-### 查询总数
-``` php
-
-```
-### where条件
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->find();
-	    //或者
-	    $res=$db->table("表名")->where(array("id"=>1))->find();
-	    var_dump($res);
-	}
-}
-
-```
-### in
-``` php
-
-```
-### group by
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $db->table("表名")->where(array("room_id"=>1))->group("status")->select();
-	}
-}
-
-```
-### left join
-``` php
-
-```
-### 执行底层sql操作
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $res=$db->table("表名")->model()->select("id")->from("表名")->row();
-        var_dump($res);
-	}
-}
-
-```
-
-

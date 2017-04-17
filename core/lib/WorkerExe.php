@@ -44,23 +44,21 @@ class WorkerExe{
 	 * 任务进行监听
 	 */
 	public function listen(){
-		$run=true;
-		if (defined('RUNER_FORK') && RUNER_FORK){
-			if (!defined('RUNER_LIMIT')){
-			    $run=1;
-			}else{
-				if(RUNER_LIMIT===true){
-				    $run=true;
-				} else{
-				    $run=RUNER_LIMIT>0?RUNER_LIMIT:1;
-				} 
-			}
+		if (defined('WORKER_FORK') && WORKER_FORK){//多进程模式
+			$run=Config::get('worker_limit');
+			$run=($run==0)?true:$run;
+		}else{//单进程模式
+		    $run=true;
 		}
-		register_shutdown_function(array($this,'shutdown_function'));
 		$taskManage=new TaskManage();
+		register_shutdown_function(array($this,'shutdown_function'));
 		while ($run===true||$run-->0){
 			$this->_worker=Queue::brPop(static::$_worker_exec,0);//取出队列
-			$taskManage->run_task($this->_worker);
+			if(Utils::is_pthreads()){//多线程模式
+			    Pthread::call($taskManage,$this->_worker);
+			}elseif(Utils::is_popen()){//单线程模式
+			    $taskManage->run_task($this->_worker);
+			}
 		}
 	}
 	public function shutdown_function(){

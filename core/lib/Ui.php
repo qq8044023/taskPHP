@@ -13,6 +13,10 @@ class Ui{
     public static function statusUI(){
         $text= "------------------------- taskPHP ------------------------------".PHP_EOL;
         $text.= 'taskPHP version:' . ML_VERSION . "      PHP version:".PHP_VERSION.PHP_EOL;
+        $text.= 'author:码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com'.PHP_EOL;
+        $text.= 'license1:https://github.com/qq8044023/taskPHP'.PHP_EOL;
+        $text.= 'license2:https://git.oschina.net/cqcqphper/taskPHP'.PHP_EOL;
+        $text.= 'startTime:'.date('Y-m-d H:i:s').PHP_EOL;
         $text.= "------------------------- taskPHP PROCESS ----------------------".PHP_EOL;
         $text.= "listen".str_pad('', 22). "processes".str_pad('', 21)."status";
         self::displayUI($text,false);

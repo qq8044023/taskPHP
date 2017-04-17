@@ -13,7 +13,14 @@ namespace core\lib;
  */
 class Config{
     // 配置参数
-    private static $_config = array();
+    private static $_config = array(
+        'core'=>array(
+            'core_user'=>'nobody',//指定用户  nobody  www
+            'memory_limit'=>'256M',//指定任务进程最大内存
+            'worker_limit'=>0,//单个进程执行的任务数 0无限  大于0为指定数
+            'worker_mode'=>0,//worker进程运行模式
+        ),
+    );
     // 参数作用域
     private static $_range = 'core';
 
@@ -35,7 +42,7 @@ class Config{
         if(is_file($file)){
             $config=include $file;
         }
-        self::$_config['core']=$config;
+        self::$_config['core']=array_merge(self::$_config['core'],$config);
         //加载用户任务配置
         $files=glob(TASKS_PATH.DS.'*'.DS.'config'.EXT);
         foreach($files as $file){

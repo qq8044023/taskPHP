@@ -38,3 +38,7 @@ $locator->addNamespace("core", CORE_PATH.DS);
 $locator->addNamespace("tasks", TASKS_PATH.DS);
 //注册
 $locator->register();
+
+//注册异常捕捉
+$Exception = new \core\lib\Exception();
+$Exception->register();

@@ -10,6 +10,7 @@ use core\lib\Worker;
 use core\lib\WorkerExe;
 use core\lib\WorkerRun;
 use core\lib\Timer;
+use core\lib\Task;
 /**
  * 任务管理类
  * @author cqcqphper 小草<cqcqphper@163.com>
@@ -37,7 +38,7 @@ class TaskManage{
 	        $worker= new Worker($key,new $class_name());
 	         
 	        if(is_string($value['timer'])){
-	            $timer = Utils::string_to_timer($value['timer']);
+	            $timer = Timer::string_to_timer($value['timer']);
 	        }
 	        $worker->set_timer($timer);
 	        $this->set_worker($worker);
@@ -52,7 +53,8 @@ class TaskManage{
 	 * @return boolean
 	 */
 	public function set_worker(Worker $worker,$overwrite=true){
-		$next_run_time=$worker->get_next_run_time();
+	    $timer=$worker->get_timer();
+		$next_run_time=Timer::get_next_run_time(null,$timer);
 		if ($next_run_time===false)$next_run_time=time();
 		$timer=$worker->get_timer();
 		$task=$worker->get_worker();
@@ -104,7 +106,9 @@ class TaskManage{
 		    ob_end_clean();
 		}catch(Exception $e){
 		    Log::input(array($task,$e->getMessage()),1);
+		    return false;
 		}
+		unset($data);
 	}
 	
 	

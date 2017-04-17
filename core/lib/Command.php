@@ -88,7 +88,7 @@ class Command{
 	 * 关闭 
 	 */
 	public static function close(){
-	     $is_daemon=Utils::is_daemon(array());
+	     $is_daemon=Daemon::is_daemon(array());
 	     $is_daemon=$is_daemon?'yes':'no';
 	     Ui::displayUI('runing:'.$is_daemon,false);
          foreach (Log::getPidAll() as $v) !is_null($v) && posix_kill($v, SIGTERM);//关闭当前进程

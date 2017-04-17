@@ -22,6 +22,7 @@ class Log{
     
     private static $_pidName='pid.pid';
     public static $_logPath=LOGS_PATH;
+
     /**
      * 写日志
      * @param unknown $data 欲写入的数据
@@ -33,9 +34,7 @@ class Log{
         if(self::$_handle == NULL){
             self::$_handle = @fopen(self::$_logPath.DS.$filename, 'a');
         }
-        
         fwrite(self::$_handle,strtoupper(date('H:i:s').' '.self::getDescTitle($type)).':'.self::getRequest($data));
-        
     }
     /**
      * 写入pid
