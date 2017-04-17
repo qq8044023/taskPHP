@@ -4,6 +4,6 @@ use core\lib\Log;
 class Demolib{
     
     public function run(){
-        Log::input('Demolib run ok');
+        Log::input('Demolib run ok'); 
     }
 }
