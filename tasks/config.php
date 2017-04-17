@@ -20,23 +20,7 @@ return array(
             //class名称,(设置true或者不设置此参数)代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
             'class_name'=>true,   
             //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/1 * * * * * *', 
+            'timer'     =>'/2 * * * * * *', 
         ),
-        //backup任务
-        'backup'=>array(
-            //class名称,(设置true或者不设置此参数)代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
-            'class_name'=>true,
-            //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/2 * * * * * *', //5秒执行
-        ),
-    ),
-    "DB"=>array(
-        'DB_TYPE' => 'mysql',
-        'DB_HOST' => 'localhost',
-        'DB_NAME' => 'tourism_game',
-        'DB_USER' => 'root',
-        'DB_PWD' => 'root',
-        'DB_PORT' => '3306',
-        'DB_CODE'=>'utf8'
     ),
 );
