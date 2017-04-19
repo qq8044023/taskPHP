@@ -1,4 +1,4 @@
-## 系统进行封装的操作函数指南
+## 系统封装的操作函数指南
 Utils::replace_keyword(),Utils::import(),Utils::getWeek(),Utils::writeLog()
 
 ### 特殊字符串转义  Utils::replace_keyword($string,$exclude_str) 
