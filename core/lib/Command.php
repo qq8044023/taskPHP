@@ -40,7 +40,7 @@ class Command{
      * 分解命令
      */
     public static function analysis(){
-        $argv=@$argv?$argv:$_SERVER['argv'];
+        $argv=$_SERVER['argv'];
         array_shift($argv);
         if(!count($argv)){
             return;

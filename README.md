@@ -36,7 +36,11 @@ taskPHP								根目录
 4. 任务派发及具体任务执行不在同个进程[distribute_listen.php]和[worker_listen.php],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
 5. 执行时间语法跟crontab类似,且支持秒设置。
 6. 添加任务简单,只需继承Task基类,实现任务入口run方法。
-    
+
+## 环境要求
+1. php版本>= 5.5<br>
+2. 开启shmop<br>
+   
 ## 注意事项
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。

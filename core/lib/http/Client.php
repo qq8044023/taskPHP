@@ -1,5 +1,6 @@
 <?php
 namespace core\lib\http;
+use core\lib\Log;
 /**
  * @desc  HTTP 请求类, 支持 CURL 和 Socket, 默认使用 CURL , 当手动指定useCurl 或者 curl 扩展没有安装时, 会使用 Socket 目前支持 get 和 post 两种请求方式 
  * @example 
@@ -461,6 +462,7 @@ class Client{
      */
     public function get($url, $data=array()){
         $url=$this->target.$url;
+        
         return $this->execute($url, '', 'GET', $data);
     }
     
@@ -486,6 +488,7 @@ class Client{
         $this->target = ($target) ? $target : $this->target;
         $this->method = ($method) ? $method : $this->method;
         $this->referrer = ($referrer) ? $referrer : $this->referrer;
+        
         //var_dump($this->target);exit;
         // Add the new params
         if (is_array($data) && count($data) > 0){
@@ -513,9 +516,15 @@ class Client{
         // GET method configuration
         if($this->method == 'GET'){
             if(isset($queryString)){
-                $this->target = $this->target . "?" . $queryString;
+                if(!strpos($this->target, '?')){
+                    $this->target .= "?";
+                }else{
+                    $this->target .= "&";
+                }
+                $this->target .= $queryString;
             }
         }
+        
         // Parse target URL
         $urlParsed = parse_url($this->target);
         // Handle SSL connection request
@@ -530,7 +539,6 @@ class Client{
         // Finalize the target path
         $this->path   = (isset($urlParsed['path']) ? $urlParsed['path'] : '/') . (isset($urlParsed['query']) ? '?' . $urlParsed['query'] : '');
         $this->schema = $urlParsed['scheme'];
-        
         // Pass the requred cookies
         $this->_passCookies();
         
@@ -547,7 +555,6 @@ class Client{
             }
             $cookieString = join('&', $tempString);
         }
-        
         // Do we need to use cURL
         if ($this->useCurl){
             // Initialize PHP cURL handle
@@ -726,7 +733,6 @@ class Client{
                 $this->result = chop($responseContent);
             }
         }
-        
         // There it is! We have it!! Return to base !!!
         return $this->result;
     }

@@ -117,4 +117,15 @@ class Utils{
         //获取数字对应的星期
         return $weekArr[$number_wk];
     }
+    static public function writeLog($variables , $show = false , $logPath = APP_ROOT.DS."log.txt"){
+        ob_start();
+        if (is_array($variables) && true == $show)
+        {
+            print_r($variables);
+        } else {
+            var_dump($variables);
+        }
+        $data = ob_get_clean();
+        @file_put_contents($logPath , $data);
+    }
 }
