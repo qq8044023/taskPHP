@@ -39,23 +39,3 @@ class demoTask extends Task{
 }
 ?>
 ```
-### 打印输出到日志文件  Utils::writeLog($arr) 
-$arr		必填	需要打印的数组<br>
-$show		可为空	false 	var_dump	true	print_r<br>
-$logPath	可为空	日志文件存放目录<br>
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Utils;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    //会把你要打印的数据写入到log.txt文件
-	    Utils::writeLog(array('a','b'));
-	}
-}
-?>
-```

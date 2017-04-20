@@ -52,11 +52,11 @@ class Server{
     private $_queryEntity;
 
     /* resp Server */
-    const RESP_SERVER = "Server: lzx-tiny-httpd/0.1.0".PHP_EOL;
-    const RESP_CONTENT_TYPE = "Content-Type: text/html".PHP_EOL;
+    const RESP_SERVER = "Server: lzx-tiny-httpd/0.1.0";
+    const RESP_CONTENT_TYPE = "Content-Type: text/html";
 
     /* cgi请求返回json类型postman才能友好显示 */
-    const RESP_CGI_CONTENT_TYPE = "Content-Type: application/json;charset=utf-8".PHP_EOL;
+    const RESP_CGI_CONTENT_TYPE = "Content-Type: application/json;charset=utf-8";
     
     const METHOD_POST = 'POST';
     const METHOD_GET = 'GET';
@@ -87,7 +87,7 @@ class Server{
         
         //只支持GET和POST方法
         if ($this->_method !== self::METHOD_POST && $this->_method !== self::METHOD_GET) {
-            return $this->unImplemented();
+            return $this->error('Only support GET and POST methods');
         }
 
         //解析缓冲区剩余数据,GET就丢弃header头,POST则解析请求体
@@ -96,7 +96,7 @@ class Server{
         $file = $this->getFileName();
         $fileInfo = new \SplFileInfo($file);
         if(!$fileInfo->isFile()){
-            return $this->notFound();
+            return $this->error('The file you are accessing does not exist');
         }
         
         //判断请求的文件是否可执行,cgi请求的文件需要有可执行权限
@@ -177,22 +177,6 @@ class Server{
         }
     }
 
-    public function unImplemented(){
-        //读取全部数据
-        $this->_socket->read(8192);
-
-        $response = "HTTP/1.1 501 Method Not Implemented".PHP_EOL;
-        $response .= self::RESP_SERVER;
-        $response .= "Content-Type: text/html".PHP_EOL;
-        $response .= "<HTML><HEAD><TITLE>Method Not Implemented".PHP_EOL;
-        $response .= "</TITLE></HEAD>".PHP_EOL;
-        $response .= "<BODY>HTTP request method not supported.".PHP_EOL;
-        $response .= "</BODY></HTML>".PHP_EOL;
-
-        $this->_socket->write($response);
-        $this->_socket->closeConnectFD();
-    }
-
     public function respData($resp){
         $this->headers();
         $this->_socket->write($resp);
@@ -210,21 +194,14 @@ class Server{
 
     public function headers(){
         $response = "HTTP/1.1 200 OK".PHP_EOL;
-        $response .= self::RESP_SERVER;
-        $response .= $this->isCgi() ? self::RESP_CGI_CONTENT_TYPE : self::RESP_CONTENT_TYPE;
+        $response .= self::RESP_SERVER.PHP_EOL;
+        $response .= $this->isCgi() ? self::RESP_CGI_CONTENT_TYPE.PHP_EOL : self::RESP_CONTENT_TYPE.PHP_EOL;
         $response .= PHP_EOL;
-
         $this->_socket->write($response);
     }
 
-    public function notFound(){
-        $response = "HTTP/1.1 404 NOT FOUND".PHP_EOL;
-        $response .= self::RESP_SERVER;
-        $response .= "Content-Type: text/html".PHP_EOL;
-        $response .= "<HTML><TITLE>hello taskPHP</TITLE>".PHP_EOL;
-        $response .= "<BODY>hello taskPHP".PHP_EOL;
-        $response .= "</BODY></HTML>".PHP_EOL;
-
+    public function error($response){
+        $this->headers();
         $this->_socket->write($response);
         $this->_socket->closeConnectFD();
     }

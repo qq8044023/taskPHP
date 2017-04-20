@@ -22,7 +22,6 @@ final class Locator{
     /**
      * 维护一个命名空间前缀和具体路径对应的映射表
      * 一个命名空间前缀中可以有多个路径
-     *
      * @var array
      */
     protected $prefixes = array();
