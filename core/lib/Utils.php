@@ -74,10 +74,12 @@ class Utils{
     }
     /**
      * 导入所需的类库
-     *  * @param unknown $str
+     *  * @param string $str
      */
-    static public function import($path) {
-        include_once APP_ROOT.DS.str_replace("@",DS,$path).EXT;
+    static public function loadphp($path) {
+        $filename=APP_ROOT.DS.str_replace(".",DS,$path).EXT;
+        $res=in_array($filename,get_included_files());
+        if(!$res) include_once $filename;
     }
     /**
      * 获取时间是星期几
@@ -116,5 +118,121 @@ class Utils{
         }
         //获取数字对应的星期
         return $weekArr[$number_wk];
+    }
+    
+    /**
+     * 设置和获取统计数据
+     * 使用方法:
+     * <code>
+     * Utils::counter('db',1); // 记录数据库操作次数
+     * Utils::counter('read',1); // 记录读取次数
+     * echo Utils::counter('db'); // 获取当前页面数据库的所有操作次数
+     * echo Utils::counter('read'); // 获取当前页面读取次数
+     * </code>
+     * @param string $key 标识位置
+     * @param integer $step 步进值
+     * @param boolean $save 是否保存结果
+     * @return mixed
+     */
+    public static function counter($key, $step = 0, $save = false){
+        static $_num = array();
+        if (!isset($_num[$key])) {
+            $_num[$key] = (false !== $save) ? Queue::get('counter_' . $key) : 0;
+        }
+        if (empty($step)) {
+            return $_num[$key];
+        } else {
+            $_num[$key] = $_num[$key] + (int) $step;
+        }
+        if (false !== $save) {
+            // 保存结果
+            Queue::set('counter_' . $key, $_num[$key], $save);
+        }
+        return null;
+    }
+    
+    /**
+     * 记录和统计时间（微秒）和内存使用情况
+     * 使用方法:
+     * <code>
+     * Utils::statistics('begin'); // 记录开始标记位
+     * // ... 区间运行代码
+     * Utils::statistics('end'); // 记录结束标签位
+     * echo Utils::statistics('begin','end',6); // 统计区间运行时间 精确到小数后6位
+     * echo Utils::statistics('begin','end','m'); // 统计区间内存使用情况
+     * 如果end标记位没有定义，则会自动以当前作为标记位
+     * 其中统计内存使用需要 MEMORY_LIMIT_ON 常量为true才有效
+     * </code>
+     * @param string $start 开始标签
+     * @param string $end 结束标签
+     * @param integer|string $dec 小数位或者m
+     * @return mixed
+     */
+    public static function statistics($start, $end = '', $dec = 4){
+        static $_info = array();
+        static $_mem  = array();
+        if (is_float($end)) {
+            // 记录时间
+            $_info[$start] = $end;
+        } elseif (!empty($end)) {
+            // 统计时间和内存使用
+            if (!isset($_info[$end])) {
+                $_info[$end] = microtime(true);
+            }
+        
+            if (MEMORY_LIMIT_ON && 'm' == $dec) {
+                if (!isset($_mem[$end])) {
+                    $_mem[$end] = memory_get_usage();
+                }
+        
+                return number_format(($_mem[$end] - $_mem[$start]) / 1024);
+            } else {
+                return number_format(($_info[$end] - $_info[$start]), $dec);
+            }
+        
+        } else {
+            // 记录时间和内存使用
+            $_info[$start] = microtime(true);
+            if (MEMORY_LIMIT_ON) {
+                $_mem[$start] = memory_get_usage();
+            }
+        
+        }
+        return null;
+    }
+    /**
+     * 写日志
+     * @param unknown $data 欲写入的数据
+     * @param int $type 日志等级 0正常 1错误 默认0
+     */
+    public static function log($data,$type=0){
+        Log::input($data,$type);
+    }
+    /**
+     * 缓存管理
+     * @param mixed $name 缓存名称
+     * @param mixed $value 缓存值
+     * @return mixed
+     */
+    public static function cache($name, $value = ''){
+        if ('' === $value) {
+            // 获取缓存
+            return Queue::get($name);
+        } elseif (is_null($value)) {
+            // 删除缓存
+            return Queue::rm($name);
+        } else {
+            // 缓存数据
+            return Queue::set($name, $value);
+        }
+    }
+    /**
+     * 获取数据库连接对象
+     * @param string    $name 配置参数名（支持二级配置 .号分割）
+     * @param string    $range  作用域
+     * @return mixed
+     */
+    public static function db($name,$range){
+        return Db::setConfig(Config::get($name,$range));
     }
 }

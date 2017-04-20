@@ -48,7 +48,7 @@ taskPHP								根目录
 ## 文档列表
 -->[MYSQL数据库类使用教程](./docs/mysql.md)<br>
 -->[windows下安装php多线程扩展pthreads教程](./docs/thread_windows.md)<br>
--->[系统函数助手](./docs/utils.md)<br>
+-->[工具类Utils使用说明](./docs/utils.md)<br>
 ## 使用说明
 
 ### 时间配置格式说明:
