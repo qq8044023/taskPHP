@@ -1,6 +1,7 @@
 <?php
 namespace core\lib\db;
 use core\lib\db\Extend\MysqlClient;
+use core\lib\Utils;
 /**
  * 
  * 码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
@@ -87,7 +88,7 @@ class Mysql extends ClientSire{
      * 处理拼接sql
      * 
      *   */
-    protected function parseQuerySql(){
+    public function parseQuerySql(){
         $this->wheres();
         $query=$this->Db->select($this->filed)->from($this->name)->where($this->where);
         //排序
@@ -103,11 +104,13 @@ class Mysql extends ClientSire{
     /**
      * 处理where
      *   */
-    protected function wheres(){
+    public function wheres(){
         if (is_array($this->where)){
+            $where="";
             foreach ($this->where as $k=>$v){
-                $this->where[$k]=intval($v);
+                $where.=$k."='".$v."' AND ";
             }
+            $this->where=substr($where,0,strlen($where)-4);
         }
     }
     protected function toArray($arr){
