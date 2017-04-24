@@ -34,10 +34,7 @@ class WorkerExe{
 	 * @param Worker $worker
 	 */
 	public function exec(Worker $worker){
-		$re=Queue::lPush(static::$_worker_exec,$worker->get_worker());//加入队列
-		if(!$re){
-		    throw new Exception('function lPush error');
-		}
+		Queue::lPush(static::$_worker_exec,$worker->get_worker());//加入队列
 	}
 	
 	/**

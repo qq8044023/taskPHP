@@ -1,10 +1,14 @@
 ## Mysql数据库操作
 
-配置mysql
+## 详细使用说明
+```php
+use core\lib\Utils;
+```
+1. 配置mysql 将以下配置代码加入到你的xxTask.php同级目录的config.php里面
 ``` php
 	/**
      * 数据库配置
-     *   */
+     **/
     'DB'=>array(
         'db_type'       =>'MYSQL',//数据库类型
         'db_host'       =>'127.0.0.1',//地址
@@ -15,172 +19,75 @@
     ),
 ```
 
-### 添加
+2. 添加数据
 ``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $data=array(
-            "player_id"=>1,
-            "item_id"=>2,
-            "rows"=>3
-        );
-        $db->table("表名")->add($data);
-	   
-	}
-}
-
+	$db=Utils::db(Utils::config('DB','demo'));
+    $data=array(
+        "player_id"=>1,
+        "item_id"=>2,
+        "rows"=>3
+    );
+    $db->table("表名")->add($data);
 ```
-### 删除
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->delete();
-	    var_dump($res);
-	}
-}
 
+3. 删除数据
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$res=$db->table("表名")->where("id=1")->delete();
 ```
-### 修改
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $db->table("表名")->where(array("room_id"=>1))->save(array("status"=>1));
-	}
-}
 
+4. 更新数据
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+    $db->table("表名")->where(array("room_id"=>1))->save(array("status"=>1));
 ```
-### 查询单条
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->find();
-	    var_dump($res);
-	}
-}
 
+5. 查询单条
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$res=$db->table("表名")->find();
+	var_dump($res);
 ```
-### 查询多条
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->select();
-	    var_dump($res);
-	}
-}
 
+6. 查询多条
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$res=$db->table("表名")->where("id=1")->select();
+	var_dump($res);
 ```
-### 查询总数
-``` php
 
+7. 查询总数
+``` php
+//==
 ```
-### where条件
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-	    $res=$db->table("表名")->where("id=1")->find();
-	    //或者
-	    $res=$db->table("表名")->where(array("id"=>1))->find();
-	    var_dump($res);
-	}
-}
 
+8. where条件
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$res=$db->table("表名")->where("id=1")->find();
+	//或者
+	$res=$db->table("表名")->where(array("id"=>1))->find();
+	var_dump($res);
 ```
-### in
+9. in
 ``` php
-
+//==
 ```
-### group by
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $db->table("表名")->where(array("room_id"=>1))->group("status")->select();
-	}
-}
 
+10. group by
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$db->table("表名")->where(array("room_id"=>1))->group("status")->select();
 ```
-### left join
-``` php
 
+11. left join
+``` php
+//==
 ```
-### 执行底层sql操作
-``` php
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Config;
-use core\lib\Db;
-/**
- * 测试任务
- */
-class demoTask extends Task{
-	public function run(){
-	    $db=Db::setConfig(Config::get('DB'));
-        $res=$db->table("表名")->model()->select("id")->from("表名")->row();
-        var_dump($res);
-	}
-}
 
+12. 执行底层sql操作
+``` php
+	$db=Utils::db(Utils::config('DB','demo'));
+	$res=$db->table("表名")->model()->select("id")->from("表名")->row();
+	var_dump($res);
 ```

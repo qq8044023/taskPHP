@@ -201,6 +201,15 @@ class Utils{
         return null;
     }
     /**
+     * 获取配置参数
+     * @param string    $name 配置参数名（支持二级配置 .号分割）
+     * @param string    $range  作用域
+     * @return mixed
+     */
+    public static function config($name,$range){
+        return Config::get($name,$range);
+    }
+    /**
      * 写日志
      * @param unknown $data 欲写入的数据
      * @param int $type 日志等级 0正常 1错误 默认0
@@ -233,6 +242,6 @@ class Utils{
      * @return mixed
      */
     public static function db($name,$range){
-        return Db::setConfig(Config::get($name,$range));
+        return Db::setConfig(self::config($name,$range));
     }
 }

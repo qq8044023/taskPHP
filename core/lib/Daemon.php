@@ -87,7 +87,9 @@ class Daemon{
             $pid = pcntl_fork();
             if ($pid == -1) die(pcntl_get_last_error());
             elseif($pid) {
-                Log::inputJson($pid.",");
+                $pid_list=(array)Utils::cache('taskPHP_core_pid');
+                $pid_list[]=$pid;
+                Utils::cache('taskPHP_core_pid',$pid_list);
                 unset($pid);
                 pcntl_wait($status,WUNTRACED);
                 goto runer_frok;
@@ -101,7 +103,9 @@ class Daemon{
         }
         Ui::statusUI();
         Ui::statusProcess($this->_listen_list);
-        Log::inputJson(getmypid().",");
+        $pid_list=(array)Utils::cache('taskPHP_core_pid');
+        $pid_list[]=getmypid();
+        Utils::cache('taskPHP_core_pid',$pid_list);
         foreach ($this->_process as $key=>$value){
             if($this->_process[$key]==0){
                 $this->start_creating($key);
@@ -122,7 +126,9 @@ class Daemon{
         if ($pid == -1){
             die(pcntl_get_last_error());
         }elseif ($pid){
-            Log::inputJson($pid.",");
+            $pid_list=(array)Utils::cache('taskPHP_core_pid');
+            $pid_list[]=$pid;
+            Utils::cache('taskPHP_core_pid',$pid_list);
             $this->_process[$title]=$pid;
         }else{
             $this->start_exec($title);

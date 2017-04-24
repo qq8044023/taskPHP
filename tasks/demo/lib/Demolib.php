@@ -1,9 +1,9 @@
 <?php
 namespace tasks\demo\lib;
-use core\lib\Log;
+use core\lib\Utils;
 class Demolib{
     
     public function run(){
-        Log::input('Demolib run ok'); 
+        Utils::log('Demolib run ok'); 
     }
 }

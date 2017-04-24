@@ -17,10 +17,15 @@ class Log{
      * @var unknown
      */
     private static $_handle= NULL;
-    
+    /**
+     * 日志后缀
+     * @var string
+     */
     private static $_ext='.log';
-    
-    private static $_pidName='pid.pid';
+    /**
+     * 日志目录
+     * @var string
+     */
     public static $_logPath=LOGS_PATH;
 
     /**
@@ -36,30 +41,7 @@ class Log{
         }
         fwrite(self::$_handle,strtoupper(date('H:i:s').' '.self::getDescTitle($type)).':'.self::getRequest($data));
     }
-    /**
-     * 写入pid
-     * @param   $data
-     *
-     *   */
-    public static function inputJson($pid){
-        self::initDir(self::$_logPath);
-        fwrite(@fopen(self::$_logPath.DS.self::$_pidName, 'a'),$pid);
-    }
-    /**
-     * 覆盖写入文件
-     * @param   $txt
-     *   */
-    public static function inputCover($txt=''){
-        self::$_handle=@fopen(self::$_logPath.DS.self::$_pidName, "w");
-        fwrite(self::$_handle,$txt);
-    }
-    /**
-     * 获取 pid列表
-     * 
-     *   */
-    public static function getPidAll(){
-        return explode(",", @file_get_contents(self::$_logPath.DS.self::$_pidName),-1);
-    }
+
     /**
      * 覆盖写入内容
      *   */

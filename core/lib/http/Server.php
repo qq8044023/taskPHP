@@ -51,6 +51,7 @@ class Server{
     /* request stdin */
     private $_queryEntity;
 
+    private $_request=array();
     /* resp Server */
     const RESP_SERVER = "Server: lzx-tiny-httpd/0.1.0";
     const RESP_CONTENT_TYPE = "Content-Type: text/html";
@@ -98,7 +99,8 @@ class Server{
         if(!$fileInfo->isFile()){
             return $this->error('The file you are accessing does not exist');
         }
-        
+        /* 获取get和post的值  */
+        $this->resolveRequest();
         //判断请求的文件是否可执行,cgi请求的文件需要有可执行权限
         if(!$fileInfo->isExecutable()){
             $this->respData('hello taskPHP');
@@ -108,6 +110,23 @@ class Server{
         $this->_socket->closeConnectFD();
     }
 
+    /**
+     * 解析 get 和 post的
+     *   */
+    protected function resolveRequest(){
+        //解析post 的数据
+        preg_match_all ( "|name=\"(.+\s*\w+\s*)--*|U" ,$this->_queryEntity, $out ,  PREG_SET_ORDER );
+        foreach($out as $k=>$v){
+            list($key,$val)=explode("\"",$v[1]);
+            (!is_null($val)) && $this->_request[$key]=trim($val);
+        }
+        //解析 get数据
+        foreach(explode("&",$this->_queryString) as $k=>$v){
+            list($key,$val)=explode("=",$v,2);
+            (!is_null($val)) && $this->_request[$key]=trim($val);
+        }
+    }
+    
     /**
      * 是否是动态请求
      *

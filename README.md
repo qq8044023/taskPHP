@@ -18,6 +18,7 @@ taskPHP								根目录
 |   |-- guide.php					框架引导文件
 |   |-- distribute_listen.php		任务派发进程入口
 |   |-- worker_listen.php			任务执行进程入口
+|-- docs							开发文档存放目录
 |-- logs							日志目录
 |-- tasks							用户任务目录
 |   |-- demo						demo任务
@@ -49,6 +50,7 @@ taskPHP								根目录
 -->[MYSQL数据库类使用教程](./docs/mysql.md)<br>
 -->[windows下安装php多线程扩展pthreads教程](./docs/thread_windows.md)<br>
 -->[工具类Utils使用说明](./docs/utils.md)<br>
+-->[http请求客户端类Client使用说明](./docs/http_client.md)<br>
 ## 使用说明
 
 ### 时间配置格式说明:

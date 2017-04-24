@@ -1,7 +1,7 @@
 <?php
 namespace tasks\demo;
 use core\lib\Task;
-use core\lib\Log;
+use core\lib\Utils;
 use core\lib\http\Client;
 use tasks\demo\lib\Demolib;
 /**
@@ -27,19 +27,19 @@ class demoTask extends Task{
 	    $result =  $http->get('http://www.baidu.com');
 	    $res='http fail';
 	    if($result!='')$res='http success';
-	    Log::input($res);
+	    Utils::log($res);
 	    
 	    //数据库操作测试
 	    //Config::get()说明：配置文件中配置数据库连接信息，第一个参数为配置项，第二个参数为作用域 demo 表示本任务（demo任务）下的配置文件
-	    /* $db_config=\core\lib\Config::get('DB','demo');
-	    $db=\core\lib\Db::setConfig($db_config);
+	    /* $db_config=Utils::config('DB','demo');
+	    $db=Utils::db($db_config);
 	    $res=$db->table("表名")->find();
 	    var_dump($res); */
 	    
 	    
 	    $str="demoTask run success";
 	    //echo $str;
-		Log::input($str);
+		Utils::log($str);
 		flush();
 	}
 }
