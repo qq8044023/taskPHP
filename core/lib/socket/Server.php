@@ -74,11 +74,13 @@ class Server {
      */
     public function accept(){
         if (!$this->_listenFD) {
-            throw new Exception('no socket handler for accept.');
+            \core\lib\Ui::displayUI('no socket handler for accept.',false);
+            return false;
         }
         //它接收连接请求并调用一个子连接Socket来处理客户端和服务器间的信息
         if (!($this->_connectFD = socket_accept($this->_listenFD))) {
-            throw new Exception("socket_accept err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::displayUI("socket_accept err:".socket_strerror(socket_last_error()),false);
+            return false;
         }
     }
 
@@ -88,7 +90,8 @@ class Server {
      */
     public function readLine(){
         if (!$this->_connectFD) {
-            throw new Exception('no connfd for write.');
+            \core\lib\Ui::displayUI('no connfd for write.',false);
+            return false;
         }
         /* PHP_NORMAL_READ碰到\r,\n,\0就停止 */
         $buf = trim(socket_read($this->_connectFD, 1024, PHP_NORMAL_READ)); //trim去掉末尾的\r
@@ -104,7 +107,8 @@ class Server {
      */
     public function read($bytes){
         if (!$this->_connectFD) {
-            throw new Exception('no connfd for write.');
+            \core\lib\Ui::displayUI('no connfd for write.',false);
+            return false;
         }
         return socket_read($this->_connectFD, $bytes);
     }
@@ -114,10 +118,10 @@ class Server {
      */
     public function write($data){
         if (!$this->_connectFD) {
-            throw new Exception('no connfd for write.');
+            \core\lib\Ui::displayUI('no connfd for write.',false);
         }
         if (!socket_write($this->_connectFD, $data, strlen($data))) {
-            throw new Exception("socket_write err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::displayUI("socket_write err:".socket_strerror(socket_last_error()),false);
         }
     }
 

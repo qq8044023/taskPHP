@@ -92,7 +92,7 @@ class Command{
 	     $is_daemon=$is_daemon?'yes':'no';
 	     Ui::displayUI('runing:'.$is_daemon,false);
 	     $pid_list=(array)Utils::cache('taskPHP_core_pid');
-         foreach ($pid_list as $v) !is_null($v) && posix_kill($v, SIGTERM);//关闭当前进程
+         foreach ($pid_list as $v) !is_null($v) && @posix_kill($v, SIGTERM);//关闭当前进程
          Utils::cache('taskPHP_core_pid',null);
          Ui::displayUI('close ok');
 	}

@@ -94,19 +94,64 @@ class Server{
         //解析缓冲区剩余数据,GET就丢弃header头,POST则解析请求体
         $this->parseQueryEntity();
         
-        $file = $this->getFileName();
+        /* $file = $this->getFileName();
         $fileInfo = new \SplFileInfo($file);
         if(!$fileInfo->isFile()){
             return $this->error('The file you are accessing does not exist');
-        }
+        } */
         /* 获取get和post的值  */
         $this->resolveRequest();
         //判断请求的文件是否可执行,cgi请求的文件需要有可执行权限
-        if(!$fileInfo->isExecutable()){
+        /* if(!$fileInfo->isExecutable()){
             $this->respData('hello taskPHP');
         }else{
             $this->cat($file);
-        }
+        } */
+        
+        if($this->_method=='POST'){
+            $html=json_encode($_POST);
+        }else{
+            if($_GET){
+                //$html=json_encode($_GET);
+                if($_GET['action']=='cmd'){
+                    if($_GET['content']=='select'){
+                        $html='';
+                        $TaskManage = new \core\lib\TaskManage();
+                        foreach ($TaskManage->run_worker_list() as $item){
+                            $worker=$item->get_worker();
+                            $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                        }
+                    }elseif($_GET['content']=='reload'){
+                        $TaskManage = new \core\lib\TaskManage();
+                        $TaskManage->load_worker();
+                        $html='task reload ok';
+                    }elseif($_GET['content']=='delete'){
+                        $name=$_GET['name'];
+                        if(!$name){
+                            $html='specify the name of the task to delete';
+                        }else{
+                            $TaskManage = new \core\lib\TaskManage();
+                            $TaskManage->del_worker($name);
+                            $html= $name.' delete ok';
+                        }
+                        
+                    }
+                }
+            }else{
+                $html='<!DOCTYPE html>
+                <html>
+                <meta charset="utf-8" />
+                <title>hello taskPHP</title>
+                <body>
+                <p><a href="/?action=cmd&content=select">查询任务</a></p>
+                <p><a href="/?action=cmd&content=reload">重载任务</a></p>
+                <p><a href="/?action=cmd&content=delete&name=">删除任务</a></p>
+                </body>
+                </html>';
+            }
+        } 
+        $this->respData($html);
+        
         $this->_socket->closeConnectFD();
     }
 
@@ -115,16 +160,9 @@ class Server{
      *   */
     protected function resolveRequest(){
         //解析post 的数据
-        preg_match_all ( "|name=\"(.+\s*\w+\s*)--*|U" ,$this->_queryEntity, $out ,  PREG_SET_ORDER );
-        foreach($out as $k=>$v){
-            list($key,$val)=explode("\"",$v[1]);
-            (!is_null($val)) && $this->_request[$key]=trim($val);
-        }
+        parse_str($this->_queryEntity,$_POST);
         //解析 get数据
-        foreach(explode("&",$this->_queryString) as $k=>$v){
-            list($key,$val)=explode("=",$v,2);
-            (!is_null($val)) && $this->_request[$key]=trim($val);
-        }
+        parse_str($this->_queryString,$_GET);
     }
     
     /**
@@ -138,13 +176,6 @@ class Server{
         return ($this->_method == self::METHOD_POST || !empty($this->_queryString));
     }
 
-    public function getFileName(){
-        if (!$this->_filename) {
-            throw new Exception('the filename parse err.');
-        }
-        return rtrim($this->_config['web_dir'], '/').$this->_filename;
-    }
-
     /**
      * 解析请求状态行
      *
@@ -155,7 +186,8 @@ class Server{
 
         $statusLineArr = explode(' ', trim($line));
         if (!is_array($statusLineArr) || count($statusLineArr) !== 3) {
-            //throw new Exception('parse request status line err.');
+            \core\lib\Ui::displayUI('parse request status line err.',false);
+            return false;
         }
 
         list($this->_method, $this->_requestUri, $protocal) = $statusLineArr;
@@ -164,7 +196,6 @@ class Server{
             $this->_filename    = strstr($this->_requestUri, '?', true);
             $this->_queryString = trim(strstr($this->_requestUri, '?'), '?');
         }else{
-            if($this->_requestUri=='/')$this->_requestUri.='index.php';
             $this->_filename    = $this->_requestUri;
             $this->_queryString = '';
         }
@@ -188,7 +219,8 @@ class Server{
             } while (!empty($line));
 
             if (empty($this->_contentLength)) {
-                throw new Exception('POST RQUEST CONTENT-LEHGTH IS NULL.');
+                \core\lib\Ui::displayUI('POST RQUEST CONTENT-LEHGTH IS NULL.',false);
+                return false;
             }
 
             //读取消息体
