@@ -244,4 +244,11 @@ class Utils{
     public static function db($name,$range){
         return Db::setConfig(self::config($name,$range));
     }
+    /**
+     * 路径转义
+     * @param unknown $path
+     * @return string  */
+    public static function escapePath($path){
+        return addcslashes($path,"\t\r\n\d");
+    }
 }
