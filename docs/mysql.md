@@ -1,4 +1,4 @@
-## Mysql数据库操作
+﻿## Mysql数据库操作
 
 ## 详细使用说明
 ```php
@@ -58,10 +58,29 @@ use core\lib\Utils;
 
 7. 查询总数
 ``` php
-//==
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$count=$db->table("vipqb_addons")->count();
+
 ```
 
-8. where条件
+8. 求总数
+``` php
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$sum=$db->table("vipqb_addons")->sum('number');
+
+```
+
+9. 求平局数
+``` php
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$agv=$db->table("vipqb_addons")->agv('number');
+
+```
+
+10. where条件
 ``` php
 	$db=Utils::db(Utils::config('DB','demo'));
 	$res=$db->table("表名")->where("id=1")->find();
@@ -69,23 +88,23 @@ use core\lib\Utils;
 	$res=$db->table("表名")->where(array("id"=>1))->find();
 	var_dump($res);
 ```
-9. in
+11. in
 ``` php
 //==
 ```
 
-10. group by
+12. group by
 ``` php
 	$db=Utils::db(Utils::config('DB','demo'));
 	$db->table("表名")->where(array("room_id"=>1))->group("status")->select();
 ```
 
-11. left join
+13. left join
 ``` php
 //==
 ```
 
-12. 执行底层sql操作
+14. 执行底层sql操作
 ``` php
 	$db=Utils::db(Utils::config('DB','demo'));
 	$res=$db->table("表名")->model()->select("id")->from("表名")->row();

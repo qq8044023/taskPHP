@@ -8,8 +8,7 @@ namespace core\lib;
  */
 
 /**
- * 使用共享内存的PHP循环内存队列实现
- * 接口按照redis设计
+ * 使用共享内存实现的内存队列
  * 支持多进程, 支持各种数据类型的存储
  * @author cqcqphper 小草<cqcqphper@163.com>
  */
@@ -35,7 +34,7 @@ class Queue{
     public static function get($name = false) {
         if(self::$_handler==null){
             self::$_handler=self::_ftok(self::$_options['project']);
-            if(self::$_handler==0x00000000)return null;
+            if(!self::$_handler)return null;
         }
         $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
         if ($shmid !== false) {
@@ -122,7 +121,7 @@ class Queue{
     private static function _write(&$val, &$lh) {
         if(self::$_handler==null){
             self::$_handler=self::_ftok(self::$_options['project']);
-            if(self::$_handler==0x00000000)return null;
+            if(!self::$_handler)return null;
         }
         $shmid  = shmop_open(self::$_handler, 'c', 0600, self::$_options['size']);
         if ($shmid) {
@@ -144,7 +143,7 @@ class Queue{
     private static function _lock() {
         if(self::$_handler==null){
             self::$_handler=self::_ftok(self::$_options['project']);
-            if(self::$_handler==0x00000000)return null;
+            if(!self::$_handler)return null;
         }
         if (function_exists('sem_get')) {
             $fp = sem_get(self::$_handler, 1, 0600, 1);
@@ -172,7 +171,7 @@ class Queue{
     public function close(){
         if(self::$_handler==null){
             self::$_handler=self::_ftok(self::$_options['project']);
-            if(self::$_handler==0x00000000)return null;
+            if(!self::$_handler)return null;
         }
         $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
         if($shmid){

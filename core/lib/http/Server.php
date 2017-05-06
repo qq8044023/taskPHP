@@ -125,6 +125,13 @@ class Server{
                         $TaskManage = new \core\lib\TaskManage();
                         $TaskManage->load_worker();
                         $html='task reload ok';
+                    }elseif($_GET['content']=='loglist'){
+                        $html='';
+                        $TaskManage = new \core\lib\TaskManage();
+                        foreach ($TaskManage->worker_result() as $item){
+                            list($time,$task_class,$result)=$item;
+                            $html.= str_pad($task_class, 20).$time. str_pad('', 10). $result.PHP_EOL;
+                        }
                     }elseif($_GET['content']=='delete'){
                         $name=$_GET['name'];
                         if(!$name){
@@ -145,6 +152,7 @@ class Server{
                 <body>
                 <p><a href="/?action=cmd&content=select">查询任务</a></p>
                 <p><a href="/?action=cmd&content=reload">重载任务</a></p>
+                <p><a href="/?action=cmd&content=loglist">任务日志</a></p>
                 <p><a href="/?action=cmd&content=delete&name=">删除任务</a></p>
                 </body>
                 </html>';

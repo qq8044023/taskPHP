@@ -16,7 +16,7 @@ class Log{
      * 文件句柄
      * @var unknown
      */
-    private static $_handle= NULL;
+    private static $_handle= array();
     /**
      * 日志后缀
      * @var string
@@ -36,10 +36,10 @@ class Log{
     public static function input($data,$type=0){
         $filename=date("Y-m-d").'_'.self::getDescTitle($type).self::$_ext;
         self::initDir(self::$_logPath);
-        if(self::$_handle == NULL){
-            self::$_handle = @fopen(self::$_logPath.DS.$filename, 'a');
+        if(!isset(self::$_handle[self::$_logPath.DS.$filename])){
+            self::$_handle[self::$_logPath.DS.$filename] = @fopen(self::$_logPath.DS.$filename, 'a');
         }
-        fwrite(self::$_handle,strtoupper(date('H:i:s').' '.self::getDescTitle($type)).':'.self::getRequest($data));
+        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper(date('H:i:s').' '.self::getDescTitle($type)).':'.self::getRequest($data));
     }
 
     /**
@@ -97,7 +97,7 @@ class Log{
     /**
      * 关闭文件句柄
      */
-    public function close(){
-        @fclose(self::$_handle);
+    public function close($val){
+        @fclose(self::$_handle[$val]);
     }
 }

@@ -132,6 +132,7 @@ class Command{
         if(!self::$_cmd_value){
             Ui::displayUI('specify the name of the task to exec');
         }
+        ini_set('memory_limit',Config::get('memory_limit'));
         $taskManage=new TaskManage();
         $taskManage->run_task(self::$_cmd_value);
     }

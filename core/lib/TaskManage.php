@@ -23,6 +23,9 @@ class TaskManage{
 	public static $_workerPrefix="task_worker:";
 	
 	public static $_workerList="task_list";
+	
+	public static $_workerLoglist="task_loglist";
+	
 	/**
 	 * 首次加载任务到内存
 	 */
@@ -42,9 +45,7 @@ class TaskManage{
 	        }
 	        $worker->set_timer($timer);
 	        $this->set_worker($worker);
-	        echo 'taskPHP:'.$key.' task load complete'.PHP_EOL;
 	    }
-	    echo 'taskPHP is running..............'.PHP_EOL;
 	}
 	/**
 	 * 设置一个任务
@@ -72,18 +73,16 @@ class TaskManage{
 		$item['run_time']=$next_run_time;
 		Queue::set($name,$item);
 		if(!in_array($worker->get_name(),$workerlist)){
-		    $re=Queue::lPush(static::$_workerList,$worker->get_name());
-		    if(!$re){
-		        throw new Exception('function lPush error');
-		        return false;
-		    }
 		    //添加一个任务
+		    Queue::lPush(static::$_workerList,$worker->get_name());
 		    $this->un_sleep();
 		}
 		return true;
 	}
 	/**
 	 * 运行任务
+	 * @param Task|string $task
+	 * @return boolean
 	 */
 	public function run_task($task){
 	    if(is_string($task)){
@@ -101,12 +100,13 @@ class TaskManage{
 		}
 		try{
 		    ob_start();
-		    $task->run();
+		    $task->main();
 		    $data=ob_get_contents();
 		    ob_end_clean();
+            $this->add_log(array(get_class($task),$data?$data:'run success'));
 		}catch(Exception $e){
 		    Log::input(array($task,$e->getMessage()),1);
-		    return false;
+		    $this->add_log(array(get_class($task),$data?$data:'run fail'));
 		}
 		unset($data);
 	}
@@ -189,26 +189,27 @@ class TaskManage{
 	public function exec_worker(Worker $worker){
 		return WorkerExe::instance()->exec($worker);
 	}
-	
+	/**
+	 * 记录运行日志
+	 * @param array $data
+	 */
+	public function  add_log(array $data){
+	    array_unshift($data,date("Y-m-d H:i:s"));
+	    //加入队列  记录日志
+	    Queue::lPush(static::$_workerLoglist,$data);
+	}
 	/**
 	 * 获取任务执行结果列表
-	 * 默认只保留最后100条结果,可修改 WorkerExe::$_workerLogLimit 
-	 * @param number $offset
-	 * @param number $limit
+	 * 默认只保留最后100条结果
 	 * @return array[
 	 * 	'0'=>执行时间
 	 * 	'1'=>执行对象
 	 * 	'2'=>执行输出
 	 * ]
 	 */
-	public function worker_result($offset=0,$limit=10){
+	public function worker_result(){
 		//获取最后几个运行结果
-		//$data= \core\lib\Queue::lrange(Exe::$_workerLog,$offset,$limit);
-		$out=array();
-		foreach($data as $value){
-			$out[]=json_decode($value,true);
-		}
-		unset($data);
-		return $out;
+		$data= Utils::cache(static::$_workerLoglist);
+		return $data; 
 	}
 }

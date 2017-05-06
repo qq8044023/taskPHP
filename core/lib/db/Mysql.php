@@ -62,7 +62,27 @@ class Mysql extends ClientSire{
         }
         return $obj->where($this->where)->query();
     }
-    
+    /**
+     * 获取条数
+     *   */
+    public function count($val="*"){
+        $this->filed="count(".$val.") AS count";
+        return $this->parseQuerySql()->row()["count"];
+    }
+    /**
+     * 求和
+     *   */
+    public function sum($val){
+        $this->filed="sum(".$val.") AS sum";
+        return $this->parseQuerySql()->row()["sum"];
+    }
+    /**
+     * 求平局值
+     *   */
+    public function avg($val){
+        $this->filed="avg(".$val.") AS avg";
+        return $this->parseQuerySql()->row()["avg"];
+    }
     /**
      * 新增
      * {@inheritDoc}
@@ -90,7 +110,10 @@ class Mysql extends ClientSire{
      *   */
     public function parseQuerySql(){
         $this->wheres();
-        $query=$this->Db->select($this->filed)->from($this->name)->where($this->where);
+        $query=$this->Db->select($this->filed)->from($this->name);
+        if(is_string($this->where)){
+            $query=$query->where($this->where);
+        }
         //排序
         if (!is_null($this->order)){
             $query=$query->orderBy($this->order);

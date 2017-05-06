@@ -81,6 +81,7 @@ class Utils{
         $res=in_array($filename,get_included_files());
         if(!$res) include_once $filename;
     }
+    
     /**
      * 获取时间是星期几
      * @param unknown $date 2017-12-23
@@ -119,7 +120,21 @@ class Utils{
         //获取数字对应的星期
         return $weekArr[$number_wk];
     }
-    
+    /**
+     * 根据PHP各种类型变量生成唯一标识号
+     * @param mixed $mix 变量
+     * @return string
+     */
+    public static function to_guid_string($mix){
+        if (is_object($mix)) {
+            return spl_object_hash($mix);
+        } elseif (is_resource($mix)) {
+            $mix = get_resource_type($mix) . strval($mix);
+        } else {
+            $mix = serialize($mix);
+        }
+        return md5($mix);
+    }
     /**
      * 设置和获取统计数据
      * 使用方法:
@@ -237,12 +252,11 @@ class Utils{
     }
     /**
      * 获取数据库连接对象
-     * @param string    $name 配置参数名（支持二级配置 .号分割）
-     * @param string    $range  作用域
+     * @param string    $config 配置信息
      * @return mixed
      */
-    public static function db($name,$range){
-        return Db::setConfig(self::config($name,$range));
+    public static function db($config){
+        return Db::setConfig($config);
     }
     /**
      * 路径转义

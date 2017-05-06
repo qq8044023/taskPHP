@@ -28,6 +28,13 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
         return false;
     }
 }
+// 记录开始运行时间
+$GLOBALS['_beginTime'] = microtime(true);
+// 记录内存初始使用
+define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
+if (MEMORY_LIMIT_ON) {
+    $GLOBALS['_startUseMems'] = memory_get_usage();
+}
 
 // 载入Loader类
 require_once CORE_PATH.DS."lib".DS."Loader".EXT;

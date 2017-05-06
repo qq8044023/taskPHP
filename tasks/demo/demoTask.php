@@ -4,6 +4,7 @@ use core\lib\Task;
 use core\lib\Utils;
 use core\lib\http\Client;
 use tasks\demo\lib\Demolib;
+use core\lib\Config;
 /**
  * 测试任务 
  */
@@ -14,9 +15,12 @@ class demoTask extends Task{
      * @see \core\lib\Task::run()
      */
 	public function run(){
-	    
+	    $config=Config::get('DB','demo');
+	    $db=Utils::db($config);
+	    $res=$db->table("vipqb_addons")->sum("id");
+	    Utils::log($res);
 	    //加载demo任务下的lib类
-	    $demolib_object = new Demolib();
+	    /* $demolib_object = new Demolib();
 	    $demolib_object->run();
 	    
 	    
@@ -28,7 +32,7 @@ class demoTask extends Task{
 	    $res='http fail';
 	    if($result!='')$res='http success';
 	    Utils::log($res);
-	    
+	     */
 	    //数据库操作测试
 	    //Config::get()说明：配置文件中配置数据库连接信息，第一个参数为配置项，第二个参数为作用域 demo 表示本任务（demo任务）下的配置文件
 	    /* $db_config=Utils::config('DB','demo');
@@ -36,10 +40,10 @@ class demoTask extends Task{
 	    $res=$db->table("表名")->find();
 	    var_dump($res); */
 	    
-	    
+	  /*   
 	    $str="demoTask run success";
 	    //echo $str;
 		Utils::log($str);
-		flush();
+		flush(); */
 	}
 }
