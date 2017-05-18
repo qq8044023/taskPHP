@@ -58,9 +58,31 @@ use core\lib\Utils;
 
 7. 查询总数
 ``` php
+<<<<<<< HEAD
 $config=Config::get('DB','demo');
 $db=Utils::db($config);
 $count=$db->table("vipqb_addons")->count();
+=======
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$count=$db->table("vipqb_addons")->count();
+
+```
+
+8. 求总数
+``` php
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$sum=$db->table("vipqb_addons")->sum('number');
+
+```
+
+9. 求平局数
+``` php
+	$config=Config::get('DB','demo');
+	$db=Utils::db($config);
+	$agv=$db->table("vipqb_addons")->agv('number');
+>>>>>>> 39f9ae4feef8a2f7c30ac898aca79b5ea9fc235d
 
 ```
 8. 求总数
@@ -69,6 +91,7 @@ $config=Config::get('DB','demo');
 $db=Utils::db($config);
 $sum=$db->table("vipqb_addons")->sum('number');
 
+<<<<<<< HEAD
 ```
 9. 求平局数
 ``` php
@@ -77,6 +100,8 @@ $db=Utils::db($config);
 $agv=$db->table("vipqb_addons")->agv('number');
 
 ```
+=======
+>>>>>>> 39f9ae4feef8a2f7c30ac898aca79b5ea9fc235d
 10. where条件
 ``` php
 	$db=Utils::db(Utils::config('DB','demo'));
