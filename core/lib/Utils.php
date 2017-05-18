@@ -81,6 +81,7 @@ class Utils{
         $res=in_array($filename,get_included_files());
         if(!$res) include_once $filename;
     }
+    
     /**
      * 获取时间是星期几
      * @param unknown $date 2017-12-23
@@ -119,7 +120,21 @@ class Utils{
         //获取数字对应的星期
         return $weekArr[$number_wk];
     }
-    
+    /**
+     * 根据PHP各种类型变量生成唯一标识号
+     * @param mixed $mix 变量
+     * @return string
+     */
+    public static function to_guid_string($mix){
+        if (is_object($mix)) {
+            return spl_object_hash($mix);
+        } elseif (is_resource($mix)) {
+            $mix = get_resource_type($mix) . strval($mix);
+        } else {
+            $mix = serialize($mix);
+        }
+        return md5($mix);
+    }
     /**
      * 设置和获取统计数据
      * 使用方法:
@@ -237,12 +252,11 @@ class Utils{
     }
     /**
      * 获取数据库连接对象
-     * @param string    $name 配置参数名（支持二级配置 .号分割）
-     * @param string    $range  作用域
+     * @param string    $config 配置信息
      * @return mixed
      */
-    public static function db($name,$range){
-        return Db::setConfig(self::config($name,$range));
+    public static function db($config){
+        return Db::setConfig($config);
     }
     /**
      * 路径转义
@@ -250,5 +264,73 @@ class Utils{
      * @return string  */
     public static function escapePath($path){
         return addcslashes($path,"\t\r\n\d");
+    }
+    /**
+     * 系统配置文件
+     * @param unknown $name
+     * @param unknown $value
+     * @param unknown $default
+     * @return array|string|mixed|NULL|string  */
+    static public function dbConfig($name=null, $value=null,$default=null) {
+        static $_config = array();
+        // 无参数时获取所有
+        if (empty($name)) {
+            return $_config;
+        }
+        // 优先执行设置获取或赋值
+        if (is_string($name)) {
+            if (!strpos($name, '.')) {
+                $name = strtoupper($name);
+                if (is_null($value))
+                    return isset($_config[$name]) ? $_config[$name] : $default;
+                    $_config[$name] = $value;
+                    return null;
+            }
+            // 二维数组设置和获取支持
+            $name = explode('.', $name);
+            $name[0]   =  strtoupper($name[0]);
+            if (is_null($value))
+                return isset($_config[$name[0]][$name[1]]) ? $_config[$name[0]][$name[1]] : $default;
+                $_config[$name[0]][$name[1]] = $value;
+                return null;
+        }
+        // 批量设置
+        if (is_array($name)){
+            $_config = array_merge($_config, array_change_key_case($name,CASE_UPPER));
+            return null;
+        }
+        return null; // 避免非法参数
+    }
+    /**
+     * 数据库实例化
+     * @param string $name
+     * @param string $tablePrefix
+     * @param string $connection
+     * @return unknown  */
+    static public function model($name='', $tablePrefix='',$connection='') {
+        static $_model  = array();
+        if(strpos($name,':')) {
+            list($class,$name)    =  explode(':',$name);
+        }else{
+            $class      =   'core\\lib\\Model';
+        }
+        $guid           =   (is_array($connection)?implode('',$connection):$connection).$tablePrefix . $name . '_' . $class;
+        if (!isset($_model[$guid]))
+            $_model[$guid] = new $class($name,$tablePrefix,$connection);
+            return $_model[$guid];
+    }
+    /**
+     * 字符串命名风格转换parse_name
+     * type 0 将Java风格转换为C的风格 1 将C风格转换为Java的风格
+     * @param string $name 字符串
+     * @param integer $type 转换类型
+     * @return string
+     */
+    static public function parseName($name, $type=0) {
+        if ($type) {
+            return ucfirst(preg_replace_callback('/_([a-zA-Z])/', function($match){return strtoupper($match[1]);}, $name));
+        } else {
+            return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
+        }
     }
 }
