@@ -6,129 +6,57 @@ use core\lib\Utils;
 ```
 1. 配置mysql 将以下配置代码加入到你的xxTask.php同级目录的config.php里面
 ``` php
-	/**
+
+<?php
+return array(
+    /**
      * 数据库配置
-     **/
+     *   */
     'DB'=>array(
-        'db_type'       =>'MYSQL',//数据库类型
-        'db_host'       =>'127.0.0.1',//地址
-        'db_username'   =>'root',//账户
-        'db_password'   =>'',//密码
-        'db_prot'       =>'3306',//端口
-        'db_name'       =>'dbname'//选中的数据库
+        'DB_TYPE'   => "mysql", // 数据库类型
+        'DB_HOST'   => "127.0.0.1", // 服务器地址
+        'DB_NAME'   => "tourism_game", // 数据库名
+        'DB_USER'   => "root", // 用户名
+        'DB_PWD'    => "root",  // 密码
+        'DB_PORT'   => 3306, // 端口
+        'DB_PREFIX' => "tourism_", // 数据库表前缀
+        'DB_PARAMS'=>array('persist'=>true),//是否支持长连接
     ),
+);
+
 ```
 
-2. 添加数据
+2.数据库操作(数据库操作和ThinkPHP一样操作)
+
 ``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-    $data=array(
-        "player_id"=>1,
-        "item_id"=>2,
-        "rows"=>3
-    );
-    $db->table("表名")->add($data);
-```
 
-3. 删除数据
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$res=$db->table("表名")->where("id=1")->delete();
-```
-
-4. 更新数据
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-    $db->table("表名")->where(array("room_id"=>1))->save(array("status"=>1));
-```
-
-5. 查询单条
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$res=$db->table("表名")->find();
-	var_dump($res);
-```
-
-6. 查询多条
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$res=$db->table("表名")->where("id=1")->select();
-	var_dump($res);
-```
-
-7. 查询总数
-``` php
-<<<<<<< HEAD
-$config=Config::get('DB','demo');
-$db=Utils::db($config);
-$count=$db->table("vipqb_addons")->count();
-=======
-	$config=Config::get('DB','demo');
-	$db=Utils::db($config);
-	$count=$db->table("vipqb_addons")->count();
+<?php
+namespace tasks\demo;
+use core\lib\Task;
+use core\lib\Utils;
+/**
+ * 测试任务 
+ * 村长<8044023@qq.com>
+ */
+class demoTask extends Task{
+    /**
+     * 任务入口
+     * (non-PHPdoc)
+     * @see \core\lib\Task::run()
+     */
+	public function run(){
+	    //初始化 配置信息  demo任务下的DB配置
+	    Utils::dbConfig(Utils::config('DB','demo'));
+	    //初始化模型 和ThinkPHP 的M()方法 一样
+	    $model=Utils::model("gameActivity");
+	    //操作同ThinkPHP 操作
+	    $res=$model->where(array("id"=>1))->order("id DESC")->limit(10)->select();
+	    //写入日志
+	    Utils::log($res);
+	}
+}
 
 ```
 
-8. 求总数
-``` php
-	$config=Config::get('DB','demo');
-	$db=Utils::db($config);
-	$sum=$db->table("vipqb_addons")->sum('number');
 
-```
 
-9. 求平局数
-``` php
-	$config=Config::get('DB','demo');
-	$db=Utils::db($config);
-	$agv=$db->table("vipqb_addons")->agv('number');
->>>>>>> 39f9ae4feef8a2f7c30ac898aca79b5ea9fc235d
-
-```
-8. 求总数
-``` php
-$config=Config::get('DB','demo');
-$db=Utils::db($config);
-$sum=$db->table("vipqb_addons")->sum('number');
-
-<<<<<<< HEAD
-```
-9. 求平局数
-``` php
-$config=Config::get('DB','demo');
-$db=Utils::db($config);
-$agv=$db->table("vipqb_addons")->agv('number');
-
-```
-=======
->>>>>>> 39f9ae4feef8a2f7c30ac898aca79b5ea9fc235d
-10. where条件
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$res=$db->table("表名")->where("id=1")->find();
-	//或者
-	$res=$db->table("表名")->where(array("id"=>1))->find();
-	var_dump($res);
-```
-11. in
-``` php
-//==
-```
-
-12. group by
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$db->table("表名")->where(array("room_id"=>1))->group("status")->select();
-```
-
-13. left join
-``` php
-//==
-```
-
-14. 执行底层sql操作
-``` php
-	$db=Utils::db(Utils::config('DB','demo'));
-	$res=$db->table("表名")->model()->select("id")->from("表名")->row();
-	var_dump($res);
-```
