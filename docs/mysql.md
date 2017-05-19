@@ -5,6 +5,7 @@
 use core\lib\Utils;
 ```
 1. 配置mysql 将以下配置代码加入到你的xxTask.php同级目录的config.php里面
+
 ``` php
 
 <?php
