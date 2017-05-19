@@ -63,8 +63,8 @@ taskPHP								根目录
 
 ### 系统命令说明:
 ``` php
-mian.php  [start]  启动 可不带参数
-mian.php  close  结束
+main.php  [start]  启动 可不带参数
+main.php  close  结束
 main.php  reload  重新加载任务
 main.php  delete demo   删除任务
 main.php  select  查看任务列表

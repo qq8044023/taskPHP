@@ -149,9 +149,12 @@ class Daemon{
         $is_windows=DS=='\\';
         if (count($process_name)==0){
             if (!$is_windows){
-                $process_name=array("main.php");
+                $process_name=array("main".EXT);
             } else{
-                $process_name=array('distribute_listen.php','worker_listen.php');
+                $list=$this->get_listen_list();
+                foreach ($list as $key=>$val){
+                    $process_name[]=$key.'_listen'.EXT;
+                }
             }
         }
         ob_start();
