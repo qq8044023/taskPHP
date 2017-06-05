@@ -68,7 +68,7 @@ for ($i = 0; $i < 10; $i++) {
 /* 多线程速度测试 */
 $t = microtime(true);
 foreach ($urls as $key=>$url) {
-    $workers[$key] = new test($url);
+    $workers[$key] = new demo($url);
     $workers[$key]->start();
 }
 foreach ($workers as $key=>$worker) {
