@@ -102,7 +102,7 @@ return array(
 ``` 
 ### composer安装taskphp框架:
 ``` php
-composer require taskphp/taskphp
+composer require taskphp/taskphp dev-master
 ```
 
 ## Windows 命令操作
