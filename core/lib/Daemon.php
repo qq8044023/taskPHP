@@ -5,191 +5,204 @@
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
+
 namespace core\lib;
 /**
  * 守护进程类
  * @author cqcqphper 小草<cqcqphper@163.com>
  *
  */
-class Daemon{
-    
-    public $_listen_list=array();
-    
-    public $_process_list=array();
-    
-    public function init(){
+class Daemon
+{
+
+    public static $_listen_list = array();
+
+    public $_process_list = array();
+
+    public function init()
+    {
         $this->get_listen_list();
         $this->exec();
     }
-    
+
     /**
      * 设置进程用户
      */
-    public function set_user(){
-        $user=Config::get('core_user');
-        if($user){
+    public function set_user()
+    {
+        $user = Config::get('core_user');
+        if ($user) {
             $userinfo = posix_getpwnam($user);
         }
-        foreach($argv as $value){
-            if(isset($is_u)){
-                $user=trim($value);
+        foreach ($argv as $value) {
+            if (isset($is_u)) {
+                $user = trim($value);
                 $userinfo = posix_getpwnam($user);
                 break;
             }
-            if($value=='-u')$is_u=true;
+            if ($value == '-u') $is_u = true;
         }
-        if(!$userinfo['uid']){
-            die("can't find user:".$user);
+        if (!$userinfo['uid']) {
+            die("can't find user:" . $user);
         }
         @posix_setuid($userinfo['uid']);
     }
+
     /**
      * 获取进程监控入口列表
      */
-    public function get_listen_list(){
-        $files=glob(CORE_PATH.DS.'*_listen'.EXT);
-        foreach($files as $file){
-            $regex='/.*?core(.*?)_listen\.php.*?/';
+    public static function get_listen_list()
+    {
+        $files = glob(CORE_PATH . DS . '*_listen' . EXT);
+        foreach ($files as $file) {
+            $regex = '/.*?core(.*?)_listen\.php.*?/';
             preg_match_all($regex, $file, $matches);
-            $name=trim($matches[1][0],DS);
-            $this->_listen_list[$name]=$file;
+            $name = trim($matches[1][0], DS);
+            self::$_listen_list[$name] = $file;
         }
-        return $this->_listen_list;
+        return self::$_listen_list;
     }
-    
-    public function exec(){
-        $os=Utils::get_os();
+
+    public function exec()
+    {
+        $os = Utils::get_os();
         $this->$os();
     }
+
     /**
      * win进程
      */
-    public function win(){
-        foreach ($this->_listen_list as $key=>$val){
-            $this->_process[$key] = popen('php '.$val, 'r');
-        }        
+    public function win()
+    {
+        foreach ($this->_listen_list as $key => $val) {
+            $this->_process[$key] = popen('php ' . $val, 'r');
+        }
         Ui::statusUI();
         Ui::statusProcess($this->_listen_list);
-        while (1){
-            foreach ($this->_process as $key=>$val){
+        while (1) {
+            foreach ($this->_process as $key => $val) {
                 $read = fread($this->_process[$key], 1048);
                 echo $read;
             }
         }
     }
-    
-    public function worker_son(){
-        ini_set('memory_limit',Config::get('memory_limit'));
-        define('WORKER_LIMIT',Config::get('worker_limit'));
-        define("WORKER_FORK",Utils::is_worker_fork());
-        if(WORKER_FORK){
+
+    public function worker_son()
+    {
+        ini_set('memory_limit', Config::get('memory_limit'));
+        define('WORKER_LIMIT', Config::get('worker_limit'));
+        define("WORKER_FORK", Utils::is_worker_fork());
+        if (WORKER_FORK) {
             runer_frok:
             $pid = pcntl_fork();
             if ($pid == -1) die(pcntl_get_last_error());
-            elseif($pid) {
-                $pid_list=(array)Utils::cache('taskPHP_core_pid');
-                $pid_list[]=$pid;
-                Utils::cache('taskPHP_core_pid',$pid_list);
+            elseif ($pid) {
+                $pid_list = (array)Utils::cache('taskPHP_core_pid');
+                $pid_list[] = $pid;
+                Utils::cache('taskPHP_core_pid', $pid_list);
                 unset($pid);
-                pcntl_wait($status,WUNTRACED);
+                pcntl_wait($status, WUNTRACED);
                 goto runer_frok;
             }
         }
     }
-    
-    public function unix(){
-        foreach ($this->_listen_list as $key=>$val){
-            $this->_process[$key]=0;
+
+    public function unix()
+    {
+        foreach ($this->_listen_list as $key => $val) {
+            $this->_process[$key] = 0;
         }
         Ui::statusUI();
         Ui::statusProcess($this->_listen_list);
-        $pid_list=(array)Utils::cache('taskPHP_core_pid');
-        $pid_list[]=getmypid();
-        Utils::cache('taskPHP_core_pid',$pid_list);
-        foreach ($this->_process as $key=>$value){
-            if($this->_process[$key]==0){
+        $pid_list = (array)Utils::cache('taskPHP_core_pid');
+        $pid_list[] = getmypid();
+        Utils::cache('taskPHP_core_pid', $pid_list);
+        foreach ($this->_process as $key => $value) {
+            if ($this->_process[$key] == 0) {
                 $this->start_creating($key);
             }
         }
         //等待子进程结束..
-        $pid=pcntl_wait($status,WUNTRACED);
-        foreach ($this->_process as $key=>$value){
-            if($this->_process[$key]==$pid){
+        $pid = pcntl_wait($status, WUNTRACED);
+        foreach ($this->_process as $key => $value) {
+            if ($this->_process[$key] == $pid) {
                 $this->start_creating($key);
             }
         }
         exit('over');
     }
-    
-    private function start_creating($title){
+
+    private function start_creating($title)
+    {
         $pid = pcntl_fork();
-        if ($pid == -1){
+        if ($pid == -1) {
             die(pcntl_get_last_error());
-        }elseif ($pid){
-            $pid_list=(array)Utils::cache('taskPHP_core_pid');
-            $pid_list[]=$pid;
-            Utils::cache('taskPHP_core_pid',$pid_list);
-            $this->_process[$title]=$pid;
-        }else{
+        } elseif ($pid) {
+            $pid_list = (array)Utils::cache('taskPHP_core_pid');
+            $pid_list[] = $pid;
+            Utils::cache('taskPHP_core_pid', $pid_list);
+            $this->_process[$title] = $pid;
+        } else {
             $this->start_exec($title);
         }
     }
-    
-    private function start_exec($title){
-       include $this->_listen_list[$title];
-       exit;
+
+    private function start_exec($title)
+    {
+        include $this->_listen_list[$title];
+        exit;
     }
-    
+
     /**
      * 后台进程是否在运行
      * @param array $process_name
      * @return boolean
      */
-    public static function is_daemon($process_name=array()){
-        $is_windows=DS=='\\';
-        if (count($process_name)==0){
-            if (!$is_windows){
-                $process_name=array("main".EXT);
-            } else{
-                $list=$this->get_listen_list();
-                foreach ($list as $key=>$val){
-                    $process_name[]=$key.'_listen'.EXT;
+    public static function is_daemon($process_name = array())
+    {
+        $is_windows = DS == '\\';
+        if (count($process_name) == 0) {
+            if (!$is_windows) {
+                $process_name = array("main" . EXT);
+            } else {
+                $list = self::get_listen_list();
+                foreach ($list as $key => $val) {
+                    $process_name[] = $key . '_listen' . EXT;
                 }
             }
         }
         ob_start();
-        if (!$is_windows){
+        if (!$is_windows) {
             system('ps aux');
-        }
-        else{
+        } else {
             system('wmic  process where caption="php.exe" get caption,commandline /value');
         }
-        $ps=ob_get_contents();
+        $ps = ob_get_contents();
         ob_end_clean();
         $ps = explode("\n", $ps);
-        $out=[];
-        foreach ($ps as $v){
-            $v=trim($v);
-            if (empty($v)){
+        $out = [];
+        foreach ($ps as $v) {
+            $v = trim($v);
+            if (empty($v)) {
                 continue;
             }
-            $p=strrpos($v," ");
-            if ($p===false){
+            $p = strrpos($v, " ");
+            if ($p === false) {
                 continue;
             }
-            $out[]=trim(substr($v,$p));
+            $out[] = trim(substr($v, $p));
         }
-        foreach ($out as &$item){
-            if(strpos($item, DS)){
-                $item_arr=explode(DS, $item);
-                $item=end($item_arr);
+        foreach ($out as &$item) {
+            if (strpos($item, DS)) {
+                $item_arr = explode(DS, $item);
+                $item = end($item_arr);
             }
-            $process_name=array_merge(array_diff($process_name, array($item)));
+            $process_name = array_merge(array_diff($process_name, array($item)));
         }
-        if(count($process_name)){
+        if (count($process_name)) {
             return false;
         }
-    
+
         return true;
     }
 }
