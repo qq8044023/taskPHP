@@ -28,23 +28,24 @@ class Log{
      */
     public static $_logPath=LOGS_PATH;
 
-    /**
+     /**
      * 写日志
      * @param unknown $data 欲写入的数据
      * @param int $type 日志等级 0正常 1错误 默认0
      */
     public static function input($data,$type=0){
-        $filename=date("Y-m-d").'_'.self::getDescTitle($type).self::$_ext;
+        $filename=date("Y-m-d").self::$_ext;
         self::initDir(self::$_logPath);
         if(!isset(self::$_handle[self::$_logPath.DS.$filename])){
             self::$_handle[self::$_logPath.DS.$filename] = @fopen(self::$_logPath.DS.$filename, 'a');
         }
-        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper(date('H:i:s').' '.self::getDescTitle($type)).':'.self::getRequest($data));
+        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.date("Y-m-d H:i:s.u").']['.self::getDescTitle($type)).']:'.self::getRequest($data));
     }
 
     /**
      * 覆盖写入内容
-     *   */
+     *
+     */
     
     /**
      * 将数组或者对象转换成字符串
@@ -61,10 +62,19 @@ class Log{
      * 转换日志等级描述
      */
     private static function getDescTitle($type){
-        $title='thing';
+        $title='DEBUG';
         switch($type){
             case 1:
-                $title='error';
+                $title='INFO';
+                break;
+            case 2:
+                $title='WARN';
+                break;
+            case 3:
+                $title='ERROR';
+                break;
+            case 4:
+                $title='FATAL';
                 break;
             default:
                 break;

@@ -17,7 +17,7 @@ class Command{
      * 默认为启动
      * @var string
      */
-    public static $_cmd_key='start';
+    public static $_cmd_key='sage';
     /**
      * 当前的命令的参数值
      * @var string
@@ -25,10 +25,12 @@ class Command{
     public static $_cmd_value='';
     /**
      * 允许的命令
-     * //命令 =》参数值  true代表有参数  false没有参数
+     * //命令 => 参数值  true代表有参数  false没有参数
      * @var array 
      */
-    private static $_cmd_list=array(
+    public static $_cmd_list=array(
+        'sage'=>false,  //帮助
+        'help'=>false,  //帮助
         'start'=>false,  //启动
         'close'=>false,   //关闭
         'reload'=>false,  //重载任务
@@ -36,6 +38,13 @@ class Command{
         'delete'=>true,   //删除任务  需要带参数值
         'exec'=>true,   //运行任务  需要参数
     );
+    /**
+     * 获取允许的命令
+     * @return array
+     */
+    public static function get_cmd_list(){
+        return self::$_cmd_list;
+    }
     /**
      * 分解命令
      */
@@ -77,6 +86,26 @@ class Command{
 	    $foo=self::$_cmd_key;
 	    self::$foo();
 	}
+    /**
+     *帮助注释
+     */
+    private static function sage(){
+        $text  = 'usage: php main.php <command> [options]'.PHP_EOL.PHP_EOL;
+        $text .= 'Available commands: '.PHP_EOL;
+        $text .= '  start [options]'.PHP_EOL;
+        $text .= '  close '.PHP_EOL;
+        $text .= '  reload '.PHP_EOL;
+        $text .= '  select '.PHP_EOL;
+        $text .= '  delete [options]'.PHP_EOL;
+        $text .= '  exec '.PHP_EOL;
+        Ui::displayUI($text,false);
+    }
+    /**
+     *帮助
+     */
+    private static function help(){
+        self::sage();
+    }
 	/**
 	 * 启动
 	 */

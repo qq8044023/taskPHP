@@ -333,4 +333,13 @@ class Utils{
             return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
         }
     }
+    
+    public static function serverIP(){
+        static $ip='';
+        if($ip==''){
+            $ip=gethostbyname($_SERVER_NAME);
+        }
+        
+        return  $ip;
+    }
 }

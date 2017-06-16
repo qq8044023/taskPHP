@@ -8,6 +8,7 @@
 namespace core\lib\http;
 use core\lib\socket\Server as SocketServer;
 use core\lib\Exception;
+use core\lib\Utils;
 /**
  * http服务端
  * @author cqcqphper 小草<cqcqphper@163.com>
@@ -94,28 +95,18 @@ class Server{
         //解析缓冲区剩余数据,GET就丢弃header头,POST则解析请求体
         $this->parseQueryEntity();
         
-        /* $file = $this->getFileName();
-        $fileInfo = new \SplFileInfo($file);
-        if(!$fileInfo->isFile()){
-            return $this->error('The file you are accessing does not exist');
-        } */
         /* 获取get和post的值  */
         $this->resolveRequest();
-        //判断请求的文件是否可执行,cgi请求的文件需要有可执行权限
-        /* if(!$fileInfo->isExecutable()){
-            $this->respData('hello taskPHP');
-        }else{
-            $this->cat($file);
-        } */
         
         if($this->_method=='POST'){
             $html=json_encode($_POST);
         }else{
             if($_GET){
-                //$html=json_encode($_GET);
+                $html='taskPHP';
                 if($_GET['action']=='cmd'){
                     if($_GET['content']=='select'){
-                        $html='';
+                        $html.= "------------------------ taskPHP task_list ---------------------".PHP_EOL;
+                        $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
                         $TaskManage = new \core\lib\TaskManage();
                         foreach ($TaskManage->run_worker_list() as $item){
                             $worker=$item->get_worker();
@@ -124,7 +115,13 @@ class Server{
                     }elseif($_GET['content']=='reload'){
                         $TaskManage = new \core\lib\TaskManage();
                         $TaskManage->load_worker();
-                        $html='task reload ok';
+                        $html='task reload ok'.PHP_EOL;
+                        $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
+                        $TaskManage = new \core\lib\TaskManage();
+                        foreach ($TaskManage->run_worker_list() as $item){
+                            $worker=$item->get_worker();
+                            $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                        }
                     }elseif($_GET['content']=='loglist'){
                         $html='';
                         $TaskManage = new \core\lib\TaskManage();
@@ -133,29 +130,73 @@ class Server{
                             $html.= str_pad($task_class, 20).$time. str_pad('', 10). $result.PHP_EOL;
                         }
                     }elseif($_GET['content']=='delete'){
-                        $name=$_GET['name'];
-                        if(!$name){
-                            $html='specify the name of the task to delete';
+                        $argv=$_GET['argv'];
+                        if(!$argv){
+                            $html='specify the argv of the task to delete';
                         }else{
                             $TaskManage = new \core\lib\TaskManage();
-                            $TaskManage->del_worker($name);
-                            $html= $name.' delete ok';
+                            $TaskManage->del_worker($argv);
+                            $html= $argv.' delete ok';
                         }
                         
+                    }else{
+                        $html= "------------------------- taskPHP ------------------------------".PHP_EOL;
+                        $html.= 'taskPHP version:' . ML_VERSION . "      PHP version:".PHP_VERSION.PHP_EOL;
+                        $html.= 'author:码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com'.PHP_EOL;
+                        $html.= 'license1:https://github.com/qq8044023/taskPHP'.PHP_EOL;
+                        $html.= 'license2:https://git.oschina.net/cqcqphper/taskPHP'.PHP_EOL;
                     }
                 }
+                
             }else{
+                $action='<select id="cmd_action"><option value="cmd">cmd</option></select>';
+                
+                $content='<select id="cmd_content">';
+                $cmd_list=array(
+                    'select','reload','loglist','delete'
+                );
+                foreach ($cmd_list as $cmd){
+                    $content.='<option value="'.$cmd.'">'.$cmd.'</option>';
+                }
+                $content.='</select>';
+                
                 $html='<!DOCTYPE html>
                 <html>
                 <meta charset="utf-8" />
                 <title>hello taskPHP</title>
+                <script type="text/javascript">
+                    function loadXMLDoc(){
+                    	var xmlhttp;
+                    	if (window.XMLHttpRequest){
+                    		xmlhttp=new XMLHttpRequest();
+                    	}else{
+                    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                    	}
+                    	xmlhttp.onreadystatechange=function(){
+                    		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                    			document.getElementById("cmd_result").innerHTML=xmlhttp.responseText;
+                    		}
+                    	}
+                    	var cmd_action_object=document.getElementById("cmd_action");
+                    	var cmd_action_index=cmd_action_object.selectedIndex;
+                    	var cmd_action_value=cmd_action_object.options[cmd_action_index].value;
+                    	
+                    	var cmd_content_object=document.getElementById("cmd_content");
+                    	var cmd_content_index=cmd_content_object.selectedIndex;
+                    	var cmd_content_value=cmd_content_object.options[cmd_content_index].value;
+                    	
+                    	var cmd_argv_object=document.getElementById("cmd_argv");
+                    	var cmd_argv_value=cmd_argv_object.value;
+                    	var url="http://'.Utils::serverIP().':'.$this->_config['port'].'/?action="+cmd_action_value+"&content="+cmd_content_value+"&argv="+cmd_argv_value;
+                    	xmlhttp.open("GET",url,true);
+                    	xmlhttp.send();
+                    }
+                    </script>
                 <body>
-                <p><a href="/?action=cmd&content=select">查询任务</a></p>
-                <p><a href="/?action=cmd&content=reload">重载任务</a></p>
-                <p><a href="/?action=cmd&content=loglist">任务日志</a></p>
-                <p><a href="/?action=cmd&content=delete&name=">删除任务</a></p>
+                <table border="0" width="98%" align="center" cellpadding="1" cellspacing="1" class="tbtitle" style="margin-left:1%;"><tr><td bgcolor="#F2F4F6"><strong>taskPHP远程管理器</strong></td></tr><form id="form1" name="form1" method="post" action=""><tr align="center"  bgcolor="#F2F4F6" ><td  align="left" >'.$action.$content.'  参数:<input name="cmd_argv" type="text" id="cmd_argv" size="10" /><input type="button" onclick="loadXMLDoc();" value="确定" /></td></tr></form><tr align="center" bgcolor="#FFFFFF"><td align="left"><textarea id="cmd_result"  style="width:700px; height:400px"id="display">hello taskPHP</textarea></td></tr></table>
                 </body>
                 </html>';
+                
             }
         } 
         $this->respData($html);
