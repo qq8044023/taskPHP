@@ -17,6 +17,8 @@ class Daemon{
     
     public $_process_list=array();
     
+    public static $_sys_pids=array();
+    
     public function init(){
         $this->get_listen_list();
         $this->exec();
@@ -87,9 +89,6 @@ class Daemon{
             $pid = pcntl_fork();
             if ($pid == -1) die(pcntl_get_last_error());
             elseif($pid) {
-                $pid_list=(array)Utils::cache('taskPHP_core_pid');
-                $pid_list[]=$pid;
-                Utils::cache('taskPHP_core_pid',$pid_list);
                 unset($pid);
                 pcntl_wait($status,WUNTRACED);
                 goto runer_frok;
@@ -103,9 +102,6 @@ class Daemon{
         }
         Ui::statusUI();
         Ui::statusProcess($this->_listen_list);
-        $pid_list=(array)Utils::cache('taskPHP_core_pid');
-        $pid_list[]=getmypid();
-        Utils::cache('taskPHP_core_pid',$pid_list);
         foreach ($this->_process as $key=>$value){
             if($this->_process[$key]==0){
                 $this->start_creating($key);
@@ -126,9 +122,6 @@ class Daemon{
         if ($pid == -1){
             die(pcntl_get_last_error());
         }elseif ($pid){
-            $pid_list=(array)Utils::cache('taskPHP_core_pid');
-            $pid_list[]=$pid;
-            Utils::cache('taskPHP_core_pid',$pid_list);
             $this->_process[$title]=$pid;
         }else{
             $this->start_exec($title);
@@ -146,19 +139,18 @@ class Daemon{
      * @return boolean
      */
     public static function is_daemon($process_name=array()){
-        $is_windows=DS=='\\';
         if (count($process_name)==0){
-            if (!$is_windows){
+            if (Utils::get_os()!=='win'){
                 $process_name=array("main".EXT);
             } else{
-                $list=$this->get_listen_list();
+                $list=(new static)->get_listen_list();
                 foreach ($list as $key=>$val){
                     $process_name[]=$key.'_listen'.EXT;
                 }
             }
         }
         ob_start();
-        if (!$is_windows){
+        if (Utils::get_os()!=='win'){
             system('ps aux');
         }
         else{
@@ -167,29 +159,28 @@ class Daemon{
         $ps=ob_get_contents();
         ob_end_clean();
         $ps = explode("\n", $ps);
-        $out=[];
-        foreach ($ps as $v){
-            $v=trim($v);
-            if (empty($v)){
-                continue;
+        $list=array();
+        //取出进程列表
+        foreach ($ps as &$item){
+            $item=trim($item);
+            foreach ($process_name as &$pn){
+                if(strpos($item, $pn)){
+                    if (Utils::get_os()!=='win'){//非win
+                        $item_arr=explode(' ', $item);
+                        $item_arr=array_filter($item_arr);
+                        $item_arr=array_merge($item_arr);
+                        $list[]=$item_arr[1];
+                    }else{
+                        $list[]='php.exe';
+                    }
+                    
+                }
             }
-            $p=strrpos($v," ");
-            if ($p===false){
-                continue;
-            }
-            $out[]=trim(substr($v,$p));
         }
-        foreach ($out as &$item){
-            if(strpos($item, DS)){
-                $item_arr=explode(DS, $item);
-                $item=end($item_arr);
-            }
-            $process_name=array_merge(array_diff($process_name, array($item)));
+        self::$_sys_pids=$list;
+        if(count(self::$_sys_pids)){
+            return true;
         }
-        if(count($process_name)){
-            return false;
-        }
-    
-        return true;
+        return false;
     }
 }

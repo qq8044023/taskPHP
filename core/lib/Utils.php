@@ -227,7 +227,7 @@ class Utils{
     /**
      * 写日志
      * @param unknown $data 欲写入的数据
-     * @param int $type 日志等级 0正常 1错误 默认0
+     * @param int $type 日志等级 0:DEBUG正常 1:INFO正常  2:WARN警告 3:ERROR错误 4:FATAL致命错误   默认0
      */
     public static function log($data,$type=0){
         Log::input($data,$type);

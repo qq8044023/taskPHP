@@ -14,6 +14,7 @@ namespace core\lib\db;
 use Think\Debug;
 use Think\Log; */
 use PDO;
+use core\lib\Exception;
 
 class Lite {
     // PDO操作实例
@@ -98,8 +99,8 @@ class Lite {
                     $this->options[PDO::ATTR_EMULATE_PREPARES]  =   false;
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
-            }catch (\PDOException $e) {
-                E($e->getMessage());
+            }catch (Exception $e) {
+                throw new Exception($e->getMessage());
             }
         }
         return $this->linkID[$linkNum];
@@ -142,7 +143,7 @@ class Lite {
         $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
-            E($this->error());
+            throw new Exception($this->error());
         foreach ($bind as $key => $val) {
             if(is_array($val)){
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
@@ -182,7 +183,7 @@ class Lite {
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            E($this->error());
+            throw new Exception($this->error());
         }
         foreach ($bind as $key => $val) {
             if(is_array($val)){
@@ -311,9 +312,8 @@ class Lite {
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
         // 记录错误日志
-        trace($this->error,'','ERR');
         if($this->config['debug']) {// 开启数据库调试模式
-            E($this->error);
+            throw new Exception($this->error);
         }else{
             return $this->error;
         }
@@ -375,13 +375,13 @@ class Lite {
     protected function debug($start) {
         if($this->config['debug']) {// 开启数据库调试模式
             if($start) {
-                G('queryStartTime');
+                \core\lib\Utils::statistics('queryStartTime');
             }else{
                 $this->modelSql[$this->model]   =  $this->queryStr;
                 //$this->model  =   '_think_';
                 // 记录操作结束时间
-                G('queryEndTime');
-                trace($this->queryStr.' [ RunTime:'.G('queryStartTime','queryEndTime').'s ]','','SQL');
+                \core\lib\Utils::statistics('queryEndTime');
+                \core\lib\Utils::log($this->queryStr.' [--END--][RunTime:'.\core\lib\Utils::statistics('queryStartTime','queryEndTime',6).'s]');
             }
         }
     }

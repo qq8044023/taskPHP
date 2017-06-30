@@ -43,7 +43,9 @@ class Pthread extends \Thread{
     public static function call($taskManage,$worker){
         $thread = new Pthread($taskManage,$worker);
         if($thread->start()){
-            return $thread;
+            $thread->join();
+        }else{
+            $thread->kill();
         }
     }
 }

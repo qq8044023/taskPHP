@@ -10,8 +10,8 @@
 // +----------------------------------------------------------------------
 
 namespace core\lib\db;
-
 use PDO;
+use core\lib\Exception;
 
 abstract class Driver {
     // PDO操作实例
@@ -99,8 +99,8 @@ abstract class Driver {
                     $this->options[PDO::ATTR_EMULATE_PREPARES]  =   false;
                 }
                 $this->linkID[$linkNum] = new PDO( $config['dsn'], $config['username'], $config['password'],$this->options);
-            }catch (\PDOException $e) {
-                E($e->getMessage());
+            }catch (Exception $e) {
+                throw new Exception($e->getMessage());
             }
         }
         return $this->linkID[$linkNum];
@@ -194,7 +194,7 @@ abstract class Driver {
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            E($this->error());
+            throw new Exception($this->error());
         }
         foreach ($this->bind as $key => $val) {
             if(is_array($val)){
@@ -324,9 +324,8 @@ abstract class Driver {
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
         // 记录错误日志
-        trace($this->error,'','ERR');
         if($this->config['debug']) {// 开启数据库调试模式
-            E($this->error);
+           throw new Exception($this->error);
         }else{
             return $this->error;
         }
@@ -559,7 +558,7 @@ abstract class Driver {
                     $data = is_string($val[1])? explode(',',$val[1]):$val[1];
                     $whereStr .=  $key.' '.strtoupper($val[0]).' '.$this->parseValue($data[0]).' AND '.$this->parseValue($data[1]);
                 }else{
-                    E(L('_EXPRESS_ERROR_').':'.$val[0]);
+                    throw new Exception($val[0]);
                 }
             }else {
                 $count = count($val);

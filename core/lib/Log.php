@@ -30,8 +30,8 @@ class Log{
 
      /**
      * 写日志
-     * @param unknown $data 欲写入的数据
-     * @param int $type 日志等级 0正常 1错误 默认0
+     * @param data $data 欲写入的数据
+     * @param int $type 日志等级 -1:无等级  0:DEBUG调试 1:INFO正常  2:WARN警告 3:ERROR错误 4:FATAL致命错误   默认0
      */
     public static function input($data,$type=0){
         $filename=date("Y-m-d").self::$_ext;
@@ -39,7 +39,8 @@ class Log{
         if(!isset(self::$_handle[self::$_logPath.DS.$filename])){
             self::$_handle[self::$_logPath.DS.$filename] = @fopen(self::$_logPath.DS.$filename, 'a');
         }
-        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.date("Y-m-d H:i:s.u").']['.self::getDescTitle($type)).']:'.self::getRequest($data));
+        $desctitle=($type==-1)?'':'['.self::getDescTitle($type).']:';
+        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.date("Y-m-d H:i:s.u").']').$desctitle.self::getRequest($data));
     }
 
     /**

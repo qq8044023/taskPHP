@@ -63,7 +63,7 @@ class WorkerExe{
 		$data=ob_get_contents();
 		ob_end_clean();
 		if (empty($this->_worker))return ;
-		Log::input(array($this->_worker,$data),1);
+		Log::input(array($this->_worker,$data));
 	}
 }
 

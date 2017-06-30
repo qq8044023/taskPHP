@@ -120,10 +120,20 @@ class Command{
 	     $is_daemon=Daemon::is_daemon(array());
 	     $is_daemon=$is_daemon?'yes':'no';
 	     Ui::displayUI('runing:'.$is_daemon,false);
-	     $pid_list=(array)Utils::cache('taskPHP_core_pid');
-         foreach ($pid_list as $v) !is_null($v) && @posix_kill($v, SIGTERM);//关闭当前进程
-         Utils::cache('taskPHP_core_pid',null);
-         Ui::displayUI('close ok');
+	     $message='';
+	     if($is_daemon){
+	       foreach (Daemon::$_sys_pids as &$pid){
+	           $message=$message.'pid:'.$pid.' close ok'.PHP_EOL;
+	       }
+	       Ui::displayUI($message,false);
+	       foreach (Daemon::$_sys_pids as &$pid){
+	           if(Utils::get_os()=='win'){
+	               system('taskkill /f /t /im php.exe');
+	           }else{
+	               @posix_kill($pid, SIGTERM);
+	           }
+	       }
+	     }
 	}
 	
 	/**

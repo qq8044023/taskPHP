@@ -45,6 +45,7 @@ taskPHP								根目录
 ## 注意事项
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
 2. windows下执行任务在循环里,编写任务有问题或调用exit将导致后台脚本停止,linux下无此问题。
+3. 建议生产部署在linux下运行多进程模式,因为运行在多线程模式运行一段时间后报错,pthreads has detected that the core\lib\Pthread could not be started, the system lacks the necessary resources or the system-imposed limit would be exceeded in xxx
 
 ## 文档列表
 -->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./docs/mysql.md)<br>

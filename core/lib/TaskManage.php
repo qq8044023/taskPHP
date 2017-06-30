@@ -107,7 +107,7 @@ class TaskManage{
 		    ob_end_clean();
             $this->add_log(array(get_class($task),$data?$data:'run success'));
 		}catch(Exception $e){
-		    Log::input(array($task,$e->getMessage()),1);
+		    Log::input(array($task,$e->getMessage()),-1);
 		    $this->add_log(array(get_class($task),$data?$data:'run fail'));
 		}
 		unset($data);

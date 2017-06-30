@@ -27,7 +27,7 @@ class Exception extends \Exception {
 		parent::__construct($message, (int) $code, $previous);
 		// 保存未修改代码
 		$this->code = $code;
-		Log::input($message,1);
+		$this->handler($code,$message);
 	}
 	
 	/**
@@ -45,7 +45,7 @@ class Exception extends \Exception {
      * @param unknown $e
      */
     public function message($e){
-        Log::input($e->getMessage(),1);
+        $this->handler(E_ERROR,$e->getMessage(),$e->getFile(),$e->getLine());
     }
     /**
      * 致命错误处理
@@ -69,9 +69,8 @@ class Exception extends \Exception {
      * @param unknown $line
      */
 	public function handler($error_level,$error_message, $file,  $line) {
-    	$message=sprintf("taskPHP_%s: %s in %s on line %d",$this->errorType($error_level), $error_message,  $file, $line);
-    	//Ui::displayUI($message,false);
-    	Log::input($message,1);
+    	$message=sprintf("[%s]:%s in %s on line %d",$this->errorType($error_level), trim($error_message),  $file, $line);
+    	Log::input($message,-1);
 	}
 	/**
 	 * 获取错误标识

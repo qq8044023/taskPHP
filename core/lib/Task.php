@@ -26,7 +26,7 @@ class Task implements SerializableBase{
      */
     public function unserialize($s){}
     public function __call($method, $args) {
-        Utils::log(get_class($this).':'.$method.' 方法不存在',1);
+        Utils::log(get_class($this).':'.$method.' 方法不存在');
     }
     /**
      * 前置方法
