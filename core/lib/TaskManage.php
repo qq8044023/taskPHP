@@ -34,9 +34,14 @@ class TaskManage{
 	    if(!$task_list)echo "taskPHP Warning:No task at present".PHP_EOL;
 	    foreach ($task_list as $key=>$value){
 	        $class_name=$key;
-	        if(@$value['class_name']===true || empty($value['class_name'])){//转换类名
+	        if(isset($value['class_name']) && empty($value['class_name'])){
+	            if($value['class_name']===true){
+	                $class_name='tasks\\'.$key.'\\'.$key.'Task';
+	            }
+	        }else{
 	            $class_name='tasks\\'.$key.'\\'.$key.'Task';
 	        }
+	        
 	        //设置任务
 	        $worker= new Worker($key,new $class_name());
 	         
@@ -194,11 +199,16 @@ class TaskManage{
 	/**
 	 * 记录运行日志
 	 * @param array $data
+	 * 默认只保留最后100条结果
 	 */
 	public function  add_log(array $data){
 	    array_unshift($data,date("Y-m-d H:i:s"));
 	    //加入队列  记录日志
 	    Queue::lPush(static::$_workerLoglist,$data);
+	    $data= Utils::cache(static::$_workerLoglist);
+	    if(is_array($data) && count($data)>100){
+	        Queue::brPop(static::$_workerLoglist,1);
+	    }
 	}
 	/**
 	 * 获取任务执行结果列表

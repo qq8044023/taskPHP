@@ -15,12 +15,12 @@ class Server {
     /**
      * @var Resource
      */
-    private $_listenFD = null;
+    public $_listenFD = null;
 
     /**
      * @var Resource
      */
-    private $_connectFD = null;
+    public $_connectFD = null;
 
     /**
      * Host

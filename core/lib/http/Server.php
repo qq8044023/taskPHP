@@ -66,12 +66,18 @@ class Server{
     public function __construct($config){
         //配置
         $this->_config = $config;
-
-        //socket
-        $this->_socket = new SocketServer($this->_config['address'], $this->_config['port']);
+        //检查端口
+        if(Utils::checkPortBindable('127.0.0.1', $this->_config['port'])){
+            //socket
+            $this->_socket = new SocketServer($this->_config['address'], $this->_config['port']);
+        }
     }
 
     public function listen(){
+        if($this->_socket===null){
+            Utils::log($this->_config['port'].'端口已被占用,打开httpserver_listen.php文件重新定义端口号!',3);
+            return false;
+        }
         //监听
         $this->_socket->listen();
         while(true){
@@ -124,11 +130,16 @@ class Server{
                         }
                     }elseif($_GET['content']=='loglist'){
                         $html='';
-                        $TaskManage = new \core\lib\TaskManage();
-                        foreach ($TaskManage->worker_result() as $item){
-                            list($time,$task_class,$result)=$item;
-                            $html.= str_pad($task_class, 20).$time. str_pad('', 10). $result.PHP_EOL;
+                        $worker_result = (new \core\lib\TaskManage())->worker_result();
+                        if(is_array($worker_result) && count($worker_result)){
+                            foreach ($worker_result as $item){
+                                list($time,$task_class,$result)=$item;
+                                $html.= str_pad($task_class, 20).$time. str_pad('', 10). $result.PHP_EOL;
+                            }
+                        }else{
+                            $html.'not task';
                         }
+                        
                     }elseif($_GET['content']=='delete'){
                         $argv=$_GET['argv'];
                         if(!$argv){
@@ -187,7 +198,7 @@ class Server{
                     	
                     	var cmd_argv_object=document.getElementById("cmd_argv");
                     	var cmd_argv_value=cmd_argv_object.value;
-                    	var url="http://'.Utils::serverIP().':'.$this->_config['port'].'/?action="+cmd_action_value+"&content="+cmd_content_value+"&argv="+cmd_argv_value;
+                    	var url=document.domain+"/?action="+cmd_action_value+"&content="+cmd_content_value+"&argv="+cmd_argv_value;
                     	xmlhttp.open("GET",url,true);
                     	xmlhttp.send();
                     }

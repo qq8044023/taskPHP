@@ -333,13 +333,23 @@ class Utils{
             return strtolower(trim(preg_replace("/[A-Z]/", "_\\0", $name), "_"));
         }
     }
-    
-    public static function serverIP(){
-        static $ip='';
-        if($ip==''){
-            $ip=gethostbyname($_SERVER_NAME);
+    /**
+     * 检查端口是否可以被绑定
+     * @param unknown $host
+     * @param unknown $port
+     */
+    static public function checkPortBindable($host, $port){
+        $result=false;
+        $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        socket_set_nonblock($sock);
+        socket_connect($sock,$host, $port);
+        socket_set_block($sock);
+        $r = array($sock);
+        $w = array($sock);
+        $f = array($sock);
+        if(socket_select($r, $w,$f , 5)===1){
+            $result=true;
         }
-        
-        return  $ip;
+        return $result;
     }
 }

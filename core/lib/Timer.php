@@ -79,6 +79,22 @@ class Timer implements \Serializable{
 	}
 	
 	/**
+	 * 获取val列表内的当前值   用于单值多选设置
+	 * @param int|array $val
+	 * @param int $nval
+	 * @return unknown
+	 */
+	protected static function _get_now_val($val,$nval){
+	    if(is_array($val)){
+	        sort($val,SORT_NUMERIC);
+	        foreach ($val as $v){
+	            if($v==$nval)return $nval;
+	        }
+	        return $val[0];
+	    }
+	    return $nval;
+	}
+	/**
 	 * 计算下一次执行的时间
 	 * @return int
 	 */
@@ -99,7 +115,7 @@ class Timer implements \Serializable{
 	    $nm=date("n",$now_time);
 	    $nd=date("j",$now_time);
 	    $nw=date("w",$now_time);
-	
+	    
 	    //定量循环
 	    if(self::is_loop($y)){
 	        $loop_val=self::parse_loop($y);
@@ -108,7 +124,16 @@ class Timer implements \Serializable{
 	        $_h=self::is_fix($h)?$h:'00';
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
-	        return strtotime(date("Y",strtotime("+ {$loop_val} year",$now_time))."-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime(date("Y",strtotime("+ {$loop_val} year",$_now_time))."-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
 	    }
 	    if(self::is_loop($m)){
 	        $loop_val=self::parse_loop($m);
@@ -116,29 +141,69 @@ class Timer implements \Serializable{
 	        $_h=self::is_fix($h)?$h:'00';
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
-	        return strtotime(date("Y-m",strtotime("+ {$loop_val} months",$now_time))."-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime(date("Y-m",strtotime("+ {$loop_val} months",$_now_time))."-{$_d} {$_h}:{$_i}:{$_s}");
 	    }
 	    if(Timer::is_loop($d)){
 	        $loop_val=self::parse_loop($d);
 	        $_h=self::is_fix($h)?$h:'00';
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
-	        return strtotime(date("Y-m-d",strtotime("+ {$loop_val} day",$now_time))." {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime(date("Y-m-d",strtotime("+ {$loop_val} day",$_now_time))." {$_h}:{$_i}:{$_s}");
 	    }
 	    if(self::is_loop($h)){
 	        $loop_val=self::parse_loop($h);
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
-	        return strtotime(date("Y-m-d H",strtotime("+ {$loop_val} hours",$now_time)).":{$_i}:{$_s}");
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime(date("Y-m-d H",strtotime("+ {$loop_val} hours",$_now_time)).":{$_i}:{$_s}");
 	    }
 	    if(Timer::is_loop($i)){
 	        $loop_val=self::parse_loop($i);
 	        $_s=self::is_fix($s)?$s:'00';
-	        return strtotime(date("Y-m-d H:i",strtotime("+ {$loop_val} minute",$now_time)).":{$_s}");
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime(date("Y-m-d H:i",strtotime("+ {$loop_val} minute",$_now_time)).":{$_s}");
 	    }
 	    if(self::is_loop($s)){
 	        $loop_val=self::parse_loop($s);
-	        return strtotime("+ {$loop_val} seconds",$now_time);
+	        /** 单值多选设置 开始 **/
+	        $_m=self::_get_now_val($m,$nm);
+	        $_d=self::_get_now_val($d,$nd);
+	        $_h=self::_get_now_val($h,$nh);
+	        $_i=self::_get_now_val($i,$ni);
+	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$ns}");
+	        /** 单值多选设置 结束 **/
+	        //单值多选设置  $now_time改为$_now_time
+	        return strtotime("+ {$loop_val} seconds",$_now_time);
 	    }
 	
 	    //指定日期及循环
@@ -363,6 +428,12 @@ class Timer implements \Serializable{
 	}
 	protected static function _str_to_val($val){
 	    if ($val=='*') return self::LOOP;
+	    /** 单值多选设置 开始 **/
+	    if (false !== strpos($val, ',')) {
+            $val = explode(',', $val);
+            return $val;
+        }
+        /** 单值多选设置 结束 **/
 	    if (self::is_loop($val)) return $val;
 	    return abs($val);
 	}

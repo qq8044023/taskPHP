@@ -6,7 +6,7 @@
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib\http;
-use core\lib\Log;
+use core\lib\Utils;
 /**
  * @desc  HTTP请求类,支持CURL和Socket,默认使用 CURL,当手动指定useCurl或者curl扩展没有安装时, 会使用Socket目前支持get和post两种请求方式 
  * 根据 https://github.com/jae-jae/Http 的基础上修改而成
@@ -260,12 +260,14 @@ class Client{
     /** 执行一条 http get 请求  */
     public function get($url, $data=array()){
         $this->params = array();
+        $url = ($this->target) ? $this->target.$url : $url;
         return $this->execute($url, '', 'GET', $data);
     }
     
     /** 执行一条 http post 请求  */
     public function post($url, $data=array()){
         $this->params = array();
+        $url = ($this->target) ? $this->target.$url : $url;
         return $this->execute($url, '', 'POST', $data);
     }
     
@@ -299,6 +301,7 @@ class Client{
                 $this->target = $this->target . (strstr($this->target,'?') !== false?'&':'?') . $queryString;
             }
         }
+        Utils::log($this->target);
         // Parse target URL
         $urlParsed = parse_url($this->target);
         // Handle SSL connection request
@@ -326,6 +329,7 @@ class Client{
             }
             $cookieString = join('&', $tempString);
         }
+        
         // Do we need to use cURL
         if ($this->useCurl){
             // Initialize PHP cURL handle

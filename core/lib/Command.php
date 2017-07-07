@@ -17,7 +17,7 @@ class Command{
      * 默认为启动
      * @var string
      */
-    public static $_cmd_key='sage';
+    public static $_cmd_key='help';
     /**
      * 当前的命令的参数值
      * @var string
@@ -29,7 +29,6 @@ class Command{
      * @var array 
      */
     public static $_cmd_list=array(
-        'sage'=>false,  //帮助
         'help'=>false,  //帮助
         'start'=>false,  //启动
         'close'=>false,   //关闭
@@ -72,9 +71,7 @@ class Command{
      */
     public static function check_legal(){
         if(!isset(self::$_cmd_list[self::$_cmd_key]) || !method_exists(new static,self::$_cmd_key)){
-            $keys=array_keys(self::$_cmd_list);
-            $keys_string=implode('|', $keys);
-            Ui::displayUI("Usage: php ".$_SERVER['argv'][0]." {".$keys_string."}");
+            self::help();
         }
     }
     /**
@@ -87,24 +84,20 @@ class Command{
 	    self::$foo();
 	}
     /**
-     *帮助注释
-     */
-    private static function sage(){
-        $text  = 'usage: php main.php <command> [options]'.PHP_EOL.PHP_EOL;
-        $text .= 'Available commands: '.PHP_EOL;
-        $text .= '  start [options]'.PHP_EOL;
-        $text .= '  close '.PHP_EOL;
-        $text .= '  reload '.PHP_EOL;
-        $text .= '  select '.PHP_EOL;
-        $text .= '  delete [options]'.PHP_EOL;
-        $text .= '  exec '.PHP_EOL;
-        Ui::displayUI($text,false);
-    }
-    /**
      *帮助
      */
     private static function help(){
-        self::sage();
+        $text='Usage: php '.$_SERVER['argv'][0].'<command> [options]'.PHP_EOL;
+        $text .= 'Available commands: '.PHP_EOL;
+        foreach (self::$_cmd_list as $key=>$val){
+            if(__FUNCTION__ ==$key)continue;
+            if($val){
+                $text.='  '.$key.' [options]'.PHP_EOL;
+            }else{
+                $text.='  '.$key.PHP_EOL;
+            }
+        }
+        Ui::displayUI($text,false);
     }
 	/**
 	 * 启动
@@ -130,7 +123,8 @@ class Command{
 	           if(Utils::get_os()=='win'){
 	               system('taskkill /f /t /im php.exe');
 	           }else{
-	               @posix_kill($pid, SIGTERM);
+	               posix_kill($pid, SIGTERM);
+	               system('kill -9 '.$pid);
 	           }
 	       }
 	     }

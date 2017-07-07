@@ -38,7 +38,7 @@ class Db {
                 self::$instance[$md5]   =   new $class($options);
             }else{
                 // 类没有定义
-                E(L('_NO_DB_DRIVER_').': ' . $class);
+                throw new Exception("_NO DB DRIVER:".$class);
             }
         }
         self::$_instance    =   self::$instance[$md5];

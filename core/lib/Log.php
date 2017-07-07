@@ -40,7 +40,8 @@ class Log{
             self::$_handle[self::$_logPath.DS.$filename] = @fopen(self::$_logPath.DS.$filename, 'a');
         }
         $desctitle=($type==-1)?'':'['.self::getDescTitle($type).']:';
-        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.date("Y-m-d H:i:s.u").']').$desctitle.self::getRequest($data));
+        $fineStamp = date('Y-m-d H:i:s') . substr(microtime(), 1, 9);
+        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.$fineStamp.']').$desctitle.self::getRequest($data));
     }
 
     /**
