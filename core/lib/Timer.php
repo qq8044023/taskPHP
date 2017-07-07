@@ -20,6 +20,7 @@ class Timer implements \Serializable{
 	protected $_month;
 	protected $_year;
 	protected $_week;
+	protected $_many_key='';
 	/**
 	 * 循环标记
 	 * @var string
@@ -84,12 +85,13 @@ class Timer implements \Serializable{
 	 * @param int $nval
 	 * @return unknown
 	 */
-	protected static function _get_now_val($val,$nval){
+	protected function _get_now_val($key,$val,$nval){
 	    if(is_array($val)){
 	        sort($val,SORT_NUMERIC);
 	        foreach ($val as $v){
-	            if($v==$nval)return $nval;
+	            if($v==$nval)  return $nval;
 	        }
+	        $this->_many_key=$key;
 	        return $val[0];
 	    }
 	    return $nval;
@@ -126,11 +128,23 @@ class Timer implements \Serializable{
 	        $_s=self::is_fix($s)?$s:'00';
 	        
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
+	        
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime(date("Y",strtotime("+ {$loop_val} year",$_now_time))."-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
@@ -142,11 +156,22 @@ class Timer implements \Serializable{
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime(date("Y-m",strtotime("+ {$loop_val} months",$_now_time))."-{$_d} {$_h}:{$_i}:{$_s}");
@@ -157,11 +182,22 @@ class Timer implements \Serializable{
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime(date("Y-m-d",strtotime("+ {$loop_val} day",$_now_time))." {$_h}:{$_i}:{$_s}");
@@ -171,11 +207,22 @@ class Timer implements \Serializable{
 	        $_i=self::is_fix($i)?$i:'00';
 	        $_s=self::is_fix($s)?$s:'00';
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime(date("Y-m-d H",strtotime("+ {$loop_val} hours",$_now_time)).":{$_i}:{$_s}");
@@ -184,11 +231,22 @@ class Timer implements \Serializable{
 	        $loop_val=self::parse_loop($i);
 	        $_s=self::is_fix($s)?$s:'00';
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$_s}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime(date("Y-m-d H:i",strtotime("+ {$loop_val} minute",$_now_time)).":{$_s}");
@@ -196,11 +254,22 @@ class Timer implements \Serializable{
 	    if(self::is_loop($s)){
 	        $loop_val=self::parse_loop($s);
 	        /** 单值多选设置 开始 **/
-	        $_m=self::_get_now_val($m,$nm);
-	        $_d=self::_get_now_val($d,$nd);
-	        $_h=self::_get_now_val($h,$nh);
-	        $_i=self::_get_now_val($i,$ni);
+	        $_m=$timer->_get_now_val('months',$m,$nm);
+	        $_d=$timer->_get_now_val('day',$d,$nd);
+	        $_h=$timer->_get_now_val('hours',$h,$nh);
+	        $_i=$timer->_get_now_val('minute',$i,$ni);
 	        $_now_time=strtotime("{$ny}-{$_m}-{$_d} {$_h}:{$_i}:{$ns}");
+	        if($_now_time<$now_time){
+	            if($timer->_many_key=='months'){
+	                $_now_time=strtotime("+ 1 year",$_now_time);
+	            }elseif($timer->_many_key=='day'){
+	                $_now_time=strtotime("+ 1 months",$_now_time);
+	            }elseif($timer->_many_key=='hours'){
+	                $_now_time=strtotime("+ 1 day",$_now_time);
+	            }elseif($timer->_many_key=='minute'){
+	                $_now_time=strtotime("+ 1 hours",$_now_time);
+	            }
+	        }
 	        /** 单值多选设置 结束 **/
 	        //单值多选设置  $now_time改为$_now_time
 	        return strtotime("+ {$loop_val} seconds",$_now_time);
@@ -393,7 +462,7 @@ class Timer implements \Serializable{
 	 */
 	public static function timer_to_string(Timer $timer){
 	    return implode(" ", array(
-	        self::_val_to_str($timer->get_seconds()),self::_val_to_str($timer->get_minutes()),self::_val_to_str($timer->get_month()),
+	        self::_val_to_str($timer->get_seconds()),self::_val_to_str($timer->get_minutes()),self::_val_to_str($timer->get_hours()),
 	        self::_val_to_str($timer->get_day()),self::_val_to_str($timer->get_month()),self::_val_to_str($timer->get_year()),
 	        self::_val_to_str($timer->get_week())
 	    ));
@@ -424,6 +493,7 @@ class Timer implements \Serializable{
 	}
 	protected static function _val_to_str($val){
 	    if ($val===self::LOOP) return "*";
+	    if(is_array($val)) return implode(',', $val);
 	    return $val;
 	}
 	protected static function _str_to_val($val){

@@ -350,6 +350,9 @@ class Utils{
         if(socket_select($r, $w,$f , 5)===1){
             $result=true;
         }
+        if(self::get_os()!='win'){
+            $result=true;
+        }
         return $result;
     }
 }
