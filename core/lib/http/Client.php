@@ -301,7 +301,6 @@ class Client{
                 $this->target = $this->target . (strstr($this->target,'?') !== false?'&':'?') . $queryString;
             }
         }
-        Utils::log($this->target);
         // Parse target URL
         $urlParsed = parse_url($this->target);
         // Handle SSL connection request

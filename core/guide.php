@@ -44,8 +44,6 @@ $locator = \core\lib\Locator::getInstance();
 $locator->addNamespace("core", CORE_PATH.DS);
 //添加框架用户任务目录
 $locator->addNamespace("tasks", TASKS_PATH.DS);
-//注册
-$locator->register();
 
 //注册异常捕捉
 $Exception = new \core\lib\Exception();

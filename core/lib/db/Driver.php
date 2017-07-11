@@ -88,7 +88,7 @@ abstract class Driver {
      * @access public
      */
     public function connect($config='',$linkNum=0) {
-        if ( !isset($this->linkID[$linkNum]) ) {
+        if ( !isset($this->linkID[$linkNum]) || (method_exists($this,'ping') && $this->ping($this->linkID[$linkNum]))) {
             if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
