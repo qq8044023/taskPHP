@@ -27,7 +27,9 @@ class Exception extends \Exception {
 		parent::__construct($message, (int) $code, $previous);
 		// 保存未修改代码
 		$this->code = $code;
-		$this->handler($code,$message);
+		$this->file==null && $this->file='';
+		$this->line==null && $this->line='';
+		$this->handler($code,$message,$this->file,$this->line);
 	}
 	
 	/**
@@ -70,7 +72,7 @@ class Exception extends \Exception {
      */
 	public function handler($error_level,$error_message, $file,  $line) {
     	$message=sprintf("[%s]:%s in %s on line %d",$this->errorType($error_level), trim($error_message),  $file, $line);
-    	Log::input($message,-1);
+    	Utils::log($message,-1);
 	}
 	/**
 	 * 获取错误标识

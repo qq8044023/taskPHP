@@ -17,14 +17,6 @@ use core\lib\db\Driver;
  */
 class Mysql extends Driver{
     /**
-     * 检测连接通信状态
-     * @param Resources $link
-     */
-    protected function ping($link){
-        return mysql_ping($link);
-    }
-
-    /**
      * 解析pdo连接的dsn信息
      * @access public
      * @param array $config 连接信息

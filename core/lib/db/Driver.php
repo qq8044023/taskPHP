@@ -88,7 +88,7 @@ abstract class Driver {
      * @access public
      */
     public function connect($config='',$linkNum=0) {
-        if ( !isset($this->linkID[$linkNum]) || (method_exists($this,'ping') && $this->ping($this->linkID[$linkNum]))) {
+        if ( !isset($this->linkID[$linkNum])) {
             if(empty($config))  $config =   $this->config;
             try{
                 if(empty($config['dsn'])) {
@@ -123,6 +123,31 @@ abstract class Driver {
     }
 
     /**
+     * 检查连接是否可用
+     * @param  Link $dbconn 数据库连接
+     * @return Boolean
+     */
+    public function pdo_ping($dbconn){
+        try{
+            $dbconn->getAttribute(PDO::ATTR_SERVER_INFO);
+        } catch (\PDOException $e) {
+            if(strpos($e->getMessage(), 'MySQL server has gone away')!==false){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * 重置连接
+     */
+    public function reset_connect(){
+        $this->close();
+        $this->initConnect();
+        \core\lib\Utils::log('pdo reset_connect ok');
+    }
+    
+    /**
      * 执行查询 返回数据集
      * @access public
      * @param string $str  sql指令
@@ -132,6 +157,7 @@ abstract class Driver {
     public function query($str,$fetchSql=false) {
         $this->initConnect(false);
         if ( !$this->_linkID ) return false;
+        $this->pdo_ping($this->_linkID)==false && $this->reset_connect();
         $this->queryStr     =   $str;
         if(!empty($this->bind)){
             $that   =   $this;
@@ -178,6 +204,7 @@ abstract class Driver {
     public function execute($str,$fetchSql=false) {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
+        $this->pdo_ping($this->_linkID)==false && $this->reset_connect();
         $this->queryStr = $str;
         if(!empty($this->bind)){
             $that   =   $this;
@@ -226,6 +253,7 @@ abstract class Driver {
     public function startTrans() {
         $this->initConnect(true);
         if ( !$this->_linkID ) return false;
+        $this->pdo_ping($this->_linkID)==false && $this->reset_connect();
         //数据rollback 支持
         if ($this->transTimes == 0) {
             $this->_linkID->beginTransaction();
