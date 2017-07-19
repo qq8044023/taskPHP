@@ -39,14 +39,17 @@ class Sqlite extends Driver {
         $info   =   array();
         if($result){
             foreach ($result as $key => $val) {
-                $info[$val['field']] = array(
-                    'name'    => $val['field'],
-                    'type'    => $val['type'],
-                    'notnull' => (bool) ($val['null'] === ''), // not null is empty, null is yes
-                    'default' => $val['default'],
-                    'primary' => (strtolower($val['dey']) == 'pri'),
-                    'autoinc' => (strtolower($val['extra']) == 'auto_increment'),
-                );
+                if(isset($val['field'])){
+                    $info[$val['field']] = array(
+                        'name'    => $val['field'],
+                        'type'    => isset($val['type'])?isset($val['type']):null,
+                        'notnull' => (bool) (isset($val['null']) && $val['null'] === ''), // not null is empty, null is yes
+                        'default' => isset($val['default'])?isset($val['default']):null,
+                        'primary' => isset($val['dey'])?(strtolower($val['dey']) == 'pri'):false,
+                        'autoinc' => isset($val['extra'])?(strtolower($val['extra']) == 'auto_increment'):false,
+                    );
+                }
+                
             }
         }
         return $info;

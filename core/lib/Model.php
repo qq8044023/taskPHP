@@ -253,7 +253,7 @@ class Model{
             // 命名范围的单独调用支持
             return $this->scope($method, $args[0]);
         } else {
-            E(__CLASS__ . ':' . $method . L('_METHOD_NOT_EXIST_'));
+            Utils::log(__CLASS__ . ':' . $method . 'METHOD_NOT_EXIST');
             return;
         }
     }
@@ -2119,5 +2119,7 @@ class Model{
 
         return $this;
     }
-
+    public function close(){
+        $this->db->close();
+    }
 }

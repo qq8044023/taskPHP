@@ -8,7 +8,7 @@ namespace core\lib;
  */
 
 /**
- * 使用共享内存实现的内存队列
+ * 使用数据库来实现进程通信
  * 支持多进程, 支持各种数据类型的存储
  * @author cqcqphper 小草<cqcqphper@163.com>
  */
@@ -17,13 +17,36 @@ class Queue{
      * 设置属性
      * @var array
      */
-    private static $_options=array(
-            'size'      => 256000,
-            'temp'       => LOGS_PATH,
-            'project'   => 's',
-        );
+    private static $_options=array();
     
     private static $_handler=null;
+    
+    public static function get_connect(){
+        $options=array(
+            'DB_TYPE'   =>'sqlite',
+            'DB_NAME'  =>LOGS_PATH.DS.'core_queue.db',
+            'table'      => 'core_queue',
+            'prefix'     =>'',
+        );
+        if (!file_exists($options['DB_NAME'])) {
+            if (!($fp = fopen($options['DB_NAME'], "w+"))) Utils::log('create '.$options['DB_NAME'].' error');
+            fclose($fp);
+            self::$_handler=Utils::model($options['table'],$options['prefix'],$options);
+            self::$_handler->query('CREATE TABLE core_queue (name varchar(200) UNIQUE,content TEXT)');
+        }
+        if(self::$_handler==null){
+            self::$_handler=Utils::model($options['table'],$options['prefix'],$options);
+        }
+        self::$_options=$options;
+        return self::$_handler;
+    }
+    
+    public static function all(){
+        self::get_connect();
+        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE 1';
+        $res=self::$_handler->query($sql);
+        return null;
+    }
     
     /**
      * 读取缓存
@@ -31,30 +54,15 @@ class Queue{
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public static function get($name = false) {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
+    public static function get($name) {
+        self::get_connect();
+        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
+        $res=self::$_handler->query($sql);
+        if(is_array($res) && count($res)){
+            $content=$res[0]['content'];
+            return unserialize($content);
         }
-        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
-        if ($shmid !== false) {
-            $size=shmop_size($shmid);
-            $str=shmop_read($shmid, 0, $size);
-            $str=trim($str);
-            $ret = unserialize($str);
-            shmop_close($shmid);
-            if ($name === false) {
-                return $ret;
-            }
-            if(isset($ret[$name])) {
-                $content   =  $ret[$name];
-                return $content;
-            }else {
-                return null;
-            }
-        }else {
-            return false;
-        }
+        return null;
     }
     
     /**
@@ -65,15 +73,22 @@ class Queue{
      * @return boolen
      */
     public static function set($name, $value) {
-        $lh = self::_lock();
-        $val = self::get();
-        if (!is_array($val)) $val = array();
-        $val[$name] = $value;
-        $val = serialize($val);
-        if(self::_write($val, $lh)) {
-            return true;
+        self::get_connect();
+        $value = serialize($value);
+        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
+        $res=self::$_handler->query($sql);
+        if(is_array($res) && count($res)){
+            $sql='UPDATE '.self::$_options['table'].'
+              SET content = \''.$value.'\'
+              WHERE name=\''.$name.'\'';
+        }else{
+            $sql='INSERT INTO '.self::$_options['table'].'
+                (name, content) 
+                  VALUES 
+                (\''.$name.'\', \''.$value.'\')';
         }
-        return false;
+        $res=self::$_handler->execute($sql);
+        return $res;
     }
     
     /**
@@ -83,100 +98,15 @@ class Queue{
      * @return boolen
      */
     public static function rm($name) {
-        $lh = self::_lock();
-        $val = self::get();
-        if (!is_array($val)) $val = array();
-        unset($val[$name]);
-        $val = serialize($val);
-        return self::_write($val, $lh);
+        self::get_connect();
+        $sql='DELETE FROM '.self::$_options['table'].'
+              WHERE name=\''.$name.'\'';
+        $res=self::$_handler->execute($sql);
+        return $res;
     }
-    
-    /**
-     * 生成IPC key
-     * @access private
-     * @param string $project 项目标识名
-     * @return integer
-     */
-    private static function _ftok($project) {
-        if (function_exists('ftok')) {
-            return ftok(__FILE__, $project);
-        }
-        if (DS == '\\') {
-            $s = stat(__FILE__);
-            return sprintf("%u", (($s['ino'] & 0xffff) | (($s['dev'] & 0xff) << 16) |
-                (($project & 0xff) << 24)));
-        } else {
-            $filename = __FILE__ . (string) $project;
-            for ($key = array(); sizeof($key) < strlen($filename); $key[] = ord(substr($filename, sizeof($key), 1)));
-            return dechex(array_sum($key));
-        }
-    }
-    
-    /**
-     * 写入操作
-     * @access private
-     * @param string $name 缓存变量名
-     * @return integer|boolen
-     */
-    private static function _write(&$val, &$lh) {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        $shmid  = shmop_open(self::$_handler, 'c', 0600, self::$_options['size']);
-        if ($shmid) {
-            $ret = shmop_write($shmid, $val, 0) == strlen($val);
-            shmop_close($shmid);
-            self::_unlock($lh);
-            return $ret;
-        }
-        self::_unlock($lh);
-        return false;
-    }
-    
-    /**
-     * 共享锁定
-     * @access private
-     * @param string $name 缓存变量名
-     * @return boolen
-     */
-    private static function _lock() {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        if (function_exists('sem_get')) {
-            $fp = sem_get(self::$_handler, 1, 0600, 1);
-            sem_acquire($fp);
-        } else {
-            $fp = fopen(self::$_options['temp'].DS.md5(self::$_handler).'.sem', 'w');
-            flock($fp, LOCK_EX);
-        }
-        return $fp;
-    }
-    
-    /**
-     * 解除共享锁定
-     * @access private
-     * @param string $name 缓存变量名
-     * @return boolen
-     */
-    private static function _unlock(&$fp) {
-        if (function_exists('sem_release')) {
-            sem_release($fp);
-        } else {
-            fclose($fp);
-        }
-    }
+
     public function close(){
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
-        if($shmid){
-            shmop_delete($shmid);
-        }
+        self::$_handler=null;
         return true;
     }
     /**
@@ -206,7 +136,7 @@ class Queue{
                 $wh=false;
                 break;
             }
-            
+    
             if($timeout==0){
                 sleep(1);
             }elseif($timeout>0 && $second<$timeout){
@@ -236,5 +166,17 @@ class Queue{
         }
         unset($data[$son_key]);
         return self::set($key, $data);
+    }
+    
+    /**
+     * 清除缓存
+     * @access public
+     * @return boolean
+     */
+    public function clear(){
+        self::get_connect();
+        $sql = 'DELETE FROM ' . self::$_options['table'];
+        $res=self::$_handler->execute($sql);
+        return $res;
     }
 }

@@ -328,7 +328,7 @@ class Client{
             }
             $cookieString = join('&', $tempString);
         }
-        
+        Utils::log(array('url'=>$this->target,'data'=>$queryString));
         // Do we need to use cURL
         if ($this->useCurl){
             // Initialize PHP cURL handle

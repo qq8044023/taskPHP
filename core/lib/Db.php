@@ -38,7 +38,7 @@ class Db {
                 self::$instance[$md5]   =   new $class($options);
             }else{
                 // 类没有定义
-                throw new Exception("_NO DB DRIVER:".$class);
+                throw new Exception("not sb driver:".$class);
             }
         }
         self::$_instance    =   self::$instance[$md5];
@@ -59,12 +59,12 @@ class Db {
             }
             $config =   array_change_key_case($config);
             $config = array (
-                'type'          =>  $config['db_type'],
-                'username'      =>  $config['db_user'],
-                'password'      =>  $config['db_pwd'],
-                'hostname'      =>  $config['db_host'],
-                'hostport'      =>  $config['db_port'],
-                'database'      =>  $config['db_name'],
+                'type'          =>  isset($config['db_type'])?$config['db_type']:null,
+                'username'      =>  isset($config['db_user'])?$config['db_user']:null,
+                'password'      =>  isset($config['db_pwd'])?$config['db_pwd']:null,
+                'hostname'      =>  isset($config['db_host'])?$config['db_host']:null,
+                'hostport'      =>  isset($config['db_port'])?$config['db_port']:null,
+                'database'      =>  isset($config['db_name'])?$config['db_name']:null,
                 'dsn'           =>  isset($config['db_dsn'])?$config['db_dsn']:null,
                 'params'        =>  isset($config['db_params'])?$config['db_params']:null,
                 'charset'       =>  isset($config['db_charset'])?$config['db_charset']:'utf8',

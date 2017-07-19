@@ -174,7 +174,7 @@ abstract class Driver {
      //   $this->debug(true);
         $this->PDOStatement = $this->_linkID->prepare($str);
         if(false === $this->PDOStatement)
-           // E($this->error());
+           $this->error();
         foreach ($this->bind as $key => $val) {
             if(is_array($val)){
                 $this->PDOStatement->bindValue($key, $val[0], $val[1]);
@@ -221,7 +221,8 @@ abstract class Driver {
         $this->debug(true);
         $this->PDOStatement =   $this->_linkID->prepare($str);
         if(false === $this->PDOStatement) {
-            throw new Exception($this->error());
+            $this->error();
+            return false;
         }
         foreach ($this->bind as $key => $val) {
             if(is_array($val)){
@@ -351,12 +352,8 @@ abstract class Driver {
         if('' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        // 记录错误日志
-        if($this->config['debug']) {// 开启数据库调试模式
-           throw new Exception($this->error);
-        }else{
-            return $this->error;
-        }
+        \core\lib\Utils::log( $this->error,3);
+        return $this->error;
     }
 
     /**
