@@ -355,4 +355,21 @@ class Utils{
         }
         return $result;
     }
+    
+    /**
+     * 单进程 全局变量的存放和获取
+     * @param string $name
+     * @param string $value
+     */
+    static public function global_var($name=null, $value=null){
+        static $_global_var  = array();
+        if($name===null){
+            return $_global_var;
+        }
+        if($value===null){//获取
+            return $_global_var[$name];
+        }else{//设置
+            return $_global_var[$name]=$value;
+        }
+    }
 }
