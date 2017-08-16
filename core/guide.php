@@ -28,7 +28,7 @@ if (version_compare(PHP_VERSION, '5.4.0') < 0) {
         return false;
     }
 }
-!extension_loaded('sockets') && die("请安装sockets扩展..");
+!extension_loaded('sockets') && die("not uninstalled php sockets");
 // 记录开始运行时间
 $GLOBALS['_beginTime'] = microtime(true);
 // 记录内存初始使用
