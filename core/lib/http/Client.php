@@ -288,6 +288,7 @@ class Client{
         if (is_array($data) && count($data) > 0){
             $this->params = array_merge($this->params, $data);
         }
+        $queryString='';
         // Process data, if presented
         if(is_array($this->params) && count($this->params) > 0){
             // Get a blank slate
@@ -328,7 +329,7 @@ class Client{
             }
             $cookieString = join('&', $tempString);
         }
-        Utils::log(array('url'=>$this->target,'data'=>$queryString));
+        //Utils::log(array('url'=>$this->target,'data'=>$queryString));
         // Do we need to use cURL
         if ($this->useCurl){
             // Initialize PHP cURL handle
