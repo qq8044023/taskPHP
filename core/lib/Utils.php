@@ -27,13 +27,6 @@ class Utils{
         return false;
     }
     
-    
-    public static function get_os(){
-        $os='unix';
-        if(DS=='\\')$os='win';
-        return $os;
-    }
-    
     public static function check_pthreads(){
         return extension_loaded('pthreads');
     }
@@ -233,6 +226,14 @@ class Utils{
         Log::input($data,$type);
     }
     /**
+     * 队列操作
+     * @return \core\lib\queue\Sqlite
+     */
+    static public function Queue(){
+        return '\core\lib\queue\Sqlite';
+    }
+    
+    /**
      * 缓存管理
      * @param mixed $name 缓存名称
      * @param mixed $value 缓存值
@@ -350,7 +351,7 @@ class Utils{
         if(socket_select($r, $w,$f , 5)===1){
             $result=true;
         }
-        if(self::get_os()!='win'){
+        if(DS!='\\'){
             $result=true;
         }
         return $result;

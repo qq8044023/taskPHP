@@ -113,8 +113,7 @@ class Server{
                     if($_GET['content']=='select'){
                         $html.= "------------------------ taskPHP task_list ---------------------".PHP_EOL;
                         $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
-                        $TaskManage = new \core\lib\TaskManage();
-                        foreach ($TaskManage->run_worker_list() as $item){
+                        foreach (\core\lib\TaskManage::run_worker_list() as $item){
                             $worker=$item->get_worker();
                             $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
@@ -123,14 +122,13 @@ class Server{
                         $TaskManage->load_worker();
                         $html='task reload ok'.PHP_EOL;
                         $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
-                        $TaskManage = new \core\lib\TaskManage();
-                        foreach ($TaskManage->run_worker_list() as $item){
+                        foreach (\core\lib\TaskManage::run_worker_list() as $item){
                             $worker=$item->get_worker();
                             $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
                     }elseif($_GET['content']=='loglist'){
                         $html='';
-                        $worker_result = (new \core\lib\TaskManage())->worker_result();
+                        $worker_result = \core\lib\TaskManage::worker_result();
                         if(is_array($worker_result) && count($worker_result)){
                             foreach ($worker_result as $item){
                                 list($time,$task_class,$result)=$item;
@@ -145,8 +143,7 @@ class Server{
                         if(!$argv){
                             $html='specify the argv of the task to delete';
                         }else{
-                            $TaskManage = new \core\lib\TaskManage();
-                            $TaskManage->del_worker($argv);
+                            \core\lib\TaskManage::del_worker($argv);
                             $html= $argv.' delete ok';
                         }
                         

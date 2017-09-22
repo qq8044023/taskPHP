@@ -17,11 +17,9 @@ class WorkerExe{
 	 * 任务KEY
 	 * @var unknown
 	 */
-	public static $_worker_exec="task_exec";
+	public static $_task_exec="task_exec";
 
 	private static $_workerExe;
-	
-	protected $_worker;
 	
 	public static function instance(){
 		if (self::$_workerExe===null){
@@ -34,7 +32,8 @@ class WorkerExe{
 	 * @param Worker $worker
 	 */
 	public function exec(Worker $worker){
-		Queue::lPush(static::$_worker_exec,$worker->get_worker());//加入队列
+	    $Queue=Utils::Queue();
+	    $Queue::lPush(static::$_task_exec,$worker->get_task());//加入队列
 	}
 	
 	/**
@@ -47,23 +46,23 @@ class WorkerExe{
 		}else{//单进程模式
 		    $run=true;
 		}
-		$taskManage=new TaskManage();
+
 		register_shutdown_function(array($this,'shutdown_function'));
+		$Queue=Utils::Queue();
 		while ($run===true||$run-->0){
-			$this->_worker=Queue::brPop(static::$_worker_exec,0);//取出队列
+			$task=$Queue::brPop(static::$_task_exec,0);//取出队列
 			if(Utils::is_pthreads()){//多线程模式
-			    Pthread::call($taskManage,$this->_worker);
+			    Pthread::call($task);
 			}elseif(Utils::is_popen()){//单线程模式
-			    $taskManage->run_task($this->_worker);
+			    TaskManage::run_task($task);
 			}
 		}
 	}
 	public function shutdown_function(){
+	    Utils::log('worker_listen daemon pid:'.getmypid().' Stop');
 		if(ob_get_level()<=0) return ;
 		$data=ob_get_contents();
 		ob_end_clean();
-		if (empty($this->_worker))return ;
-		Utils::log('pid:'.getmypid().' Stop');
 	}
 }
 

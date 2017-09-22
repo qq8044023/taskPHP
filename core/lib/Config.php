@@ -35,7 +35,7 @@ class Config{
     /**
      * 加载配置
      */
-    private static function load(){
+    public static function load(){
         //加载系统配置
         $config=array();
         $file=TASKS_PATH.DS.'config'.EXT;
@@ -51,6 +51,7 @@ class Config{
             $name=trim($matches[1][0],DS);
             self::$_config[$name]=include $file;
         }
+        Utils::cache('config',self::$_config);
     }
 
     /**
@@ -60,7 +61,7 @@ class Config{
      * @return bool
      */
     public static function has($name, $range = ''){
-        self::load();
+        self::$_config=Utils::cache('config');
         $range = $range ?: self::$_range;
         if (!strpos($name, '.')) {
             return isset(self::$_config[$range][strtolower($name)]);
@@ -78,7 +79,7 @@ class Config{
      * @return mixed
      */
     public static function get($name = null, $range = ''){
-        self::load();
+        self::$_config=Utils::cache('config');
         $range = $range ?: self::$_range;
         // 无参数时获取所有
         if (empty($name) && isset(self::$_config[$range])) {
@@ -102,7 +103,7 @@ class Config{
      * @return mixed
      */
     public static function set($name, $value = null, $range = ''){
-        self::load();
+        self::$_config=Utils::cache('config');
         $range = $range ?: self::$_range;
         if (!isset(self::$_config[$range])) {
             self::$_config[$range] = array();
@@ -115,6 +116,7 @@ class Config{
                 $name = explode('.', $name, 2);
                 self::$_config[$range][$name[0]][$name[1]] = $value;
             }
+            Utils::cache('config',self::$_config);
             return;
         } elseif (is_array($name)) {
             // 批量设置
@@ -122,8 +124,10 @@ class Config{
                 self::$_config[$range][$value] = isset(self::$_config[$range][$value]) ?
                 array_merge(self::$_config[$range][$value], $name) :
                 self::$_config[$range][$value] = $name;
+                Utils::cache('config',self::$_config);
                 return self::$_config[$range][$value];
             } else {
+                Utils::cache('config',self::$_config);
                 return self::$_config[$range] = array_merge(self::$_config[$range], array_change_key_case($name));
             }
         } else {
@@ -142,5 +146,6 @@ class Config{
         } else {
             self::$_config[$range] = array();
         }
+        Utils::cache('config',self::$_config);
     }
 }

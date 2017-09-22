@@ -120,7 +120,7 @@ class Command{
 	       }
 	       Ui::displayUI($message,false);
 	       foreach (Daemon::$_sys_pids as &$pid){
-	           if(Utils::get_os()=='win'){
+	           if(DS=='\\'){
 	               system('taskkill /f /t /im php.exe');
 	           }else{
 	               posix_kill($pid, SIGTERM);

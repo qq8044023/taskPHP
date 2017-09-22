@@ -7,7 +7,7 @@
  */
 date_default_timezone_set( 'Asia/Chongqing');
 //版本号
-define('ML_VERSION', '1.0');
+define('ML_VERSION', '1.2');
 //是否cli模式
 define("IS_CLI", (PHP_SAPI=='cli') ? true : false);
 //分割符
@@ -22,12 +22,7 @@ define("CORE_PATH", APP_ROOT.DS."core");
 define("LOGS_PATH", APP_ROOT.DS."logs");
 //php文件后缀
 define("EXT", ".php");
-//兼容PHP5.3.x
-if (version_compare(PHP_VERSION, '5.4.0') < 0) {
-    function trait_exists($traitname, $autoload = false){
-        return false;
-    }
-}
+
 !extension_loaded('sockets') && die("not uninstalled php sockets");
 // 记录开始运行时间
 $GLOBALS['_beginTime'] = microtime(true);

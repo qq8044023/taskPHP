@@ -12,7 +12,7 @@ namespace core\lib;
  *
  */
 class Daemon{
-    
+    public static $_os='unix';
     public $_listen_list=array();
     
     public $_process_list=array();
@@ -20,6 +20,7 @@ class Daemon{
     public static $_sys_pids=array();
     
     public function init(){
+        if(DS=='\\')self::$_os='win';
         $this->get_listen_list();
         $this->exec();
     }
@@ -60,8 +61,8 @@ class Daemon{
     }
     
     public function exec(){
-        $os=Utils::get_os();
-        $this->$os();
+        Config::load();
+        $this->{self::$_os}();
     }
     /**
      * win进程
@@ -87,8 +88,10 @@ class Daemon{
         if(WORKER_FORK){
             runer_frok:
             $pid = pcntl_fork();
-            if ($pid == -1) die(pcntl_get_last_error());
-            elseif($pid) {
+            if ($pid == -1){
+                Utils::log('create son worker_listen daemon:'.pcntl_get_last_error());die;
+            }elseif($pid) {
+                Utils::log('create son worker_listen daemon pid:'.$pid);
                 unset($pid);
                 pcntl_wait($status,WUNTRACED);
                 goto runer_frok;
@@ -114,14 +117,15 @@ class Daemon{
                 $this->start_creating($key);
             }
         }
-        exit('over');
+        Utils::log('taskPHP over');die;
     }
     
     private function start_creating($title){
         $pid = pcntl_fork();
         if ($pid == -1){
-            die(pcntl_get_last_error());
+            Utils::log('create '.$title.' daemon:'.pcntl_get_last_error());die;
         }elseif ($pid){
+            Utils::log('create '.$title.' daemon pid:'.$pid);
             $this->_process[$title]=$pid;
         }else{
             $this->start_exec($title);
@@ -129,6 +133,7 @@ class Daemon{
     }
     
     private function start_exec($title){
+        Utils::log($title.' daemon run:success');
        include $this->_listen_list[$title];
        exit;
     }
@@ -140,7 +145,7 @@ class Daemon{
      */
     public static function is_daemon($process_name=array()){
         if (count($process_name)==0){
-            if (Utils::get_os()!=='win'){
+            if (self::$_os!=='win'){
                 $process_name=array("main".EXT);
             } else{
                 $list=(new static)->get_listen_list();
@@ -150,7 +155,7 @@ class Daemon{
             }
         }
         ob_start();
-        if (Utils::get_os()!=='win'){
+        if (self::$_os!=='win'){
             system('ps aux');
         }
         else{
@@ -165,7 +170,7 @@ class Daemon{
             $item=trim($item);
             foreach ($process_name as &$pn){
                 if(strpos($item, $pn)){
-                    if (Utils::get_os()!=='win'){//非win
+                    if (self::$_os!=='win'){//非win
                         $item_arr=explode(' ', $item);
                         $item_arr=array_filter($item_arr);
                         $item_arr=array_merge($item_arr);
