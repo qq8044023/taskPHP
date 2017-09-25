@@ -12,7 +12,11 @@ namespace core\lib;
  *
  */
 class Utils{
-    
+    public static function get_os(){
+        $os='unix';
+        if(DS=='\\')$os='win';
+        return $os;
+    }
     public static function check_worker_fork(){
         return self::get_os() != 'win' && self::check_pcntl();
     }
