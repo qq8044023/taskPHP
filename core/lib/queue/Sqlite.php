@@ -1,7 +1,7 @@
 <?php
 namespace core\lib\queue;
 use core\lib\Utils;
-/**
+/** 
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
