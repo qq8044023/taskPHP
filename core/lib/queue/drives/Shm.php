@@ -6,6 +6,7 @@
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib\queue\drives;
+use core\lib\Utils;
 /**
  * 队列驱动-Shm
  * @author cqcqphper 小草<cqcqphper@163.com>
@@ -178,7 +179,7 @@ class Shm{
     public function pop($key,$timeout=0){
         $res=null;
         $wh=true;$second=0;
-        while ($wh){
+        while ($wh && Utils::cache('close_worker')=='false'){
             $data= (array) $this->get($key);
             if(count($data)!=0){
                 $res=array_shift($data);

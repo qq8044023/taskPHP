@@ -33,7 +33,7 @@ class WorkerExe{
 	 * @param Worker $worker
 	 */
 	public function exec(Worker $worker){
-	    if(Utils::cache('listen'.$worker->get_name())){
+	    if(Utils::cache('listen'.$worker->get_name())=='true'){
 	        \core\lib\queue\Queue::push(static::$_worker_exec.$worker->get_name(),$worker->get_worker());//加入队列
 	    }
 	}
@@ -43,12 +43,11 @@ class WorkerExe{
 	 */
 	public function listen($task_name){
 	    $config=Utils::config('task_list.'.$task_name);
-	    ini_set('memory_limit','512M');
+	    //ini_set('memory_limit','512M');
 	    Utils::log('worker_listen daemon pid:'.getmypid().' Start');
 		$taskManage=new TaskManage();
 		register_shutdown_function([$this,'shutdown_function']);
-		
-		while (Utils::cache('listen'.$task_name)){
+		while (Utils::cache('listen'.$task_name)=='true'){
 			$this->_worker=\core\lib\queue\Queue::pop(static::$_worker_exec.$task_name);//取出队列
 			if(!$this->_worker){
 			    continue;

@@ -42,6 +42,7 @@ class App{
             'pid'=>[],
         ],
     ];
+    private static $_sys_pids=[];
     
     /**
      * 运行框架
@@ -55,7 +56,6 @@ class App{
             }
             Ui::displayUI($text,false);
         }
-        //
         self::{Command::$_cmd_key}(Command::$_cmd_value);
     }
     
@@ -67,7 +67,8 @@ class App{
             self::shutdown_function();
         });
         foreach (self::$_process_list as $key=>$val){
-            self::$_process_list[$key]['pid'][]=popen('php '.CORE_PATH.DS.self::$_process_list[$key]['file_name'].EXT, 'r');;
+            self::$_process_list[$key]['pid'][]=popen('php '.CORE_PATH.DS.self::$_process_list[$key]['file_name'].EXT, 'r');
+            Ui::showLog('distribute start success');
         }  
         if($value==='all'){
             $list=Utils::config('task_list');
@@ -79,14 +80,16 @@ class App{
                 self::$_process_list[$key]=$list[$key];
                 if(!isset(self::$_process_list[$key]['worker_count']))self::$_process_list[$key]['worker_count']=1;
                 self::$_process_list[$key]['pid']=[];
-                Utils::cache('listen'.$key,1);
+                Utils::cache('listen'.$key,'true');
+                Utils::cache('close_worker','false');
                 if(self::$_process_list[$key]['worker_count']){
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
                         self::$_process_list[$key]['pid'][] = popen('php '.CORE_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
                     }
                 }
+                Ui::showLog($key.' start success');
             }
-        }    
+        }
         Ui::statusUI();
         Ui::statusProcess(self::$_process_list);
         //运行web服务器
@@ -105,22 +108,27 @@ class App{
         }
         if(is_array($list) && count($list)){
             foreach ($list as $key=>$val){
+                Utils::cache('listen'.$key,'false');
+                Utils::cache('close_worker','true');
+                sleep(5);
                 //关闭任务进程
                 if(isset(self::$_process_list[$key]['pid'])){
-                    foreach (self::$_process_list[$key]['pid'] as $pid){
-                        Utils::cache('listen'.$key,0);
-                        pclose($pid);unset($pid);
+                    foreach (self::$_process_list[$key]['pid'] as &$pid){
+                        pclose($pid);
                     }
                 }
+                Ui::showLog($key.' close success');
                 self::$_process_list[$key]=$list[$key];
                 if(!isset(self::$_process_list[$key]['worker_count']))self::$_process_list[$key]['worker_count']=1;
                 self::$_process_list[$key]['pid']=[];
                 if(self::$_process_list[$key]['worker_count']){
+                    Utils::cache('listen'.$key,'true');
+                    Utils::cache('close_worker','false');
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
-                        Utils::cache('listen'.$key,1);
                         self::$_process_list[$key]['pid'][] = popen('php '.CORE_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
                     }
                 }
+                Ui::showLog($key.' start success');
             }
         }
         return 'ok';
@@ -137,45 +145,38 @@ class App{
         }
         if(is_array($list) && count($list)){
             foreach ($list as $key=>$val){
+                Utils::cache('listen'.$key,'false');
+                Utils::cache('close_worker','true');
+                sleep(5);
                 //关闭任务进程
                 if(isset(self::$_process_list[$key]['pid'])){
                     foreach (self::$_process_list[$key]['pid'] as &$pid){
-                        Utils::cache('listen'.$key,0);
-                        pclose($pid);unset($pid);
+                        pclose($pid);
                     }
                 }
                 self::$_process_list[$key]['pid']=[];
             }
+            Ui::showLog($key.' close success');
         }
         if($value==='all'){
-            if(DS!='\\'){
-                posix_kill(getmypid(), SIGTERM);
-                system('kill -9 '.getmypid());
-            }
+             $is_daemon=self::is_daemon(array("main".EXT));
+    	     if($is_daemon){
+    	       foreach (self::$_sys_pids as &$pid){
+    	           if(DS=='\\'){
+    	               system('taskkill /f /t /im php.exe');
+    	           }else{
+    	               posix_kill($pid, SIGTERM);
+    	               system('kill -9 '.$pid);
+    	           }
+    	           Ui::showLog($pid.' close success');
+    	       }
+    	     }
         }
         return 'ok';
     }
     
     private static function init_server(){
-        //检查端口
-        $in_port=false;
-        $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        socket_set_nonblock($sock);
-        socket_connect($sock,'127.0.0.1', Utils::config('web_manage.port'));
-        socket_set_block($sock);
-        $r = array($sock);
-        $w = array($sock);
-        $f = array($sock);
-        if(socket_select($r, $w,$f , 5)===1){
-            $in_port=true;
-        }
-        if(DS!='\\'){
-            $in_port=true;
-        }
-        if($in_port){
-            //socket
-            self::$_socket = new SocketServer(Utils::config('web_manage.address'), Utils::config('web_manage.port'));
-        }
+        self::$_socket = new SocketServer(Utils::config('web_manage.address'), Utils::config('web_manage.port'));
         //监听
         self::$_socket->listen();
         while(true){
@@ -191,7 +192,7 @@ class App{
         $line = self::$_socket->readLine();
         $statusLineArr = explode(' ', trim($line));
         if (!is_array($statusLineArr) || count($statusLineArr) !== 3) {
-            \core\lib\Ui::displayUI('parse request status line err.',false);
+            Ui::showLog('parse request status line err');
             return false;
         }
         list(self::$_method, $requestUri, $protocal) = $statusLineArr;
@@ -272,23 +273,16 @@ class App{
                 }
     
             }else{
-                $action='<select id="cmd_action"><option value="cmd">cmd</option><option value="task">task</option></select>';
-    
+                
+                $cmd_html='<form id="form1" name="form1" method="post" action=""><tr align="center"  bgcolor="#F2F4F6" ><td  align="left" ><select id="cmd_action"><option value="cmd">cmd</option></select><select id="cmd_content"><option value="restart">重启任务进程</option><option value="close">关闭任务进程</option></select>  参数:<input name="cmd_argv" type="text" id="cmd_argv" size="10" value="all" /><input type="button" onclick="cmd_ajax();" value="确定" /></td></tr></form>';
+                $task_html='<form id="form2" name="form2" method="post" action=""><tr align="center"  bgcolor="#F2F4F6" ><td  align="left" ><select id="task_action"><option value="task">task</option></select><select id="task_content"><option value="select">查询任务</option><option value="reload">重载任务</option><option value="delete">删除任务</option></select>  参数:<input name="task_argv" type="text" id="task_argv" size="10" value="all" /><input type="button" onclick="task_ajax();" value="确定" /></td></tr></form>';
                 $content='<select id="cmd_content">';
-                $cmd_list=array(
-                   'restart','close' ,'select','reload','delete'
-                );
-                foreach ($cmd_list as $cmd){
-                    $content.='<option value="'.$cmd.'">'.$cmd.'</option>';
-                }
-                $content.='</select>';
-    
                 $html='<!DOCTYPE html>
                 <html>
                 <meta charset="utf-8" />
                 <title>hello taskPHP</title>
                 <script type="text/javascript">
-                    function loadXMLDoc(){
+                    function cmd_ajax(){
                     	var xmlhttp;
                     	if (window.XMLHttpRequest){
                     		xmlhttp=new XMLHttpRequest();
@@ -297,7 +291,7 @@ class App{
                     	}
                     	xmlhttp.onreadystatechange=function(){
                     		if (xmlhttp.readyState==4 && xmlhttp.status==200){
-                    			document.getElementById("cmd_result").innerHTML=xmlhttp.responseText;
+                    			document.getElementById("result").innerHTML=xmlhttp.responseText;
                     		}
                     	}
                     	var cmd_action_object=document.getElementById("cmd_action");
@@ -314,9 +308,35 @@ class App{
                     	xmlhttp.open("GET",url,true);
                     	xmlhttp.send();
                     }
+                    function task_ajax(){
+                    	var xmlhttp;
+                    	if (window.XMLHttpRequest){
+                    		xmlhttp=new XMLHttpRequest();
+                    	}else{
+                    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+                    	}
+                    	xmlhttp.onreadystatechange=function(){
+                    		if (xmlhttp.readyState==4 && xmlhttp.status==200){
+                    			document.getElementById("result").innerHTML=xmlhttp.responseText;
+                    		}
+                    	}
+                    	var task_action_object=document.getElementById("task_action");
+                    	var task_action_index=task_action_object.selectedIndex;
+                    	var task_action_value=task_action_object.options[task_action_index].value;
+           
+                    	var task_content_object=document.getElementById("task_content");
+                    	var task_content_index=task_content_object.selectedIndex;
+                    	var task_content_value=task_content_object.options[task_content_index].value;
+           
+                    	var task_argv_object=document.getElementById("task_argv");
+                    	var task_argv_value=task_argv_object.value;
+                    	var url=document.domain+"/?action="+task_action_value+"&content="+task_content_value+"&argv="+task_argv_value;
+                    	xmlhttp.open("GET",url,true);
+                    	xmlhttp.send();
+                    }
                     </script>
                 <body>
-                <table border="0" width="98%" align="center" cellpadding="1" cellspacing="1" class="tbtitle" style="margin-left:1%;"><tr><td bgcolor="#F2F4F6"><strong>taskPHP远程管理器</strong></td></tr><form id="form1" name="form1" method="post" action=""><tr align="center"  bgcolor="#F2F4F6" ><td  align="left" >'.$action.$content.'  参数:<input name="cmd_argv" type="text" id="cmd_argv" size="10" /><input type="button" onclick="loadXMLDoc();" value="确定" /></td></tr></form><tr align="center" bgcolor="#FFFFFF"><td align="left"><textarea id="cmd_result"  style="width:700px; height:400px"id="display">hello taskPHP</textarea></td></tr></table>
+                <table border="0" width="98%" align="center" cellpadding="1" cellspacing="1" class="tbtitle" style="margin-left:1%;"><tr><td bgcolor="#F2F4F6"><strong>taskPHP远程管理器</strong></td></tr>'.$cmd_html.$task_html.'<tr align="center" bgcolor="#FFFFFF"><td align="left"><textarea id="result"  style="width:700px; height:400px">hello taskPHP</textarea></td></tr></table>
                 </body>
                 </html>';
     
@@ -347,7 +367,7 @@ class App{
             } while (!empty($line));
     
             if (empty($contentLength)) {
-                \core\lib\Ui::displayUI('POST RQUEST CONTENT-LEHGTH IS NULL.',false);
+                Ui::showLog('POST RQUEST CONTENT-LEHGTH IS NULL');
                 return false;
             }
     
@@ -363,13 +383,69 @@ class App{
         $response .= PHP_EOL;
         self::$_socket->write($response);
     }
+    /**
+     * 后台进程是否在运行
+     * @param array $process_name
+     * @return boolean
+     */
+    private static function is_daemon($process_name=array()){
+        if (count($process_name)==0){
+            if (DS=='\\'){
+                $process_name=array("main".EXT);
+            } else{
+                $list=[];
+                $files=glob(CORE_PATH.DS.'*_listen'.EXT);
+                foreach($files as $file){
+                    $regex='/.*?core(.*?)_listen\.php.*?/';
+                    preg_match_all($regex, $file, $matches);
+                    $name=trim($matches[1][0],DS);
+                    $list[$name]=$file;
+                }
+                foreach ($list as $key=>$val){
+                    $process_name[]=$key.'_listen'.EXT;
+                }
+            }
+        }
+        ob_start();
+        if (DS!=='\\'){
+            system('ps aux');
+        }
+        else{
+            system('wmic  process where caption="php.exe" get caption,commandline /value');
+        }
+        $ps=ob_get_contents();
+        ob_end_clean();
+        $ps = explode("\n", $ps);
+        $list=array();
+        //取出进程列表
+        foreach ($ps as &$item){
+            $item=trim($item);
+            foreach ($process_name as &$pn){
+                if(strpos($item, $pn)){
+                    if (DS!='\\'){//非win
+                        $item_arr=explode(' ', $item);
+                        $item_arr=array_filter($item_arr);
+                        $item_arr=array_merge($item_arr);
+                        $list[]=$item_arr[1];
+                    }else{
+                        $list[]='php.exe';
+                    }
     
+                }
+            }
+        }
+        self::$_sys_pids=$list;
+        if(count(self::$_sys_pids)){
+            return true;
+        }
+        return false;
+    }
     public static function shutdown_function(){
         Utils::log('taskPHP daemon pid:'.getmypid().' Stop');
         foreach (self::$_process_list as $key=>$val){
             foreach (self::$_process_list[$key]['pid'] as &$pid){
                 pclose($pid);
-                Ui::displayUI($key.' daemon Stop',false);
+                Ui::showLog($key.' daemon Stop');
             }
         }
     }

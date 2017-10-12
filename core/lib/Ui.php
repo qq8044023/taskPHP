@@ -54,9 +54,12 @@ class Ui{
      * @param string $isClose  输出后是否退出
      */
     public static function displayUI($text,$isClose=true){
-        $text=$text.PHP_EOL;
-        echo $text;
+        echo $text.PHP_EOL;
         $isClose==true && die;
+    }
+    
+    public static function showLog($text){
+        echo '['.date('H:i:s').']'.'[taskPHP]:'.$text.PHP_EOL;
     }
 }
 
