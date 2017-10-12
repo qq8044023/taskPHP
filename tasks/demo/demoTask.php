@@ -5,6 +5,9 @@ use core\lib\Utils;
 use core\lib\Config;
 use core\lib\http\Client;
 use tasks\demo\lib\Demolib;
+use tasks\demo\model\demo;
+use tasks\demo\model\gameActivity;
+use core\lib\Db;
 /**
  * 测试任务 
  */
@@ -16,12 +19,21 @@ class demoTask extends Task{
      * @see \core\lib\Task::run()
      */
 	public function run(){
+	    /****************************数据库流程*************************************/
+	    //方法一
+	    $res=Db::connect(Utils::config('db'))->name("gameActivity")->find();
+	    Utils::log($res);
+	    //方法二
+	    $demo=new gameActivity();
+	    Utils::log($demo->test());
+	    Utils::log($demo->test1());
+	    
 	    
 	    //加载demo任务下的lib类
-	     $demolib_object = new Demolib();
+	    $demolib_object = new Demolib();
 	    $demolib_object->run();
-	    Utils::log('demo任务运行成功');
-
+	    Utils::log('demo任务运行成功'); 
+ 
 	    /*
 	    //远程采集测试
 	    //http下的Client类的详细使用说明请参考类描述

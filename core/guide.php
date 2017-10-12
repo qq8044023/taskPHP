@@ -5,9 +5,13 @@
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
-date_default_timezone_set( 'Asia/Chongqing');
+date_default_timezone_set('Asia/Chongqing');
 //版本号
-define('ML_VERSION', '1.2');
+define('TASKPHP_VERSION', '2.0');
+//开始时间记录
+define('TASKPHP_START_TIME', microtime(true));
+//开始 内存量记录
+define('TASKPHP_START_MEM', memory_get_usage());
 //是否cli模式
 define("IS_CLI", (PHP_SAPI=='cli') ? true : false);
 //分割符
@@ -23,14 +27,7 @@ define("LOGS_PATH", APP_ROOT.DS."logs");
 //php文件后缀
 define("EXT", ".php");
 
-!extension_loaded('sockets') && die("not uninstalled php sockets");
-// 记录开始运行时间
-$GLOBALS['_beginTime'] = microtime(true);
-// 记录内存初始使用
-define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
-if (MEMORY_LIMIT_ON) {
-    $GLOBALS['_startUseMems'] = memory_get_usage();
-}
+!extension_loaded('sockets') && die("请安装sockets扩展..");
 
 // 载入Loader类
 require_once CORE_PATH.DS."lib".DS."Loader".EXT;

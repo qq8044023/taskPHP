@@ -1,16 +1,15 @@
 <?php
-namespace core\lib\queue;
-use core\lib\Utils;
 /**
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
-
+namespace core\lib\queue\drives;
+use PDO;
+use core\lib\Utils;
 /**
- * 使用数据库来实现进程通信
- * 支持多进程, 支持各种数据类型的存储
+ * 队列驱动-Sqlite
  * @author cqcqphper 小草<cqcqphper@163.com>
  */
 class Sqlite{
@@ -18,35 +17,30 @@ class Sqlite{
      * 设置属性
      * @var array
      */
-    private static $_options=array();
+    private  $_options=[
+                'table'=>'core_queue',
+            ];
     
-    private static $_handler=null;
+    private  $_handler=null;
+    /**
+     * 数据库实例
+     * @var null
+     */
+    private $_db = null;
     
-    public static function get_connect(){
-        $options=array(
-            'DB_TYPE'   =>'sqlite',
-            'DB_NAME'  =>LOGS_PATH.DS.'core_queue.db',
-            'table'      => 'core_queue',
-            'prefix'     =>'',
-        );
-        if (!file_exists($options['DB_NAME'])) {
-            if (!($fp = fopen($options['DB_NAME'], "w+"))) Utils::log('create '.$options['DB_NAME'].' error');
+    public function __construct(array $options){
+        $this->_options = array_merge($this->_options,$options);
+        $this->_options['dsn']=LOGS_PATH.DS.'core_queue.db';
+        if (!file_exists($this->_options['dsn'])) {
+            if (!($fp = fopen($this->_options['dsn'], "w+"))) Utils::log('create '.$this->_options['dsn'].' error');
             fclose($fp);
-            self::$_handler=Utils::model($options['table'],$options['prefix'],$options);
-            self::$_handler->query('CREATE TABLE core_queue (name varchar(200) UNIQUE,content TEXT)');
+            $this->_db = new PDO('sqlite:'.LOGS_PATH.DS.'core_queue.db');
+            $sql='CREATE TABLE '.$this->_options['table'].' (name varchar(200) UNIQUE,content TEXT)';
+            $this->_db->exec($sql);
+        }else{
+            $this->_db = new PDO('sqlite:'.LOGS_PATH.DS.'core_queue.db');
         }
-        if(self::$_handler==null){
-            self::$_handler=Utils::model($options['table'],$options['prefix'],$options);
-        }
-        self::$_options=$options;
-        return self::$_handler;
-    }
-    
-    public static function all(){
-        self::get_connect();
-        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE 1';
-        $res=self::$_handler->query($sql);
-        return null;
+        
     }
     
     /**
@@ -55,12 +49,11 @@ class Sqlite{
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public static function get($name) {
-        self::get_connect();
-        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=self::$_handler->query($sql);
+    public function get($name) {
+        $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
+        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
-            $content=$res[0]['content'];
+            $content=$res['content'];
             return unserialize($content);
         }
         return null;
@@ -73,22 +66,21 @@ class Sqlite{
      * @param mixed $value  存储数据
      * @return boolen
      */
-    public static function set($name, $value) {
-        self::get_connect();
+    public function set($name, $value) {
         $value = serialize($value);
-        $sql    = 'SELECT content FROM ' . self::$_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=self::$_handler->query($sql);
+        $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
+        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
-            $sql='UPDATE '.self::$_options['table'].'
+            $sql='UPDATE '.$this->_options['table'].'
               SET content = \''.$value.'\'
               WHERE name=\''.$name.'\'';
         }else{
-            $sql='INSERT INTO '.self::$_options['table'].'
+            $sql='INSERT INTO '.$this->_options['table'].'
                 (name, content) 
                   VALUES 
                 (\''.$name.'\', \''.$value.'\')';
         }
-        $res=self::$_handler->execute($sql);
+        $res=$res=$this->_db->exec($sql);
         return $res;
     }
     
@@ -98,27 +90,22 @@ class Sqlite{
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public static function rm($name) {
-        self::get_connect();
-        $sql='DELETE FROM '.self::$_options['table'].'
+    public function rm($name) {
+        $sql='DELETE FROM '.$this->_options['table'].'
               WHERE name=\''.$name.'\'';
-        $res=self::$_handler->execute($sql);
+        $res=$this->_db->exec($sql);
         return $res;
     }
 
-    public function close(){
-        self::$_handler=null;
-        return true;
-    }
     /**
      * 加入
      * @param string $key 表头
      * @param string $value 值
      */
-    public static function lPush($key,$value){
-        $data= (array) self::get($key);
+    public function push($key,$value){
+        $data= (array) $this->get($key);
         array_push($data,$value);
-        return self::set($key, $data);
+        return $this->set($key, $data);
     }
     /**
      * 出列 堵塞 当没有数据的时候，会一直等待下去
@@ -126,14 +113,14 @@ class Sqlite{
      * @param number $timeout 延时   0无限等待
      * @return Ambigous <NULL, mixed>
      */
-    public static function brPop($key,$timeout=0){
+    public function pop($key,$timeout=0){
         $res=null;
         $wh=true;$second=0;
         while ($wh){
-            $data= (array) self::get($key);
+            $data= (array) $this->get($key);
             if(count($data)!=0){
                 $res=array_shift($data);
-                self::set($key, $data);
+                $this->set($key, $data);
                 $wh=false;
                 break;
             }
@@ -155,8 +142,8 @@ class Sqlite{
      * @param unknown $son_key
      * @return boolean|\core\lib\boolen
      */
-    public static function srem($key,$son_key){
-        $data= (array) self::get($key);
+    public function srem($key,$son_key){
+        $data= (array) $this->get($key);
         if(!count($data)){
             return false;
         }
@@ -166,7 +153,7 @@ class Sqlite{
             }
         }
         unset($data[$son_key]);
-        return self::set($key, $data);
+        return $this->set($key, $data);
     }
     
     /**
@@ -175,9 +162,8 @@ class Sqlite{
      * @return boolean
      */
     public function clear(){
-        self::get_connect();
         $sql = 'DELETE FROM ' . self::$_options['table'];
-        $res=self::$_handler->execute($sql);
+        $res=$this->_db->exec($sql);
         return $res;
     }
 }

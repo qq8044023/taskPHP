@@ -5,12 +5,13 @@
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
+use core\lib\Command;
 use core\lib\WorkerExe;
 if(!defined('IS_CLI')){
     include_once __DIR__."/guide.php";
 }
 if(IS_CLI==false)die("plase run in cli".PHP_EOL);
-$Daemon= new core\lib\Daemon();
-$Daemon->worker_son();
+Command::analysis();
+$task_name=Command::$_cmd_key;
 $workerExe=WorkerExe::instance();
-$workerExe->listen();
+$workerExe->listen($task_name);

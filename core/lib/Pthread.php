@@ -12,9 +12,11 @@ namespace core\lib;
  *
  */
 class Pthread extends \Thread{
-    public $_task;
-    public function __construct($task) {
-        $this->_task=$task;
+    public $_taskManage;
+    public $_worker;
+    public function __construct($taskManage,$worker) {
+        $this->_taskManage=$taskManage;
+        $this->_worker=$worker;
     }
     /**
      * 重载框架的locator
@@ -30,16 +32,16 @@ class Pthread extends \Thread{
         $locator->register();
     }
     public function run() {
-        if($this->_task!=null){
+        if($this->_worker!=null){
             $this->reload_locator();
-            TaskManage::run_task($this->_task);
+            $this->_taskManage->run_task($this->_worker);
         }
     }
     /**
      * 调用
      **/
-    public static function call($task){
-        $thread = new Pthread($task);
+    public static function call($taskManage,$worker){
+        $thread = new Pthread($taskManage,$worker);
         if($thread->start()){
             $thread->join();
         }else{

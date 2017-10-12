@@ -13,7 +13,6 @@ use core\lib\Utils;
  */
 interface SerializableBase extends \Serializable{}
 class Task implements SerializableBase{
-    
     /**
      * 子类又需要的时候需要重写
      * (non-PHPdoc)
@@ -26,9 +25,6 @@ class Task implements SerializableBase{
      * @see Serializable::unserialize()
      */
     public function unserialize($s){}
-    public function __toString(){
-        return __CLASS__;
-    }
     public function __call($method, $args) {
         Utils::log(get_class($this).':'.$method.' 方法不存在');
     }

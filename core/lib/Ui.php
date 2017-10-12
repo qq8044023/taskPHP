@@ -12,8 +12,7 @@ class Ui{
      *   */
     public static function statusUI(){
         $text= "------------------------- taskPHP ------------------------------".PHP_EOL;
-        $text.= 'taskPHP version:' . ML_VERSION . "      PHP version:".PHP_VERSION.PHP_EOL;
-        $text.= 'author:码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com'.PHP_EOL;
+        $text.= 'taskPHP version:' . TASKPHP_VERSION . "      PHP version:".PHP_VERSION.PHP_EOL;
         $text.= 'license1:https://github.com/qq8044023/taskPHP'.PHP_EOL;
         $text.= 'license2:https://git.oschina.net/cqcqphper/taskPHP'.PHP_EOL;
         $text.= 'startTime:'.date('Y-m-d H:i:s').PHP_EOL;
@@ -28,7 +27,11 @@ class Ui{
     public static function statusProcess($list){
         $text='';
         foreach ($list as $key=>$val){
-            $text.= str_pad($key, 30).'N'. str_pad('', 27). " [OK] ".PHP_EOL;
+            $status='success';
+            if(!$list[$key]['pid']){
+                $status='fail';
+            }
+            $text.= str_pad($key, 30).$list[$key]['worker_count']. str_pad('', 25). " [".$status."] ".PHP_EOL;
         }
         $text.= "----------------------------------------------------------------";
         self::displayUI($text,false);

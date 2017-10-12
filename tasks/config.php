@@ -1,26 +1,50 @@
 <?php
 //系统配置
-return array(
-    //指定用户  nobody  www
-    'core_user'         =>'nobody',
-    //指定任务进程最大内存
-    'memory_limit'      =>'256M',
-    //单个进程执行的任务数 0无限  大于0为指定数
-    'worker_limit'       =>0,
-    //worker进程运行模式
-    //0.自动模式 默认
-    //1.多进程模式
-    //2.单进程模式 
-    //3.多线程模式
-    'worker_mode'       =>0,
+return [
+    //系统队列配置
+    'queue'=>[
+        'drive'         => 'Sqlite',//驱动类型 Sqlite|Redis|Mysql|Shm
+    ],
+   
+    //web管理配置
+    //内网访问地址：http://127.0.0.1:8082
+    //外网访问地址：http://ip:8082
+    'web_manage'=>[
+        //ip地址
+        'address'=>'0.0.0.0',
+        //端口
+        'port'=>8082,
+    ],
     //任务列表
-    'task_list'=>array(
-        //demo任务 
-        'demo'=>array(
-            //class名称,(设置true或者不设置此参数)代表tasks目录里面的任务会自动找到该任务的class名称,非tasks目录里面的任务则填写完整的class名称core\lib\xxxx
-            'class_name'=>true,   
+    'task_list'=>[
+        'demo'=>[
+            //指定任务进程最大内存  系统默认为512M
+            'worker_memory'      =>'1024M',
+            //开启任务进程的多线程模式
+            'worker_pthreads'   =>false,
+            //任务的进程数 系统默认1
+            'worker_count'=>1,
             //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/2 * * * * * *', 
-        ),
-    ),
-);
+            'timer'     =>'/10 * * * * * *',
+        ],
+    ],
+    'db'=>[
+        'type'          =>  'mysql',
+        'username'      =>  '',
+        'password'      =>  '',
+        'hostname'      =>  '',
+        'hostport'      =>  '3306',
+        'database'      =>  '',
+        // 数据库连接参数
+        'params'        => [],
+        // 数据库编码默认采用utf8
+        'charset'       => 'utf8',
+        // 数据库表前缀
+        'prefix'        => 'tourism_',
+        // 数据库调试模式
+        'debug'         => false,
+        // 开启断线重连
+        'break_reconnect'=>true,
+    ],
+    //https://github.com/qq8044023/taskPHP/tree/1.0
+];

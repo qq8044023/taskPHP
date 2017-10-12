@@ -32,7 +32,7 @@ class Worker{
 	 * @return \core\lib\Worker
 	 */
 	public function set_skip($skip){
-		$this->_skip=boolval($skip);
+		$this->_skip= (bool)$skip;
 		return $this;
 	}
 	/**
@@ -53,7 +53,7 @@ class Worker{
 	 * 返回执行对象
 	 * @return Task
 	 */
-	public function get_task(){
+	public function get_worker(){
 		if ($this->_task==null){
 			$task=@unserialize($this->_worker_str);
 			if (!$task instanceof Task) return null;

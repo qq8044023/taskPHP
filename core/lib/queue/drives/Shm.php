@@ -1,15 +1,13 @@
 <?php
-namespace core\lib\queue;
 /**
  * taskPHP
  * @author     码农<8044023@qq.com>,cqcqphper 小草<cqcqphper@163.com>
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
-
+namespace core\lib\queue\drives;
 /**
- * 使用共享内存实现的内存队列
- * 支持多进程, 支持各种数据类型的存储
+ * 队列驱动-Shm
  * @author cqcqphper 小草<cqcqphper@163.com>
  */
 class Shm{
@@ -17,13 +15,18 @@ class Shm{
      * 设置属性
      * @var array
      */
-    private static $_options=array(
+    private $_options=array(
             'size'      => 512000,
             'temp'       => LOGS_PATH,
             'project'   => 's',
         );
     
-    private static $_handler=null;
+    private $_handler=null;
+    
+    public function __construct(array $options){
+        $this->_options = array_merge($this->_options,$options);
+        $this->_handler=$this->_ftok($this->_options['project']);
+    }
     
     /**
      * 读取缓存
@@ -31,12 +34,8 @@ class Shm{
      * @param string $name 缓存变量名
      * @return mixed
      */
-    public static function get($name = false) {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
+    public function get($name = false) {
+        $shmid = @shmop_open($this->_handler, 'w', 0600, 0);
         if ($shmid !== false) {
             $size=shmop_size($shmid);
             $str=shmop_read($shmid, 0, $size);
@@ -64,7 +63,7 @@ class Shm{
      * @param mixed $value  存储数据
      * @return boolen
      */
-    public static function set($name, $value) {
+    public function set($name, $value) {
         $lh = self::_lock();
         $val = self::get();
         if (!is_array($val)) $val = array();
@@ -83,12 +82,12 @@ class Shm{
      * @return boolen
      */
     public static function rm($name) {
-        $lh = self::_lock();
-        $val = self::get();
+        $lh = $this->_lock();
+        $val = $this->get();
         if (!is_array($val)) $val = array();
         unset($val[$name]);
         $val = serialize($val);
-        return self::_write($val, $lh);
+        return $this->_write($val, $lh);
     }
     
     /**
@@ -118,19 +117,15 @@ class Shm{
      * @param string $name 缓存变量名
      * @return integer|boolen
      */
-    private static function _write(&$val, &$lh) {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        $shmid  = shmop_open(self::$_handler, 'c', 0600, self::$_options['size']);
+    private function _write(&$val, &$lh) {
+        $shmid  = shmop_open($this->_handler, 'c', 0600, $this->_options['size']);
         if ($shmid) {
             $ret = shmop_write($shmid, $val, 0) == strlen($val);
             shmop_close($shmid);
-            self::_unlock($lh);
+            $this->_unlock($lh);
             return $ret;
         }
-        self::_unlock($lh);
+        $this->_unlock($lh);
         return false;
     }
     
@@ -140,16 +135,12 @@ class Shm{
      * @param string $name 缓存变量名
      * @return boolen
      */
-    private static function _lock() {
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
+    private function _lock() {
         if (function_exists('sem_get')) {
-            $fp = sem_get(self::$_handler, 1, 0600, 1);
+            $fp = sem_get($this->_handler, 1, 0600, 1);
             sem_acquire($fp);
         } else {
-            $fp = fopen(self::$_options['temp'].DS.md5(self::$_handler).'.sem', 'w');
+            $fp = fopen($this->_options['temp'].DS.md5($this->_handler).'.sem', 'w');
             flock($fp, LOCK_EX);
         }
         return $fp;
@@ -161,33 +152,22 @@ class Shm{
      * @param string $name 缓存变量名
      * @return boolen
      */
-    private static function _unlock(&$fp) {
+    private function _unlock(&$fp) {
         if (function_exists('sem_release')) {
             sem_release($fp);
         } else {
             fclose($fp);
         }
     }
-    public function close(){
-        if(self::$_handler==null){
-            self::$_handler=self::_ftok(self::$_options['project']);
-            if(!self::$_handler)return null;
-        }
-        $shmid = @shmop_open(self::$_handler, 'w', 0600, 0);
-        if($shmid){
-            shmop_delete($shmid);
-        }
-        return true;
-    }
     /**
      * 加入
      * @param string $key 表头
      * @param string $value 值
      */
-    public static function lPush($key,$value){
-        $data= (array) self::get($key);
+    public function push($key,$value){
+        $data= (array) $this->get($key);
         array_push($data,$value);
-        return self::set($key, $data);
+        return $this->set($key, $data);
     }
     /**
      * 出列 堵塞 当没有数据的时候，会一直等待下去
@@ -195,11 +175,11 @@ class Shm{
      * @param number $timeout 延时   0无限等待
      * @return Ambigous <NULL, mixed>
      */
-    public static function brPop($key,$timeout=0){
+    public function pop($key,$timeout=0){
         $res=null;
         $wh=true;$second=0;
         while ($wh){
-            $data= (array) self::get($key);
+            $data= (array) $this->get($key);
             if(count($data)!=0){
                 $res=array_shift($data);
                 self::set($key, $data);
@@ -224,8 +204,8 @@ class Shm{
      * @param unknown $son_key
      * @return boolean|\core\lib\boolen
      */
-    public static function srem($key,$son_key){
-        $data= (array) self::get($key);
+    public function srem($key,$son_key){
+        $data= (array) $this->get($key);
         if(!count($data)){
             return false;
         }
@@ -235,6 +215,19 @@ class Shm{
             }
         }
         unset($data[$son_key]);
-        return self::set($key, $data);
+        return $this->set($key, $data);
+    }
+    
+    /**
+     * 清除缓存
+     * @access public
+     * @return boolean
+     */
+    public function clear(){
+        $shmid = @shmop_open($this->_handler, 'w', 0600, 0);
+        if($shmid){
+            shmop_delete($shmid);
+        }
+        return true;
     }
 }

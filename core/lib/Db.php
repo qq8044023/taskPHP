@@ -1,48 +1,96 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
+// | core\libPHP [ WE CAN DO IT JUST core\lib ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2014 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2006~2017 http://core\libphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-namespace core\lib;
-/**
- * ThinkPHP 数据库中间层实现类
- */
-class Db {
+namespace core\lib; 
 
-    static private  $instance   =  array();     //  数据库连接实例
-    static private  $_instance  =  null;   //  当前数据库连接实例
+use core\lib\db\Connection;
+use core\lib\db\Query;
+
+/**
+ * Class Db
+ * @package core\lib
+ * @method Query table(string $table) static 指定数据表（含前缀）
+ * @method Query name(string $name) static 指定数据表（不含前缀）
+ * @method Query where(mixed $field, string $op = null, mixed $condition = null) static 查询条件
+ * @method Query join(mixed $join, mixed $condition = null, string $type = 'INNER') static JOIN查询
+ * @method Query union(mixed $union, boolean $all = false) static UNION查询
+ * @method Query limit(mixed $offset, integer $length = null) static 查询LIMIT
+ * @method Query order(mixed $field, string $order = null) static 查询ORDER
+ * @method Query cache(mixed $key = null , integer $expire = null) static 设置查询缓存
+ * @method mixed value(string $field) static 获取某个字段的值
+ * @method array column(string $field, string $key = '') static 获取某个列的值
+ * @method Query view(mixed $join, mixed $field = null, mixed $on = null, string $type = 'INNER') static 视图查询
+ * @method mixed find(mixed $data = null) static 查询单个记录
+ * @method mixed select(mixed $data = null) static 查询多个记录
+ * @method integer insert(array $data, boolean $replace = false, boolean $getLastInsID = false, string $sequence = null) static 插入一条记录
+ * @method integer insertGetId(array $data, boolean $replace = false, string $sequence = null) static 插入一条记录并返回自增ID
+ * @method integer insertAll(array $dataSet) static 插入多条记录
+ * @method integer update(array $data) static 更新记录
+ * @method integer delete(mixed $data = null) static 删除记录
+ * @method boolean chunk(integer $count, callable $callback, string $column = null) static 分块获取数据
+ * @method mixed query(string $sql, array $bind = [], boolean $master = false, bool $pdo = false) static SQL查询
+ * @method integer execute(string $sql, array $bind = [], boolean $fetch = false, boolean $getLastInsID = false, string $sequence = null) static SQL执行
+ * @method Paginator paginate(integer $listRows = 15, mixed $simple = null, array $config = []) static 分页查询
+ * @method mixed transaction(callable $callback) static 执行数据库事务
+ * @method void startTrans() static 启动事务
+ * @method void commit() static 用于非自动提交状态下面的查询提交
+ * @method void rollback() static 事务回滚
+ * @method boolean batchQuery(array $sqlArray) static 批处理执行SQL语句
+ * @method string quote(string $str) static SQL指令安全过滤
+ * @method string getLastInsID($sequence = null) static 获取最近插入的ID
+ */
+class Db
+{
+    //  数据库连接实例
+    private static $instance = [];
+    // 查询次数
+    public static $queryTimes = 0;
+    // 执行次数
+    public static $executeTimes = 0;
 
     /**
-     * 取得数据库类实例
+     * 数据库初始化 并取得数据库类实例
      * @static
      * @access public
-     * @param mixed $config 连接配置
-     * @return Object 返回数据库驱动类
+     * @param mixed         $config 连接配置
+     * @param bool|string   $name 连接标识 true 强制重新连接
+     * @return Connection
+     * @throws Exception
      */
-    static public function getInstance($config=array()) {
-        $md5    =   md5(serialize($config));
-        if(!isset(self::$instance[$md5])) {
-            // 解析连接参数 支持数组和字符串
-            $options    =   self::parseConfig($config);
-            // 兼容mysqli
-            if('mysqli' == $options['type']) $options['type']   =   'mysql';
-            // 如果采用lite方式 仅支持原生SQL 包括query和execute方法
-            $class  =   $options['lite']?  'core\lib\db\Lite' :   'core\\lib\\db\\Driver\\'.ucwords($options['type']);
-            if(class_exists($class)){
-                self::$instance[$md5]   =   new $class($options);
-            }else{
-                // 类没有定义
-                throw new Exception("not sb driver:".$class);
-            }
+    public static function connect($config = [], $name = false)
+    {
+        if (false === $name) {
+            $name = md5(serialize($config));
         }
-        self::$_instance    =   self::$instance[$md5];
-        return self::$_instance;
+        if (true === $name || !isset(self::$instance[$name])) {
+            // 解析连接参数 支持数组和字符串
+            $options = self::parseConfig($config);
+            if (empty($options['type'])) {
+                throw new \InvalidArgumentException('Undefined db type');
+            }
+            $class = false !== strpos($options['type'], '\\') ? $options['type'] : '\\core\lib\\db\\connector\\' . ucwords($options['type']);
+            // 记录初始化信息
+            /* if (App::$debug) {
+                Log::record('[ DB ] INIT ' . $options['type'], 'info');
+            } */
+            if (true === $name) {
+                $name = md5(serialize($config));
+            }
+            self::$instance[$name] = new $class($options);
+        }
+        return self::$instance[$name];
+    }
+    
+    public static function clear() {
+        self::$instance = null;
     }
 
     /**
@@ -52,49 +100,19 @@ class Db {
      * @param mixed $config
      * @return array
      */
-    static private function parseConfig($config){
-        if(!empty($config)){
-            if(is_string($config)) {
-                return self::parseDsn($config);
-            }
-            $config =   array_change_key_case($config);
-            $config = array (
-                'type'          =>  isset($config['db_type'])?$config['db_type']:null,
-                'username'      =>  isset($config['db_user'])?$config['db_user']:null,
-                'password'      =>  isset($config['db_pwd'])?$config['db_pwd']:null,
-                'hostname'      =>  isset($config['db_host'])?$config['db_host']:null,
-                'hostport'      =>  isset($config['db_port'])?$config['db_port']:null,
-                'database'      =>  isset($config['db_name'])?$config['db_name']:null,
-                'dsn'           =>  isset($config['db_dsn'])?$config['db_dsn']:null,
-                'params'        =>  isset($config['db_params'])?$config['db_params']:null,
-                'charset'       =>  isset($config['db_charset'])?$config['db_charset']:'utf8',
-                'deploy'        =>  isset($config['db_deploy_type'])?$config['db_deploy_type']:0,
-                'rw_separate'   =>  isset($config['db_rw_separate'])?$config['db_rw_separate']:false,
-                'master_num'    =>  isset($config['db_master_num'])?$config['db_master_num']:1,
-                'slave_no'      =>  isset($config['db_slave_no'])?$config['db_slave_no']:'',
-             //   'debug'         =>  isset($config['db_debug'])?$config['db_debug']:APP_DEBUG,
-                'lite'          =>  isset($config['db_lite'])?$config['db_lite']:false,
-            );
-        }else {
-            $config = array (
-                'type'          =>  Utils::dbConfig('DB_TYPE'),
-                'username'      =>  Utils::dbConfig('DB_USER'),
-                'password'      =>  Utils::dbConfig('DB_PWD'),
-                'hostname'      =>  Utils::dbConfig('DB_HOST'),
-                'hostport'      =>  Utils::dbConfig('DB_PORT'),
-                'database'      =>  Utils::dbConfig('DB_NAME'),
-                'dsn'           =>  Utils::dbConfig('DB_DSN'),
-                'params'        =>  Utils::dbConfig('DB_PARAMS'),
-                'charset'       =>  Utils::dbConfig('DB_CHARSET'),
-                'deploy'        =>  Utils::dbConfig('DB_DEPLOY_TYPE'),
-                'rw_separate'   =>  Utils::dbConfig('DB_RW_SEPARATE'),
-                'master_num'    =>  Utils::dbConfig('DB_MASTER_NUM'),
-                'slave_no'      =>  Utils::dbConfig('DB_SLAVE_NO'),
-                'debug'         =>  true,
-                'lite'          =>  Utils::dbConfig('DB_LITE'),
-            );
+    private static function parseConfig($config)
+    {
+        if (empty($config)) {
+            $config = Utils::config('db');//["database"];
+        } elseif (is_string($config) && false === strpos($config, '/')) {
+            // 支持读取配置参数
+            $config = Utils::config('db');
         }
-        return $config;
+        if (is_string($config)) {
+            return self::parseDsn($config);
+        } else {
+            return $config;
+        }
     }
 
     /**
@@ -105,32 +123,34 @@ class Db {
      * @param string $dsnStr
      * @return array
      */
-    static private function parseDsn($dsnStr) {
-        if( empty($dsnStr) ){return false;}
+    private static function parseDsn($dsnStr)
+    {
         $info = parse_url($dsnStr);
-        if(!$info) {
-            return false;
+        if (!$info) {
+            return [];
         }
-        $dsn = array(
-            'type'      =>  $info['scheme'],
-            'username'  =>  isset($info['user']) ? $info['user'] : '',
-            'password'  =>  isset($info['pass']) ? $info['pass'] : '',
-            'hostname'  =>  isset($info['host']) ? $info['host'] : '',
-            'hostport'  =>  isset($info['port']) ? $info['port'] : '',
-            'database'  =>  isset($info['path']) ? substr($info['path'],1) : '',
-            'charset'   =>  isset($info['fragment'])?$info['fragment']:'utf8',
-        );
-        
-        if(isset($info['query'])) {
-            parse_str($info['query'],$dsn['params']);
-        }else{
-            $dsn['params']  =   array();
+        $dsn = [
+            'type'     => $info['scheme'],
+            'username' => isset($info['user']) ? $info['user'] : '',
+            'password' => isset($info['pass']) ? $info['pass'] : '',
+            'hostname' => isset($info['host']) ? $info['host'] : '',
+            'hostport' => isset($info['port']) ? $info['port'] : '',
+            'database' => !empty($info['path']) ? ltrim($info['path'], '/') : '',
+            'charset'  => isset($info['fragment']) ? $info['fragment'] : 'utf8',
+        ];
+
+        if (isset($info['query'])) {
+            parse_str($info['query'], $dsn['params']);
+        } else {
+            $dsn['params'] = [];
         }
         return $dsn;
-     }
+    }
 
     // 调用驱动类的方法
-    static public function __callStatic($method, $params){
-        return call_user_func_array(array(self::$_instance, $method), $params);
+    public static function __callStatic($method, $params)
+    {
+        // 自动初始化数据库
+        return call_user_func_array([self::connect(), $method], $params);
     }
 }
