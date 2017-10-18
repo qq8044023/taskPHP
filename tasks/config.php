@@ -46,5 +46,4 @@ return [
         // 开启断线重连
         'break_reconnect'=>true,
     ],
-    //https://github.com/qq8044023/taskPHP/tree/1.0
 ];

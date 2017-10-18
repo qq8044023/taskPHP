@@ -40,6 +40,12 @@ taskPHP								根目录
 3. 多种进程通信方式堵塞式消息队列。
 4. 任务派发及具体任务执行不在同个进程[distribute_listen.php]和[worker_listen.php],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
 5. 执行时间语法跟crontab类似,且支持秒设置。
+``` php
+   * * * * * * *    //格式 :秒 分 时 天 月 年 周
+  10 * * * * * *    //表示每一分钟的第10秒运行
+ /10 * * * * * *	//表示每10秒运行
+ /1 * 15,16 * * * * //表示 每天的15点,16点的每一秒运行
+```
 6. 添加任务简单,只需继承Task基类,实现任务入口run方法。
 
 ## 环境要求
@@ -53,7 +59,7 @@ taskPHP								根目录
 4. 后台任务数量多或者任务运行时间很密集导致数据库链接过多没有释放,需要再任务结尾处执行数据库链接对象的close方法来关闭链接。
 
 ## 文档列表
--->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./docs/mysql.md)<br>
+-->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./docs/db.md)<br>
 -->[windows下安装php多线程扩展pthreads教程](./docs/thread_windows.md)<br>
 -->[工具类Utils使用说明](./docs/utils.md)<br>
 -->[BUG记录文档](./docs/bugs.md)<br>
@@ -65,8 +71,15 @@ taskPHP								根目录
 ``` php
 composer require taskphp/taskphp dev-master
 ```
-## Windows 命令操作
-### 调试启动程序
+## 命令操作
+``` php
+main.php  start [all|任务名]  启动 可不带参数默认all
+main.php  close all 结束框架  必带参数all
+
+```
+
+
+### Windows调试启动程序
 ```
 D:\phpStudy\wwwroot\ostaskphp>php main.php start
 ------------------------- taskPHP ------------------------------
@@ -81,9 +94,7 @@ taskPHP:demo task load complete
 taskPHP is running..............
 ```
 
-
-## Liunx 命令操作
-### 调试启动程序
+### Liunx调试启动程序
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start
 ------------------------- taskPHP ------------------------------
@@ -98,7 +109,7 @@ taskPHP:demo task load complete
 taskPHP is running..............
 
 ``` 
-### 后台启动程序
+### Liunx后台启动程序
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start &
@@ -115,11 +126,6 @@ taskPHP is running..............
 ```
 
 
-### 时间配置格式说明:
-
-``` php
-   * * * * * * *    //格式 :秒 分 时 天 月 年 周
-  10 * * * * * *    //表示每一分钟的第10秒运行
- /10 * * * * * *	//表示每10秒运行
- /1 * 15,16 * * * * //表示 每天的15点,16点的每一秒运行
-``` 
+### 远程控制
+    内网访问地址：http://127.0.0.1:8082
+    外网访问地址：http://ip:8082
