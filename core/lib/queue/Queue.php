@@ -39,12 +39,12 @@ class Queue {
      *     'drive' => 'Mysql',
      *     'options'    => [
      *        'dbname' => 'taskphp',
-     *        'host'        => '',//主机
-     *        'port'        => '',//端口
-     *        'username'      => '',//用户名
+     *        'host'        => '127.0.0.1',//主机
+     *        'port'        => '3306',//端口
+     *        'username'      => 'root',//用户名
      *        'password'      => '',//密码
-     *        'charset'      => '',//编码
-     *        'prefix' => '', //list前缀
+     *        'charset'      => 'utf8',//编码
+     *        'prefix' => 'dg_', //list前缀
      *     ]
      * ]
      * ========== Redis ==========
@@ -63,7 +63,7 @@ class Queue {
         $config=Utils::config('queue');
         $class_name='core\\lib\\queue\\drives\\'.$config['drive'];
         if(!self::$_handler){
-            self::$_handler=new $class_name($config);
+            self::$_handler=new $class_name(isset($config['options'])?$config['options']:[]);
         }
         return self::$_handler;
     }

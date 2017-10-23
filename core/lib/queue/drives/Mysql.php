@@ -27,7 +27,7 @@ class Mysql{
      * 数据库实例
      * @var null
      */
-    private $db = null;
+    private $_db = null;
 
     /**
      * MysqlQueue constructor.
@@ -36,7 +36,8 @@ class Mysql{
      */
     public function __construct(array $options){
         $this->_options = array_merge($this->_options,$options);
-        $this->db = new PDO(
+        try {
+            $this->_db = new PDO(
             sprintf(
                 "mysql:host=%s;dbname=%s;port=%s;charset=%s;",
                 $this->_options['host'],
@@ -46,14 +47,18 @@ class Mysql{
             ),
             $this->_options['username'],
             $this->_options['password']
-        );
+            );
+        }catch (\PDOException $e){
+            \core\lib\Utils::log($e->getMessage());
+        }
+        
         if(!$this->tableExist()){
             $sql = "CREATE TABLE IF NOT EXISTS `{$this->_options['table']}` (
             `name` varchar(200) CHARACTER SET utf8 NOT NULL,
             `content` TEXT NOT NULL,
             PRIMARY KEY (`name`)
             ) ENGINE = InnoDB  DEFAULT CHARACTER SET = utf8";
-            $this->db->exec($sql);
+            $this->_db->exec($sql);
         }
     }
 
@@ -65,7 +70,7 @@ class Mysql{
      */
     public function get($name) {
         $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
+        $res=$this->_db->prepare($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
             $content=$res['content'];
             return unserialize($content);
@@ -83,7 +88,7 @@ class Mysql{
     public function set($name, $value) {
         $value = serialize($value);
         $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
+        $res=$this->_db->prepare($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
             $sql='UPDATE '.$this->_options['table'].'
               SET content = \''.$value.'\'
@@ -176,14 +181,14 @@ class Mysql{
      * @return boolean
      */
     public function clear(){
-        $sql = 'DELETE FROM ' . self::$_options['table'];
+        $sql = 'DELETE FROM ' . $this->_options['table'];
         $res=$this->_db->exec($sql);
         return $res;
     }
     
     private function tableExist(){
-        $sql   = "show tables like '{$this->queue_table_name}'";
-        $list  = $this->db->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+        $sql   = "show tables like '{$this->_options['table']}'";
+        $list  = $this->_db->prepare($sql)->fetchAll(PDO::FETCH_ASSOC);
         return count($list) > 0;
     }
 }

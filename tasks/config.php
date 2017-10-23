@@ -46,4 +46,5 @@ return [
         // 开启断线重连
         'break_reconnect'=>true,
     ],
+    
 ];

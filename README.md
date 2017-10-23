@@ -1,7 +1,7 @@
 ## 当前版本 2.0
 
 ## 历史版本
--->[taskPHP1.0](https://github.com/qq8044023/taskPHP/tree/1.0)<br>
+-->[taskPHP1.0](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/1.0)<br>
 
 ## taskPHP
 taskPHP基于php开发的定时计划任务框架,利用多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
@@ -16,22 +16,22 @@ oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
 ## 框架概况
 框架目录结构:
 ``` php
-taskPHP								根目录
-|-- core							框架系统目录
-|   |-- lib							框架核心文件目录
-|   |   |-- ....					众多的框架核心类库文件
-|   |-- guide.php					框架引导文件
+taskPHP					根目录
+|-- core				框架系统目录
+|   |-- lib				框架核心文件目录
+|   |   |-- ....			众多的框架核心类库文件
+|   |-- guide.php			框架引导文件
 |   |-- distribute_listen.php		任务派发进程入口
-|   |-- worker_listen.php			任务执行进程入口
-|-- docs							开发文档存放目录
-|-- logs							日志目录
-|-- tasks							用户任务目录
-|   |-- demo						demo任务
-|	|	|-- Lib						demo任务的扩展目录
-|	|	|-- demo.php			demo任务类文件
-|	|	...							更多任务
-|   |-- config.php					全局配置文件
-|-- main.php						框架入口文件
+|   |-- worker_listen.php	        任务执行进程入口
+|-- docs				开发文档存放目录
+|-- logs				日志目录
+|-- tasks				用户任务目录
+|   |-- demo				demo任务
+|	|	|-- Lib		        demo任务的扩展目录
+|	|	|-- demo.php	        demo任务类文件
+|	|	...			更多任务
+|   |-- config.php			全局配置文件
+|-- main.php				框架入口文件
 |-- windows.cmd				windows快速启动文件
 ``` 
 框架说明
@@ -81,51 +81,76 @@ main.php  close all 结束框架  必带参数all
 
 ### Windows调试启动程序
 ```
-D:\phpStudy\wwwroot\ostaskphp>php main.php start
+Active code page: 65001
+E:\wamp\www\taskPHP>php main.php start
+[16:58:00][taskPHP]:distribute start success
+[16:58:00][taskPHP]:demo start success
 ------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.6.1
+taskPHP version:2.0      PHP version:5.5.12
+license1:https://github.com/qq8044023/taskPHP
+license2:https://git.oschina.net/cqcqphper/taskPHP
+startTime:2017-10-20 16:58:00
+------------------------- taskPHP Manage  ----------------------
+http://ServerIp:8082
+http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
-distribute                    1                            [OK]
-demo                          2                            [OK]
-demo2                         2                            [OK]
+distribute                    1                          [success]
+demo                          1                          [success]
 ----------------------------------------------------------------
-taskPHP:demo task load complete
-taskPHP is running..............
+Press Ctrl-C to quit. Start success.
+
 ```
 
 ### Liunx调试启动程序
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start
+[16:58:00][taskPHP]:distribute start success
+[16:58:00][taskPHP]:demo start success
 ------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.6.1
+taskPHP version:2.0      PHP version:5.5.12
+license1:https://github.com/qq8044023/taskPHP
+license2:https://git.oschina.net/cqcqphper/taskPHP
+startTime:2017-10-20 16:58:00
+------------------------- taskPHP Manage  ----------------------
+http://ServerIp:8082
+http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
-distribute                    1                            [OK]
-demo                          2                            [OK]
-demo2                         2                            [OK]
+distribute                    1                          [success]
+demo                          1                          [success]
 ----------------------------------------------------------------
-taskPHP:demo task load complete
-taskPHP is running..............
-
+Press Ctrl-C to quit. Start success.
 ``` 
 ### Liunx后台启动程序
 
 ``` php
 [root@FX-DEBUG taskphps]# php ./main.php start &
+[16:58:00][taskPHP]:distribute start success
+[16:58:00][taskPHP]:demo start success
 ------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.6.1
+taskPHP version:2.0      PHP version:5.5.12
+license1:https://github.com/qq8044023/taskPHP
+license2:https://git.oschina.net/cqcqphper/taskPHP
+startTime:2017-10-20 16:58:00
+------------------------- taskPHP Manage  ----------------------
+http://ServerIp:8082
+http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
-distribute                    1                            [OK]
-demo                          2                            [OK]
-demo2                         2                            [OK]
+distribute                    1                          [success]
+demo                          1                          [success]
 ----------------------------------------------------------------
-taskPHP:demo task load complete
-taskPHP is running..............
+Press Ctrl-C to quit. Start success.
 ```
+## 开发者列表
 
+### 内核开发
+小草(寇建波)548493@qq.com<br>
+### 2.0开发者
+小草(寇建波)548493@qq.com<br>
+村长(村长)8044023@qq.com<br>
+### 文档编写
+hey丶(张志鸿)1270996380@qq.com<br>
+空气(空气)1925757357@qq.com<br>
 
-### 远程控制
-    内网访问地址：http://127.0.0.1:8082
-    外网访问地址：http://ip:8082

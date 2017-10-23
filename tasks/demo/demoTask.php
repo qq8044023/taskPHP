@@ -21,12 +21,12 @@ class demoTask extends Task{
 	public function run(){
 	    /****************************数据库流程*************************************/
 	    //方法一
-	    $res=Db::connect(Utils::config('db'))->name("gameActivity")->find();
-	    Utils::log($res);
+	    //$res=Db::connect(Utils::config('db'))->name("gameActivity")->find();
+	    //Utils::log($res);
 	    //方法二
-	    $demo=new gameActivity();
-	    Utils::log($demo->test());
-	    Utils::log($demo->test1());
+	    //$demo=new gameActivity();
+	    //Utils::log($demo->test());
+	    //Utils::log($demo->test1());
 	    
 	    
 	    //加载demo任务下的lib类

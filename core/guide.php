@@ -27,8 +27,6 @@ define("LOGS_PATH", APP_ROOT.DS."logs");
 //php文件后缀
 define("EXT", ".php");
 
-!extension_loaded('sockets') && die("请安装sockets扩展..");
-
 // 载入Loader类
 require_once CORE_PATH.DS."lib".DS."Loader".EXT;
 $locator = \core\lib\Locator::getInstance();

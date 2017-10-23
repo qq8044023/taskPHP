@@ -48,13 +48,15 @@ class App{
      * 运行框架
      */
     public static function run(){
+        !extension_loaded('sockets') && Ui::displayUI('ERROR:Please open the sockets module');
+        
         Command::analysis();
         if(!isset(Command::$_cmd_list[Command::$_cmd_key]) || !method_exists(new static,Command::$_cmd_key)){
             $text .= 'Available commands: '.PHP_EOL;
             foreach (self::$_cmd_list as $key=>$val){
                 $text.='  '.$key.' [options]'.PHP_EOL;
             }
-            Ui::displayUI($text,false);
+            Ui::displayUI($text);
         }
         self::{Command::$_cmd_key}(Command::$_cmd_value);
     }

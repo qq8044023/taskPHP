@@ -16,6 +16,9 @@ class Ui{
         $text.= 'license1:https://github.com/qq8044023/taskPHP'.PHP_EOL;
         $text.= 'license2:https://git.oschina.net/cqcqphper/taskPHP'.PHP_EOL;
         $text.= 'startTime:'.date('Y-m-d H:i:s').PHP_EOL;
+        $text.= "------------------------- taskPHP Manage  ----------------------".PHP_EOL;
+        $text.='http://ServerIp:8082'.PHP_EOL;
+        $text.='http://127.0.0.1:8082'.PHP_EOL;
         $text.= "------------------------- taskPHP PROCESS ----------------------".PHP_EOL;
         $text.= "listen".str_pad('', 22). "processes".str_pad('', 21)."status";
         self::displayUI($text,false);
@@ -33,7 +36,8 @@ class Ui{
             }
             $text.= str_pad($key, 30).$list[$key]['worker_count']. str_pad('', 25). " [".$status."] ".PHP_EOL;
         }
-        $text.= "----------------------------------------------------------------";
+        $text.= "----------------------------------------------------------------".PHP_EOL;
+        $text.= "Press Ctrl-C to quit. Start success.".PHP_EOL;
         self::displayUI($text,false);
     }
     
