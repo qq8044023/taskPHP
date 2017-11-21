@@ -14,7 +14,7 @@ class Ui{
         $text= "------------------------- taskPHP ------------------------------".PHP_EOL;
         $text.= 'taskPHP version:' . TASKPHP_VERSION . "      PHP version:".PHP_VERSION.PHP_EOL;
         $text.= 'license1:https://github.com/qq8044023/taskPHP'.PHP_EOL;
-        $text.= 'license2:https://git.oschina.net/cqcqphper/taskPHP'.PHP_EOL;
+        $text.= 'license2:https://gitee.com/cqcqphper/taskPHP'.PHP_EOL;
         $text.= 'startTime:'.date('Y-m-d H:i:s').PHP_EOL;
         $text.= "------------------------- taskPHP Manage  ----------------------".PHP_EOL;
         $text.='http://ServerIp:8082'.PHP_EOL;
@@ -66,6 +66,3 @@ class Ui{
         echo '['.date('H:i:s').']'.'[taskPHP]:'.$text.PHP_EOL;
     }
 }
-
-
-

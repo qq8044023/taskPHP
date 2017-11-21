@@ -6,7 +6,6 @@
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace core\lib\socket;
-use core\lib\Exception;
 /**
  * socket服务端
  * @author cqcqphper 小草<cqcqphper@163.com>
@@ -49,23 +48,23 @@ class Server {
      */
     public function listen(){
         if (!($this->_listenFD = socket_create(AF_INET, SOCK_STREAM, SOL_TCP))) {
-            throw new Exception("socket_create err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::showLog("socket_create err:".socket_strerror(socket_last_error()));
         }
         //在修改源码后重启启动总是提示bind: Address already in use,使用tcpreuse解决
         if (!socket_set_option($this->_listenFD, SOL_SOCKET, SO_REUSEADDR, 1)) {
-            throw new Exception("socket_set_option err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::showLog("socket_set_option err:".socket_strerror(socket_last_error()));
         }
         //阻塞模式
         if (!socket_set_block($this->_listenFD)) {
-            throw new Exception("socket_set_block err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::showLog("socket_set_block err:".socket_strerror(socket_last_error()));
         }
         //绑定到socket端口
         if (!socket_bind($this->_listenFD, $this->_host, $this->_port)) {
-            throw new Exception("socket_bind err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::showLog("socket_bind err:".socket_strerror(socket_last_error()));
         }
         //开始监听
         if (!socket_listen($this->_listenFD, 5)) {
-            throw new Exception("socket_listen err:".socket_strerror(socket_last_error()));
+            \core\lib\Ui::showLog("socket_listen err:".socket_strerror(socket_last_error()));
         }
     }
 

@@ -146,9 +146,9 @@ Press Ctrl-C to quit. Start success.
 ## 开发者列表
 
 ### 内核开发
-小草(寇建波)548493@qq.com<br>
+cqcqphper(小草)cqcqphper@qq.com<br>
 ### 2.0开发者
-小草(寇建波)548493@qq.com<br>
+cqcqphper(小草)cqcqphper@qq.com<br>
 村长(村长)8044023@qq.com<br>
 ### 文档编写
 hey丶(张志鸿)1270996380@qq.com<br>
