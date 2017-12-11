@@ -57,6 +57,7 @@ taskPHP					根目录
 2. 编写任务有问题或调用exit将导致后台脚本停止,需要通过远控管理器重启进程。
 3. 多线程模式运行一段时间后报错,pthreads has detected that the core\lib\Pthread could not be started, the system lacks the necessary resources or the system-imposed limit would be exceeded in xxx
 4. 后台任务数量多或者任务运行时间很密集导致数据库链接过多没有释放,需要再任务结尾处执行数据库链接对象的close方法来关闭链接。
+5. 在windows下路径不能有空格，否则会导致进程启动不起来。
 
 ## 文档列表
 -->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./docs/db.md)<br>

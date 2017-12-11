@@ -23,7 +23,7 @@ class Worker{
 		$this->_skip=true;
 		$this->_name=$name;
 		if ($task instanceof Task) $this->_task=$task;
-		else $this->_worker_str=strval($task);
+		else $this->_worker_str=strval($this->_task);
 	}
 	/**
 	 * 当任务超时未执行时,是否放弃期间的未执
