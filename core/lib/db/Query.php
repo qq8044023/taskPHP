@@ -2225,12 +2225,12 @@ class Query
             return $this->connection->getRealSql($sql, $bind);
         } else {
             // 检测缓存
-            if (isset($key) && Cache::get($key)) {
+           /*  if (isset($key) && Cache::get($key)) {
                 // 删除缓存
                 Cache::rm($key);
             } elseif (!empty($options['cache']['tag'])) {
                 Cache::clear($options['cache']['tag']);
-            }
+            } */
             // 执行操作
             $result = '' == $sql ? 0 : $this->execute($sql, $bind);
             if ($result) {
