@@ -53,7 +53,7 @@ class App{
         Command::analysis();
         if(!isset(Command::$_cmd_list[Command::$_cmd_key]) || !method_exists(new static,Command::$_cmd_key)){
             $text .= 'Available commands: '.PHP_EOL;
-            foreach (self::$_cmd_list as $key=>$val){
+            foreach (Command::$_cmd_list as $key=>$val){
                 $text.='  '.$key.' [options]'.PHP_EOL;
             }
             Ui::displayUI($text);

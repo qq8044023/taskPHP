@@ -45,7 +45,7 @@ class Utils{
     public static function counter($key, $step = 0, $save = false){
         static $_num = array();
         if (!isset($_num[$key])) {
-            $_num[$key] = (false !== $save) ? Queue::get('counter_' . $key) : 0;
+            $_num[$key] = (false !== $save) ? queue\Queue::get('counter_' . $key) : 0;
         }
         if (empty($step)) {
             return $_num[$key];
@@ -54,7 +54,7 @@ class Utils{
         }
         if (false !== $save) {
             // 保存结果
-            Queue::set('counter_' . $key, $_num[$key], $save);
+            queue\Queue::set('counter_' . $key, $_num[$key], $save);
         }
         return null;
     }
