@@ -1,4 +1,5 @@
-## 当前版本 2.0
+taskPHP 2.1 —— 你值得信赖的PHP定时计划任务框架
+===============
 
 ## 历史版本
 -->[taskPHP1.0](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/1.0)<br>
@@ -17,12 +18,11 @@ oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
 框架目录结构:
 ``` php
 taskPHP					根目录
-|-- core				框架系统目录
-|   |-- lib				框架核心文件目录
-|   |   |-- ....			众多的框架核心类库文件
+|-- taskphp				框架系统目录
 |   |-- guide.php			框架引导文件
 |   |-- distribute_listen.php		任务派发进程入口
 |   |-- worker_listen.php	        任务执行进程入口
+|   |-- ....			框架核心类库文件
 |-- docs				开发文档存放目录
 |-- logs				日志目录
 |-- tasks				用户任务目录

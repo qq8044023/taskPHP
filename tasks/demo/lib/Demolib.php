@@ -1,6 +1,6 @@
 <?php
 namespace tasks\demo\lib;
-use core\lib\Utils;
+use taskphp\Utils;
 class Demolib{
     
     public function run(){

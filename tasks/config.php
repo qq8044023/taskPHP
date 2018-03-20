@@ -5,7 +5,13 @@ return [
     'queue'=>[
         'drive'         => 'Sqlite',//驱动类型 Sqlite|Redis|Mysql|Shm
     ],
-   
+    //系统日志配置
+   'log'=>[
+       //错误日志开关 true开启  false关闭
+       'error'=>true,
+       //调试日志开关 true开启  false关闭
+       'debug'=>true,
+   ],
     //web管理配置
     //内网访问地址：http://127.0.0.1:8082
     //外网访问地址：http://ip:8082
@@ -25,24 +31,20 @@ return [
             //任务的进程数 系统默认1
             'worker_count'=>1,
             //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/10 * * * * * *',
+            'timer'     =>'/5 * * * * * *',
         ],
     ],
     'db'=>[
         'type'          =>  'mysql',
-        'username'      =>  '',
-        'password'      =>  '',
-        'hostname'      =>  '',
-        'hostport'      =>  '3306',
-        'database'      =>  '',
-        // 数据库连接参数
-        'params'        => [],
+        'username'      =>  'root',
+        'password'      =>  'root',
+        'host'      =>  '127.0.0.1',
+        'port'      =>  '3306',
+        'name'      =>  'test',
         // 数据库编码默认采用utf8
         'charset'       => 'utf8',
         // 数据库表前缀
-        'prefix'        => 'tourism_',
-        // 数据库调试模式
-        'debug'         => false,
+        'prefix'        => 'test_',
         // 开启断线重连
         'break_reconnect'=>true,
     ],

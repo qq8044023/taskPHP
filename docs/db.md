@@ -13,49 +13,60 @@ return array(
     /**
      * 数据库配置
      *   */
-    'DB'=>array(
-        'DB_TYPE'   => "mysql", // 数据库类型
-        'DB_HOST'   => "127.0.0.1", // 服务器地址
-        'DB_NAME'   => "tourism_game", // 数据库名
-        'DB_USER'   => "root", // 用户名
-        'DB_PWD'    => "root",  // 密码
-        'DB_PORT'   => 3306, // 端口
-        'DB_PREFIX' => "tourism_", // 数据库表前缀
-        'DB_PARAMS'=>array('persist'=>true),//是否支持长连接
-    ),
+    'db'=>[
+        'type'          =>  'mysql',
+        'username'      =>  'root',
+        'password'      =>  'root',
+        'host'      =>  '127.0.0.1',
+        'port'      =>  '3306',
+        'name'      =>  'test',
+        // 数据库编码默认采用utf8
+        'charset'       => 'utf8',
+        // 数据库表前缀
+        'prefix'        => 'test_',
+        // 开启断线重连
+        'break_reconnect'=>true,
+    ],
 );
 
 ```
 
-2.数据库操作(数据库操作和ThinkPHP一样操作)
+2.数据库操作
 
 ``` php
 
-<?php
-namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Utils;
-/**
- * 测试任务 
- * 村长<8044023@qq.com>
- */
-class demoTask extends Task{
-    /**
-     * 任务入口
-     * (non-PHPdoc)
-     * @see \core\lib\Task::run()
-     */
-	public function run(){
-	    //初始化 配置信息  demo任务下的DB配置
-	    Utils::dbConfig(Utils::config('DB','demo'));
-	    //初始化模型 和ThinkPHP 的M()方法 一样
-	    $model=Utils::model("gameActivity");
-	    //操作同ThinkPHP 操作
-	    $res=$model->where(array("id"=>1))->order("id DESC")->limit(10)->select();
-	    //写入日志
-	    Utils::log($res);
-	}
-}
+		//数据库操作 获取一条数据
+	    /*  $res=Utils::db('table1')->find();
+	    Utils::log($res);*/
+	     
+	    //方法二
+	     $res=Utils::db()->table("table1")->where("id=1")->limit(2)->order("id DESC")->select();
+	     Utils::log($res);
+	     
+	    /* //方法三
+	     $db=Db::connect();
+	     $res=Utils::db()->table("user")->alias("a")->join("user_third AS b ON a.uid=b.uid","LEFT")->where("a.status=1")->limit(2)->order("a.uid DESC")->select();
+	     Utils::log(); */
+	     
+	    //Utils::db()->table("user")->getSql()  打印sql语句
+	     
+	    /* //方法四
+	     $res=Utils::db()->table("user_phone_log")->where(array("phone_log_id"=>2))->update(array("uid"=>3));
+	     Utils::log($res); */
+	     
+	    //方法五
+	    /* 
+	     $res=Utils::db()->table("user_phone_log")->add(array(
+	     "uid"         =>22,
+	     "status"      =>1,
+	     "create_date" =>time(),
+	     "phone"       =>13111111
+	     ));
+	     Utils::log($res); */
+	     
+	    /* //方法六
+	     $res=Utils::db()->table("user_phone_log")->where(array("uid"=>22))->delete();
+	     Utils::log($res); */
 
 ```
 

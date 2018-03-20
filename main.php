@@ -5,5 +5,5 @@
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
-include_once __DIR__."/core/guide.php";
-core\lib\App::run();
+include_once __DIR__."/taskphp/guide.php";
+taskphp\App::run();

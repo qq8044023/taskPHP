@@ -1,13 +1,10 @@
 <?php
 namespace tasks\demo;
-use core\lib\Task;
-use core\lib\Utils;
-use core\lib\Config;
-use core\lib\http\Client;
+use taskphp\Task;
+use taskphp\Utils;
+use taskphp\Config;
 use tasks\demo\lib\Demolib;
-use tasks\demo\model\demo;
-use tasks\demo\model\gameActivity;
-use core\lib\Db;
+use taskphp\Db;
 /**
  * 测试任务 
  */
@@ -19,29 +16,43 @@ class demoTask extends Task{
      * @see \core\lib\Task::run()
      */
 	public function run(){
-	    /****************************数据库流程*************************************/
-	    //方法一
-	    //$res=Db::connect(Utils::config('db'))->name("gameActivity")->find();
-	    //Utils::log($res);
+	    //数据库操作 获取一条数据
+	    /*  $res=Utils::db('table1')->find();
+	    Utils::log($res);*/
+	     
 	    //方法二
-	    //$demo=new gameActivity();
-	    //Utils::log($demo->test());
-	    //Utils::log($demo->test1());
-	    
+	     $res=Utils::db()->table("table1")->where("id=1")->limit(2)->order("id DESC")->select();
+	     Utils::log($res);
+	     
+	    /* //方法三
+	     $db=Db::connect();
+	     $res=Utils::db()->table("user")->alias("a")->join("user_third AS b ON a.uid=b.uid","LEFT")->where("a.status=1")->limit(2)->order("a.uid DESC")->select();
+	     Utils::log(); */
+	     
+	    //Utils::db()->table("user")->getSql()  打印sql语句
+	     
+	    /* //方法四
+	     $res=Utils::db()->table("user_phone_log")->where(array("phone_log_id"=>2))->update(array("uid"=>3));
+	     Utils::log($res); */
+	     
+	    //方法五
+	    /* 
+	     $res=Utils::db()->table("user_phone_log")->add(array(
+	     "uid"         =>22,
+	     "status"      =>1,
+	     "create_date" =>time(),
+	     "phone"       =>13111111
+	     ));
+	     Utils::log($res); */
+	     
+	    /* //方法六
+	     $res=Utils::db()->table("user_phone_log")->where(array("uid"=>22))->delete();
+	     Utils::log($res); */
 	    
 	    //加载demo任务下的lib类
 	    $demolib_object = new Demolib();
 	    $demolib_object->run();
 	    Utils::log('demo任务运行成功'); 
- 
-	    /*
-	    //远程采集测试
-	    //http下的Client类的详细使用说明请参考类描述
-	    $http = new Client();
-	    $result =  $http->get('http://www.baidu.com');
-	    $res='http fail';
-	    if($result!='')$res='http success';
-	    Utils::log($res); */
 	    
 	    //数据库操作测试
 	    //Config::get()说明：配置文件中配置数据库连接信息，第一个参数为配置项，第二个参数为作用域 demo 表示本任务（demo任务）下的配置文件
