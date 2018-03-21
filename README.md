@@ -19,18 +19,19 @@ oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
 ``` php
 taskPHP					根目录
 |-- taskphp				框架系统目录
-|   |-- guide.php			框架引导文件
-|   |-- distribute_listen.php		任务派发进程入口
-|   |-- worker_listen.php	        任务执行进程入口
+|   |-- base.php			框架入口文件
 |   |-- ....			框架核心类库文件
 |-- docs				开发文档存放目录
-|-- logs				日志目录
 |-- tasks				用户任务目录
+|   |-- logs				日志目录
 |   |-- demo				demo任务
 |	|	|-- Lib		        demo任务的扩展目录
 |	|	|-- demo.php	        demo任务类文件
 |	|	...			更多任务
 |   |-- config.php			全局配置文件
+|   |-- guide.php			用户引导文件
+|   |-- distribute_listen.php		任务派发进程入口
+|   |-- worker_listen.php	        任务执行进程入口
 |-- main.php				框架入口文件
 |-- windows.cmd				windows快速启动文件
 ``` 

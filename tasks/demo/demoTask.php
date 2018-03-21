@@ -20,9 +20,9 @@ class demoTask extends Task{
 	    /*  $res=Utils::db('table1')->find();
 	    Utils::log($res);*/
 	     
-	    //方法二
+	    /* //方法二
 	     $res=Utils::db()->table("table1")->where("id=1")->limit(2)->order("id DESC")->select();
-	     Utils::log($res);
+	     Utils::log($res); */
 	     
 	    /* //方法三
 	     $db=Db::connect();

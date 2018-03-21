@@ -26,15 +26,15 @@ class TaskManage{
 	    $task_list=Config::get('task_list');
 	    if(!$task_list)echo "taskPHP Warning:No task at present".PHP_EOL;
 	    foreach ($task_list as $key=>$value){
-	        $class_name='tasks\\'.$key.'\\'.$key.'Task';
 	        //设置任务
-	        $worker= new Worker($key,new $class_name());
+	        $worker= new Worker($key,new $key());
 	        if(is_string($value['timer'])){
 	            $timer = Timer::string_to_timer($value['timer']);
 	        }
 	        $worker->set_timer($timer);
 	        $this->set_worker($worker);
 	    }
+	    
 	}
 	/**
 	 * 设置一个任务
@@ -48,7 +48,6 @@ class TaskManage{
 		if ($next_run_time===false)$next_run_time=time();
 		$timer=$worker->get_timer();
 		$task=$worker->get_worker();
-		
 		$workerlist= (array) Utils::cache(static::$_workerList);
 		if (!$overwrite && in_array($worker->get_name(),$workerlist)){
 			//不重写

@@ -17,16 +17,6 @@ class Log{
      * @var unknown
      */
     private static $_handle= [];
-    /**
-     * 日志后缀
-     * @var string
-     */
-    private static $_ext='.log';
-    /**
-     * 日志目录
-     * @var string
-     */
-    public static $_logPath=LOGS_PATH;
 
      /**
      * 写日志
@@ -34,14 +24,15 @@ class Log{
      * @param int $type 日志等级 -1:无等级  0:DEBUG调试 1:INFO正常  2:WARN警告 3:ERROR错误 4:FATAL致命错误   默认0
      */
     public static function input($data,$type=0){
-        $filename=date("Y-m-d").self::$_ext;
-        self::initDir(self::$_logPath);
-        if(!isset(self::$_handle[self::$_logPath.DS.$filename])){
-            self::$_handle[self::$_logPath.DS.$filename] = @fopen(self::$_logPath.DS.$filename, 'a');
+        $log_path=Utils::config('log.path');
+        $filename=date("Y-m-d").'log';
+        self::initDir($log_path);
+        if(!isset(self::$_handle[$log_path.DS.$filename])){
+            self::$_handle[$log_path.DS.$filename] = @fopen($log_path.DS.$filename, 'a');
         }
         $desctitle=($type==-1)?'':'['.self::getDescTitle($type).']:';
         $fineStamp = date('Y-m-d H:i:s') . substr(microtime(), 1, 9);
-        fwrite(self::$_handle[self::$_logPath.DS.$filename],strtoupper('['.$fineStamp.']').$desctitle.self::getRequest($data));
+        fwrite(self::$_handle[$log_path.DS.$filename],strtoupper('['.$fineStamp.']').$desctitle.self::getRequest($data));
     }
     
     /**

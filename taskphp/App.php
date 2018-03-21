@@ -69,7 +69,7 @@ class App{
             self::shutdown_function();
         });
         foreach (self::$_process_list as $key=>$val){
-            self::$_process_list[$key]['pid'][]=popen('php '.CORE_PATH.DS.self::$_process_list[$key]['file_name'].EXT, 'r');
+            self::$_process_list[$key]['pid'][]=popen('php '.TASKS_PATH.DS.self::$_process_list[$key]['file_name'].EXT, 'r');
             Ui::showLog('distribute start success');
         }  
         if($value==='all'){
@@ -86,7 +86,7 @@ class App{
                 Utils::cache('close_worker','false');
                 if(self::$_process_list[$key]['worker_count']){
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
-                        self::$_process_list[$key]['pid'][] = popen('php '.CORE_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
+                        self::$_process_list[$key]['pid'][] = popen('php '.TASKS_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
                     }
                 }
                 Ui::showLog($key.' start success');
@@ -240,27 +240,27 @@ class App{
                     if($_GET['content']=='select'){
                         $html.= "------------------------ taskPHP task_list ---------------------".PHP_EOL;
                         $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
-                        $TaskManage = new \core\lib\TaskManage();
+                        $TaskManage = new TaskManage();
                         foreach ($TaskManage->run_worker_list() as $item){
                             $worker=$item->get_worker();
-                            $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                            $html.= str_pad($worker->get_name(), 20).Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
                     }elseif($_GET['content']=='reload'){
-                        $TaskManage = new \core\lib\TaskManage();
+                        $TaskManage = new TaskManage();
                         $TaskManage->load_worker();
                         $html='task reload ok'.PHP_EOL;
                         $html.= "task_name".str_pad('', 14). "run_time".str_pad('', 21)."next_time".PHP_EOL;
-                        $TaskManage = new \core\lib\TaskManage();
+                        $TaskManage = new TaskManage();
                         foreach ($TaskManage->run_worker_list() as $item){
                             $worker=$item->get_worker();
-                            $html.= str_pad($worker->get_name(), 20).\core\lib\Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                            $html.= str_pad($worker->get_name(), 20).Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
                     }elseif($_GET['content']=='delete'){
                         $argv=$_GET['argv'];
                         if(!$argv){
                             $html='specify the argv of the task to delete';
                         }else{
-                            $TaskManage = new \core\lib\TaskManage();
+                            $TaskManage = new TaskManage();
                             $TaskManage->del_worker($argv);
                             $html= $argv.' delete ok';
                         }

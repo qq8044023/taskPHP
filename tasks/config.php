@@ -7,6 +7,7 @@ return [
     ],
     //系统日志配置
    'log'=>[
+       'path'=>TASKS_PATH.DS.'logs',
        //错误日志开关 true开启  false关闭
        'error'=>true,
        //调试日志开关 true开启  false关闭
@@ -23,7 +24,7 @@ return [
     ],
     //任务列表
     'task_list'=>[
-        'demo'=>[
+        'tasks\\demo\\demoTask'=>[
             //指定任务进程最大内存  系统默认为512M
             'worker_memory'      =>'1024M',
             //开启任务进程的多线程模式

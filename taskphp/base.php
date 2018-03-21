@@ -5,7 +5,6 @@
  * @copyright  taskPHP
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
-date_default_timezone_set('Asia/Chongqing');
 //版本号
 define('TASKPHP_VERSION', '2.1');
 //开始时间记录
@@ -16,24 +15,16 @@ define('TASKPHP_START_MEM', memory_get_usage());
 define("IS_CLI", (PHP_SAPI=='cli') ? true : false);
 //分割符
 define("DS", DIRECTORY_SEPARATOR);
-//项目跟目录
-define("APP_ROOT", substr(dirname(__FILE__),0,-8));
-//任务跟目录
-define("TASKS_PATH", APP_ROOT.DS."tasks");
 //系统内核跟目录
-define("CORE_PATH", APP_ROOT.DS."taskphp");
-//日志跟目录
-define("LOGS_PATH", APP_ROOT.DS."logs");
+define("TASKPHP_PATH", dirname(__FILE__));
 //php文件后缀
 define("EXT", ".php");
 
 // 载入Loader类
-require_once CORE_PATH.DS."Loader".EXT;
+require_once TASKPHP_PATH.DS."Loader".EXT;
 $locator = \taskphp\Locator::getInstance();
 //添加框架目录
-$locator->addNamespace("taskphp", CORE_PATH.DS);
-//添加框架用户任务目录
-$locator->addNamespace("tasks", TASKS_PATH.DS);
+$locator->addNamespace("taskphp", TASKPHP_PATH.DS);
 
 //注册异常捕捉
 $Exception = new \taskphp\Exception();

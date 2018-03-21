@@ -18,7 +18,6 @@ class Shm{
      */
     private $_options=array(
             'size'      => 512000,
-            'temp'       => LOGS_PATH,
             'project'   => 's',
         );
     
@@ -26,6 +25,9 @@ class Shm{
     
     public function __construct(array $options){
         $this->_options = array_merge($this->_options,$options);
+        if(!isset($this->_options['temp'])){
+            $this->_options['temp']=\taskphp\Utils::config('log.path');
+        }
         $this->_handler=$this->_ftok($this->_options['project']);
     }
     

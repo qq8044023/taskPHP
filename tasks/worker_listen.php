@@ -12,6 +12,7 @@ if(!defined('IS_CLI')){
 }
 if(IS_CLI==false)die("plase run in cli".PHP_EOL);
 Command::analysis();
+echo '111';
 $task_name=Command::$_cmd_key;
 $workerExe=WorkerExe::instance();
 $workerExe->listen($task_name);

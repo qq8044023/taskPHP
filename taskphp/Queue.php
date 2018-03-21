@@ -30,7 +30,7 @@ class Queue {
      * [
      *     'drive' => 'Sqlite',
      *     'options'    => [
-
+     *           'dsn'=>TASKPHP_PATH.DS.'logs'.DS.'core_queue.db',
      *     ']
      * ]
      * ========== MySQL ==========
@@ -106,7 +106,7 @@ class Queue {
      * 删除 key 集合中的子集
      * @param unknown $key
      * @param unknown $son_key
-     * @return boolean|\core\lib\boolen
+     * @return boolean
      */
     public static function srem($key,$son_key){
         $data= (array) self::get($key);

@@ -30,15 +30,17 @@ class Sqlite{
     
     public function __construct(array $options){
         $this->_options = array_merge($this->_options,$options);
-        $this->_options['dsn']=LOGS_PATH.DS.'core_queue.db';
+        if(!isset($this->_options['dsn'])){
+            $this->_options['dsn']=\taskphp\Utils::config('log.path').DS.'core_queue.db';
+        }
         if (!file_exists($this->_options['dsn'])) {
             if (!($fp = fopen($this->_options['dsn'], "w+"))) Utils::log('create '.$this->_options['dsn'].' error');
             fclose($fp);
-            $this->_db = new PDO('sqlite:'.LOGS_PATH.DS.'core_queue.db');
+            $this->_db = new PDO('sqlite:'.$this->_options['dsn']);
             $sql='CREATE TABLE '.$this->_options['table'].' (name varchar(200) UNIQUE,content TEXT)';
             $this->_db->exec($sql);
         }else{
-            $this->_db = new PDO('sqlite:'.LOGS_PATH.DS.'core_queue.db');
+            $this->_db = new PDO('sqlite:'.$this->_options['dsn']);
         }
         
     }
