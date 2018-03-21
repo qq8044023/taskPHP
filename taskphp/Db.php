@@ -494,7 +494,7 @@ class db extends sql{
      */
     public function getFields(){
         if($this->fields) return $this->fields;
-        $this->sql = 'DESC '.parent::$CONFIG['DB_PREFIX'].$this->subTableName;
+        $this->sql = 'DESC '.parent::$CONFIG['prefix'].$this->subTableName;
         $starttime = microtime(true);
         $list = $this->fetchResult(false,2,\PDO::FETCH_ASSOC);
         self::sqlend($starttime);
