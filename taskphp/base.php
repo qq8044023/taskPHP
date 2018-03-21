@@ -23,8 +23,6 @@ define("EXT", ".php");
 // 载入Loader类
 require_once TASKPHP_PATH.DS."Loader".EXT;
 $locator = \taskphp\Locator::getInstance();
-//添加框架目录
-$locator->addNamespace("taskphp", TASKPHP_PATH.DS);
 
 //注册异常捕捉
 $Exception = new \taskphp\Exception();

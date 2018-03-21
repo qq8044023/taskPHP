@@ -1,6 +1,7 @@
 <?php
 
 namespace taskphp\socket;
+use taskphp\Exception;
 /**
  * socket客户端类
  * 
@@ -61,7 +62,7 @@ class Client{
             }
         }
         if (!empty($errNum) || !empty($errStr)) {
-            throw new \core\lib\Exception($errStr,$errNum);
+            throw new Exception($errStr,$errNum);
         }
         $this->connected = is_resource($this->connection);
         return $this->connected;

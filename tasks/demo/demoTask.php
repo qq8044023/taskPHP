@@ -54,16 +54,6 @@ class demoTask extends Task{
 	    $demolib_object->run();
 	    Utils::log('demo任务运行成功'); 
 	    
-	    //数据库操作测试
-	    //Config::get()说明：配置文件中配置数据库连接信息，第一个参数为配置项，第二个参数为作用域 demo 表示本任务（demo任务）下的配置文件
-	    /*  
-	    Utils::dbConfig(Utils::config('DB','demo'));
-	    $res=Utils::model("gameActivity")->find();
-	    //echo $str;
-	    Utils::log($res);
-	    
-		flush();*/
-	    
 	    /**测试动态修改配置**/
 	    /* Utils::counter('run_count',1);
 	    if(Utils::counter('run_count')==1){

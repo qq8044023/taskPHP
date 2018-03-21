@@ -24,6 +24,9 @@ class Shm{
     private $_handler=null;
     
     public function __construct(array $options){
+        if(!extension_loaded('shmop')){
+            \taskphp\Ui::showLog('ERROR:shmop module has not been opened');die;
+        }
         $this->_options = array_merge($this->_options,$options);
         if(!isset($this->_options['temp'])){
             $this->_options['temp']=\taskphp\Utils::config('log.path');
@@ -205,7 +208,7 @@ class Shm{
      * 删除 key 集合中的子集
      * @param unknown $key
      * @param unknown $son_key
-     * @return boolean|\core\lib\boolen
+     * @return boolean
      */
     public function srem($key,$son_key){
         $data= (array) $this->get($key);

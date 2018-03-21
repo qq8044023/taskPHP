@@ -2,9 +2,9 @@
 
 ## 详细使用说明
 ```php
-use core\lib\Utils;
+use taskphp\Utils;
 ```
-1. 配置mysql 将以下配置代码加入到你的xxTask.php同级目录的config.php里面
+1. 配置mysql config.php里面
 
 ``` php
 
@@ -44,7 +44,6 @@ return array(
 	     Utils::log($res);
 	     
 	    /* //方法三
-	     $db=Db::connect();
 	     $res=Utils::db()->table("user")->alias("a")->join("user_third AS b ON a.uid=b.uid","LEFT")->where("a.status=1")->limit(2)->order("a.uid DESC")->select();
 	     Utils::log(); */
 	     

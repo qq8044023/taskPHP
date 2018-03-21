@@ -24,9 +24,9 @@ class Redis{
      * @var array
      */
     private  $_options=[
-        'prefix'=>'core_queue',
-        'host'=>'',
-        'port'=>'',
+        'prefix'=>'queue',
+        'host'=>'127.0.0.1',
+        'port'=>'6379',
     ];
     
     /**
@@ -39,6 +39,9 @@ class Redis{
      * @param array $config
      */
     public function __construct(array $options = []){
+        if(!extension_loaded('redis')){
+            \taskphp\Ui::showLog('ERROR:redis module has not been opened');die;
+        }
         $this->_options = array_merge($this->_options,$options);
         $this->redis = new \Redis();
         $this->redis->connect($this->_options['host'],$this->_options['port']);
@@ -125,7 +128,7 @@ class Redis{
      * 删除 key 集合中的子集
      * @param unknown $key
      * @param unknown $son_key
-     * @return boolean|\core\lib\boolen
+     * @return boolean
      */
     public function srem($key,$son_key){
         $data= (array) $this->get($key);

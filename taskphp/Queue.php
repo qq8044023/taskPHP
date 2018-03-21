@@ -30,7 +30,7 @@ class Queue {
      * [
      *     'drive' => 'Sqlite',
      *     'options'    => [
-     *           'dsn'=>TASKPHP_PATH.DS.'logs'.DS.'core_queue.db',
+     *           'dsn'=>TASKPHP_PATH.DS.'logs'.DS.'queue.db',
      *     ']
      * ]
      * ========== MySQL ==========

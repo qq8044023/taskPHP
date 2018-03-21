@@ -7,6 +7,7 @@ return [
     ],
     //系统日志配置
    'log'=>[
+       //日志目录
        'path'=>TASKS_PATH.DS.'logs',
        //错误日志开关 true开启  false关闭
        'error'=>true,

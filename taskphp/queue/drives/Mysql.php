@@ -6,6 +6,7 @@
  * @license    https://git.oschina.net/cqcqphper/taskPHP
  */
 namespace taskphp\queue\drives;
+use taskphp\Utils;
 use PDO;
 
 /**
@@ -35,13 +36,19 @@ class Mysql{
      * @param array $config
      */
     public function __construct(array $options){
+        if(!extension_loaded('pdo')){
+            \taskphp\Ui::showLog('ERROR:pdo module has not been opened');die;
+        }
         $this->_options = array_merge($this->_options,$options);
+        if(!isset($this->_options['host']) || !isset($this->_options['name']) || !isset($this->_options['port']) || !isset($this->_options['charset']) || !isset($this->_options['username']) || !isset($this->_options['password'])){
+            $this->_options = array_merge($this->_options,Utils::config('db'));
+        }
         try {
             $this->_db = new PDO(
             sprintf(
                 "mysql:host=%s;dbname=%s;port=%s;charset=%s;",
                 $this->_options['host'],
-                $this->_options['dbname'],
+                $this->_options['name'],
                 $this->_options['port'],
                 $this->_options['charset']
             ),
@@ -49,7 +56,7 @@ class Mysql{
             $this->_options['password']
             );
         }catch (\PDOException $e){
-            \core\lib\Utils::log($e->getMessage());
+            Utils::log($e->getMessage());
         }
         
         if(!$this->tableExist()){
@@ -159,7 +166,7 @@ class Mysql{
      * 删除 key 集合中的子集
      * @param unknown $key
      * @param unknown $son_key
-     * @return boolean|\core\lib\boolen
+     * @return boolean
      */
     public function srem($key,$son_key){
         $data= (array) $this->get($key);

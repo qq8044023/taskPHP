@@ -13,6 +13,9 @@ namespace taskphp;
 class db extends sql{
     protected static $DB;
     function __construct($table=null){
+        if(!extension_loaded('pdo')){
+            \taskphp\Ui::showLog('ERROR:pdo module has not been opened');die;
+        }
         if(!Utils::global_var('pdo_object')) Utils::global_var('pdo_object',self::InitPDO());
         self::$DB = Utils::global_var('pdo_object');
         if($table) $this->table($table);

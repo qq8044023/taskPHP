@@ -14,12 +14,10 @@ namespace taskphp;
 class Config{
     // 配置参数
     private static $_config = array(
-        'core'=>array(
-            'core_user'=>'nobody',//指定用户  nobody  www
-            'memory_limit'=>'256M',//指定任务进程最大内存
-            'worker_limit'=>0,//单个进程执行的任务数 0无限  大于0为指定数
-            'worker_mode'=>0,//worker进程运行模式
-        ),
+        'core_user'=>'nobody',//指定用户  nobody  www
+		'memory_limit'=>'256M',//指定任务进程最大内存
+		'worker_limit'=>0,//单个进程执行的任务数 0无限  大于0为指定数
+		'worker_mode'=>0,//worker进程运行模式
     );
 
     /**

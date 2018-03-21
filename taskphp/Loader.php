@@ -44,7 +44,10 @@ final class Locator{
      * @return void
      */
     public function register(){
+        // 注册系统自动加载
         spl_autoload_register(array($this, 'loadClass'),true,true);
+        // 注册命名空间定义
+        $this->addNamespace('taskphp', TASKPHP_PATH.DS);
     }
     /**
      * 给一个命名空间前缀中添加具体的路径.

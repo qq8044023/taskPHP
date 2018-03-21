@@ -24,12 +24,8 @@ class Pthread extends \Thread{
     protected function reload_locator(){
         date_default_timezone_set( 'Asia/Chongqing');
         $locator = Locator::getInstance();
-        //添加框架目录
-        $locator->addNamespace("taskphp", CORE_PATH.DS);
         //添加框架用户任务目录
         $locator->addNamespace("tasks", TASKS_PATH.DS);
-        //注册
-        $locator->register();
     }
     public function run() {
         if($this->_worker!=null){

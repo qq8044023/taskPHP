@@ -18,7 +18,7 @@ class Sqlite{
      * @var array
      */
     private  $_options=[
-                'table'=>'core_queue',
+                'table'=>'queue',
             ];
     
     private  $_handler=null;
@@ -29,9 +29,12 @@ class Sqlite{
     private $_db = null;
     
     public function __construct(array $options){
+        if(!extension_loaded('pdo')){
+            \taskphp\Ui::showLog('ERROR:pdo module has not been opened');die;
+        }
         $this->_options = array_merge($this->_options,$options);
         if(!isset($this->_options['dsn'])){
-            $this->_options['dsn']=\taskphp\Utils::config('log.path').DS.'core_queue.db';
+            $this->_options['dsn']=\taskphp\Utils::config('log.path').DS.'queue.db';
         }
         if (!file_exists($this->_options['dsn'])) {
             if (!($fp = fopen($this->_options['dsn'], "w+"))) Utils::log('create '.$this->_options['dsn'].' error');
@@ -142,7 +145,7 @@ class Sqlite{
      * 删除 key 集合中的子集
      * @param unknown $key
      * @param unknown $son_key
-     * @return boolean|\core\lib\boolen
+     * @return boolean
      */
     public function srem($key,$son_key){
         $data= (array) $this->get($key);

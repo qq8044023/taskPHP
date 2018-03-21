@@ -14,7 +14,7 @@
 
 ## 详细使用说明
 ```php
-use core\lib\Utils;
+use taskphp\Utils;
 ```
 1. 特殊字符串转义:Utils::replace_keyword(): 
 ```php

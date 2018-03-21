@@ -109,7 +109,7 @@ class TaskManage{
 	/**
 	 * 执行一个暂停
 	 * @param int $time
-	 * @return \core\lib\TaskManage
+	 * @return \taskphp\TaskManage
 	 */
 	public function on_sleep($time){
 		$time=intval($time);
@@ -119,7 +119,7 @@ class TaskManage{
 	}
 	/**
 	 * 解除一个暂停
-	 * @return \core\lib\TaskManage
+	 * @return \taskphp\TaskManage
 	 */
 	public function un_sleep(){
 		Queue::push(static::$_sleep,'0');//

@@ -48,8 +48,6 @@ class App{
      * 运行框架
      */
     public static function run(){
-        !extension_loaded('sockets') && Ui::displayUI('ERROR:Please open the sockets module');
-        
         Command::analysis();
         if(!isset(Command::$_cmd_list[Command::$_cmd_key]) || !method_exists(new static,Command::$_cmd_key)){
             $text .= 'Available commands: '.PHP_EOL;
@@ -127,7 +125,7 @@ class App{
                     Utils::cache('listen'.$key,'true');
                     Utils::cache('close_worker','false');
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
-                        self::$_process_list[$key]['pid'][] = popen('php '.CORE_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
+                        self::$_process_list[$key]['pid'][] = popen('php '.TASKS_PATH.DS.'worker_listen'.EXT.' '.$key, 'r');
                     }
                 }
                 Ui::showLog($key.' start success');
@@ -396,9 +394,10 @@ class App{
                 $process_name=array("main".EXT);
             } else{
                 $list=[];
-                $files=glob(CORE_PATH.DS.'*_listen'.EXT);
+                $files=glob(TASKS_PATH.DS.'*_listen'.EXT);
+                $temp=explode(DS, TASKS_PATH);
                 foreach($files as $file){
-                    $regex='/.*?core(.*?)_listen\.php.*?/';
+                    $regex='/.*?'.end($temp).'(.*?)_listen\.php.*?/';
                     preg_match_all($regex, $file, $matches);
                     $name=trim($matches[1][0],DS);
                     $list[$name]=$file;

@@ -161,7 +161,7 @@ class Timer2{
      * @param unknown $cron_arr
      * @param unknown $now_arr
      * @param unknown $key
-     * @return Ambigous <mixed, \core\lib\unknown, unknown>
+     * @return Ambigous <mixed,unknown>
      */
     private function check_loop($cron_arr,$now_arr,$key){
         switch ($key){
