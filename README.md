@@ -4,6 +4,7 @@ taskPHP 3.0 —— 你值得信赖的PHP定时计划任务框架
 ## 历史版本
 -->[taskPHP1.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/1.0)<br>
 -->[taskPHP2.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/2.1)<br>
+> 所有分支 [查看所有分支](https://gitee.com/cqcqphper/taskPHP/branches)
 
 ## taskPHP
 taskPHP基于php开发的定时计划任务框架,多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
@@ -41,7 +42,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 5. 在windows下路径不能有空格，否则会导致进程启动不起来。
 
 ## 文档列表
--->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./src/docs/db.md)<br>
+-->[数据库类使用教程](./src/docs/db.md)<br>
 -->[windows下安装php多线程扩展pthreads教程](./src/docs/thread_windows.md)<br>
 -->[工具类Utils使用说明](./src/docs/utils.md)<br>
 -->[thinkphp5.0框架的集成教程](./src/docs/thinkphp5.0.md)<br>
