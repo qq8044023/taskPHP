@@ -14,7 +14,7 @@ namespace taskphp;
 class Command{
     public static $_argv=null;
     
-    public static $_cmd='main.php';
+    public static $_cmd='start.php';
     /**
      * 当前的命令名称
      * 默认为启动

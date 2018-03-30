@@ -13,7 +13,7 @@ namespace taskphp;
  */
 class Worker{
 	protected $_name;
-	protected $_timer;
+	protected $_crontab;
 	protected $_task;
 	protected $_worker_str;
 	protected $_skip;
@@ -73,27 +73,27 @@ class Worker{
 	}
 	/**
 	 * 设置运行时间对象
-	 * @param Timer $timer
+	 * @param Crontab $crontab
 	 * @return \taskphp\Worker
 	 */
-	public function set_timer(Timer $timer){
-		$this->_timer=$timer;
+	public function set_crontab(Crontab $crontab){
+		$this->_crontab=$crontab;
 		return $this;
 	}
 	/**
 	 * 返回运行时间对象
-	 * @return \taskphp\Timer
+	 * @return \taskphp\Crontab
 	 */
-	public function get_timer(){
-		if ($this->_timer==null)$this->_timer=new Timer();
-		return $this->_timer;
+	public function get_crontab(){
+		if ($this->_crontab==null)$this->_crontab=new Crontab();
+		return $this->_crontab;
 	}
 	/**
 	 * 计算下一次执行的时间
 	 * @return int
 	 */
 	public function get_next_run_time($now_time=null){
-	    $timer=$this->get_timer();
-	    return Timer::get_next_run_time($now_time,$timer);
+	    $crontab=$this->get_crontab();
+	    return Crontab::get_next_run_time($now_time,$crontab);
 	}
 }

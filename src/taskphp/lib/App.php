@@ -241,7 +241,7 @@ class App{
                         $TaskManage = new TaskManage();
                         foreach ($TaskManage->run_worker_list() as $item){
                             $worker=$item->get_worker();
-                            $html.= str_pad($worker->get_name(), 20).Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                            $html.= str_pad($worker->get_name(), 20).Crontab::crontab_to_string($worker->get_crontab()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
                     }elseif($_GET['content']=='reload'){
                         $TaskManage = new TaskManage();
@@ -251,7 +251,7 @@ class App{
                         $TaskManage = new TaskManage();
                         foreach ($TaskManage->run_worker_list() as $item){
                             $worker=$item->get_worker();
-                            $html.= str_pad($worker->get_name(), 20).Timer::timer_to_string($worker->get_timer()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
+                            $html.= str_pad($worker->get_name(), 20).Crontab::crontab_to_string($worker->get_crontab()). str_pad('', 10). date("Y-m-d H:i:s",$item->get_run_time()).PHP_EOL;
                         }
                     }elseif($_GET['content']=='delete'){
                         $argv=$_GET['argv'];
@@ -416,7 +416,6 @@ class App{
                     }else{
                         $list[]='php.exe';
                     }
-    
                 }
             }
         }
@@ -431,14 +430,11 @@ class App{
         $taskManage=new TaskManage();
         $taskManage->load_worker();
         $distribute=new Distribute();
-        $distribute->set_task_manage($taskManage);
-        $distribute->listen();
+        $distribute->set_task_manage($taskManage)->listen();
     }
     
     private static function worker(){
-        $task_name=Command::$_cmd_value;
-        $workerExe=WorkerExe::instance();
-        $workerExe->listen($task_name);
+        WorkerExe::instance()->listen(Command::$_cmd_value);
     }
     public static function shutdown_function(){
         Utils::log('taskPHP daemon pid:'.getmypid().' Stop');

@@ -29,9 +29,9 @@ class TaskManage{
 	        //设置任务
 	        $worker= new Worker($key,new $key());
 	        if(is_string($value['timer'])){
-	            $timer = Timer::string_to_timer($value['timer']);
+	            $crontab = Crontab::string_to_crontab($value['timer']);
 	        }
-	        $worker->set_timer($timer);
+	        $worker->set_crontab($crontab);
 	        $this->set_worker($worker);
 	    }
 	    
@@ -43,10 +43,10 @@ class TaskManage{
 	 * @return boolean
 	 */
 	public function set_worker(Worker $worker,$overwrite=true){
-	    $timer=$worker->get_timer();
-		$next_run_time=Timer::get_next_run_time(null,$timer);
+	    $crontab=$worker->get_crontab();
+		$next_run_time=Crontab::get_next_run_time(null,$crontab);
 		if ($next_run_time===false)$next_run_time=time();
-		$timer=$worker->get_timer();
+		$crontab=$worker->get_crontab();
 		$task=$worker->get_worker();
 		$workerlist= (array) Utils::cache(static::$_workerList);
 		if (!$overwrite && in_array($worker->get_name(),$workerlist)){
@@ -55,7 +55,7 @@ class TaskManage{
 		}
 		$name=static::$_workerPrefix.$worker->get_name();
 		$item=[];
-		$item['timer']=$timer;
+		$item['crontab']=$crontab;
 		$item['task']=$task;
 		$item['skip']=intval($worker->get_skip());
 		$item['run_time']=$next_run_time;
@@ -156,11 +156,11 @@ class TaskManage{
 			$name=static::$_workerPrefix.$value;
 			$item=Utils::cache($name);
 			$task=$item['task'];
-			$timer=$item['timer'];
+			$crontab=$item['crontab'];
 			$run_time=intval($item['run_time']);
-			if ((!$timer instanceof Timer)||$run_time<=0)continue;
+			if ((!$crontab instanceof Crontab)||$run_time<=0)continue;
 			$worker=new Worker($value, $task);
-			$worker->set_timer($timer);
+			$worker->set_crontab($crontab);
 			$worker->set_skip($item['skip']);
 			$out[]=new WorkerRun($worker, $run_time);
 		}

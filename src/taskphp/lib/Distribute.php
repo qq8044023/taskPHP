@@ -28,6 +28,7 @@ class Distribute{
 	
 	public function set_task_manage(TaskManage $taskManage){
 	    $this->_TaskManage=$taskManage;
+	    return $this;
 	}
 	
 	/**
