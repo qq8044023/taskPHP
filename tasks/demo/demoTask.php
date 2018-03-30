@@ -8,17 +8,16 @@ use taskphp\Db;
 /**
  * 测试任务 
  */
-class demoTask extends Task{
-    public $_timer='/2 * * * * * *';
+class demoTask{
     /**
      * 任务入口
      * (non-PHPdoc)
-     * @see \core\lib\Task::run()
+     * @see taskphp\Task::run()
      */
 	public function run(){
 	    //数据库操作 获取一条数据
-	    /*  $res=Utils::db('table1')->find();
-	    Utils::log($res);*/
+	     /* $res=Utils::db('table1')->find();
+	    Utils::log($res); */
 	     
 	    /* //方法二
 	     $res=Utils::db()->table("table1")->where("id=1")->limit(2)->order("id DESC")->select();

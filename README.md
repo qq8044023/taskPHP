@@ -8,7 +8,7 @@ taskPHP 2.1 —— 你值得信赖的PHP定时计划任务框架
 taskPHP基于php开发的定时计划任务框架,利用多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
 ## 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
-oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
+gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 这两个地址都会同步更新。
 ## 在线交流QQ群
 如感兴趣请加QQ群 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
@@ -19,8 +19,9 @@ oschina地址: http://git.oschina.net/cqcqphper/taskPHP<br>
 ``` php
 taskPHP					根目录
 |-- taskphp				框架系统目录
-|   |-- base.php			框架入口文件
-|   |-- ....			框架核心类库文件
+|   |-- base.php			框架引导文件
+|   |-- Lib			框架核心类库目录
+|	|	 |...			框架核心类库文件
 |-- docs				开发文档存放目录
 |-- tasks				用户任务目录
 |   |-- logs				日志目录
@@ -29,17 +30,14 @@ taskPHP					根目录
 |	|	|-- demo.php	        demo任务类文件
 |	|	...			更多任务
 |   |-- config.php			全局配置文件
-|   |-- guide.php			用户引导文件
-|   |-- distribute_listen.php		任务派发进程入口
-|   |-- worker_listen.php	        任务执行进程入口
-|-- main.php				框架入口文件
+|-- main.php				项目入口文件
 |-- windows.cmd				windows快速启动文件
 ``` 
 框架说明
 1. 任务多进程运行模式。
 2. 任务多线程模式,需要安装pthreads扩展(可选)。
 3. 多种进程通信方式堵塞式消息队列。
-4. 任务派发及具体任务执行不在同个进程[distribute_listen.php]和[worker_listen.php],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
+4. 任务派发及具体任务执行不在同个进程[distribute]和[worker],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
 5. 执行时间语法跟crontab类似,且支持秒设置。
 ``` php
    * * * * * * *    //格式 :秒 分 时 天 月 年 周
@@ -47,7 +45,7 @@ taskPHP					根目录
  /10 * * * * * *	//表示每10秒运行
  /1 * 15,16 * * * * //表示 每天的15点,16点的每一秒运行
 ```
-6. 添加任务简单,只需继承Task基类,实现任务入口run方法。
+6. 添加任务简单,只需编写任务类,实现任务入口run方法。
 
 ## 环境要求
 1. php版本>= 5.5<br>
@@ -56,7 +54,7 @@ taskPHP					根目录
 ## 注意事项
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
 2. 编写任务有问题或调用exit将导致后台脚本停止,需要通过远控管理器重启进程。
-3. 多线程模式运行一段时间后报错,pthreads has detected that the core\lib\Pthread could not be started, the system lacks the necessary resources or the system-imposed limit would be exceeded in xxx
+3. 多线程模式运行一段时间后报错,pthreads has detected that the taskphp\Pthread could not be started, the system lacks the necessary resources or the system-imposed limit would be exceeded in xxx
 4. 后台任务数量多或者任务运行时间很密集导致数据库链接过多没有释放,需要再任务结尾处执行数据库链接对象的close方法来关闭链接。
 5. 在windows下路径不能有空格，否则会导致进程启动不起来。
 
@@ -90,15 +88,15 @@ E:\wamp\www\taskPHP>php main.php start
 ------------------------- taskPHP ------------------------------
 taskPHP version:2.0      PHP version:5.5.12
 license1:https://github.com/qq8044023/taskPHP
-license2:https://git.oschina.net/cqcqphper/taskPHP
+license2:https://gitee.com/cqcqphper/taskPHP
 startTime:2017-10-20 16:58:00
 ------------------------- taskPHP Manage  ----------------------
 http://ServerIp:8082
 http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
-distribute                    1                          [success]
-demo                          1                          [success]
+distribute                     1                          [success]
+tasks\demo                  1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
 
@@ -112,7 +110,7 @@ Press Ctrl-C to quit. Start success.
 ------------------------- taskPHP ------------------------------
 taskPHP version:2.0      PHP version:5.5.12
 license1:https://github.com/qq8044023/taskPHP
-license2:https://git.oschina.net/cqcqphper/taskPHP
+license2:https://gitee.com/cqcqphper/taskPHP
 startTime:2017-10-20 16:58:00
 ------------------------- taskPHP Manage  ----------------------
 http://ServerIp:8082
@@ -120,7 +118,7 @@ http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
 distribute                    1                          [success]
-demo                          1                          [success]
+tasks\demo                 1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
 ``` 
@@ -133,7 +131,7 @@ Press Ctrl-C to quit. Start success.
 ------------------------- taskPHP ------------------------------
 taskPHP version:2.0      PHP version:5.5.12
 license1:https://github.com/qq8044023/taskPHP
-license2:https://git.oschina.net/cqcqphper/taskPHP
+license2:https://gitee.com/cqcqphper/taskPHP
 startTime:2017-10-20 16:58:00
 ------------------------- taskPHP Manage  ----------------------
 http://ServerIp:8082
@@ -141,7 +139,7 @@ http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
 distribute                    1                          [success]
-demo                          1                          [success]
+tasks\demo                 1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
 ```
