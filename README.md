@@ -56,6 +56,7 @@ composer require taskphp/taskphp
 ## 命令操作
 ``` php
 start.php  start [all|任务名]  启动 可不带参数默认all
+start.php  start &   挂载后台运行,liunx操作
 start.php  close all 结束框架  必带参数all
 
 ```
