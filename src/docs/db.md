@@ -8,8 +8,6 @@ use taskphp\Utils;
 
 ``` php
 
-<?php
-return array(
     /**
      * 数据库配置
      *   */
