@@ -6,7 +6,7 @@ taskPHP 3.0 —— 你值得信赖的PHP定时计划任务框架
 -->[taskPHP2.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/2.1)<br>
 
 ## taskPHP
-taskPHP基于php开发的定时计划任务框架,利用多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
+taskPHP基于php开发的定时计划任务框架,多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
 ## 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
 gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
@@ -27,7 +27,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
  /10 * * * * * *	//表示每10秒运行
  /1 * 15,16 * * * * //表示 每天的15点,16点的每一秒运行
 ```
-6. 添加任务简单,只需编写任务类,实现任务入口run方法。
+6. 添加任务简单,只需编写任务类,实现任务入口run方法,详情参考examples目录内的测试任务。
 
 ## 环境要求
 1. php版本>= 5.5<br>
@@ -44,7 +44,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 -->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./src/docs/db.md)<br>
 -->[windows下安装php多线程扩展pthreads教程](./src/docs/thread_windows.md)<br>
 -->[工具类Utils使用说明](./src/docs/utils.md)<br>
--->[BUG记录文档](./src/docs/bugs.md)<br>
+-->[thinkphp5.0框架的集成教程](./src/docs/thinkphp5.0.md)<br>
 -->[整合thinkphp5教程](./src/docs/thinkphp5.md)<br>
 
 ## 使用说明
@@ -55,8 +55,8 @@ composer require taskphp/taskphp
 ```
 ## 命令操作
 ``` php
-main.php  start [all|任务名]  启动 可不带参数默认all
-main.php  close all 结束框架  必带参数all
+start.php  start [all|任务名]  启动 可不带参数默认all
+start.php  close all 结束框架  必带参数all
 
 ```
 
