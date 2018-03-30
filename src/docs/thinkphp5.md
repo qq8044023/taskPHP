@@ -5,7 +5,7 @@
 composer require taskphp/taskphp
 
 ```
-如果下载不下来,可以尝试修改composer地址:
+如果下载不下来,可以尝试修改composer镜像地址:
 ``` php
 
 composer config -g repo.packagist composer https://packagist.phpcomposer.com
