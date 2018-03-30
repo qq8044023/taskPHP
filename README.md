@@ -45,7 +45,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 -->[windows下安装php多线程扩展pthreads教程](./src/docs/thread_windows.md)<br>
 -->[工具类Utils使用说明](./src/docs/utils.md)<br>
 -->[thinkphp5.0框架的集成教程](./src/docs/thinkphp5.0.md)<br>
--->[整合thinkphp5教程](./src/docs/thinkphp5.md)<br>
+
 
 ## 使用说明
 
