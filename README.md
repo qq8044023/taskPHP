@@ -51,7 +51,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 
 ### composer安装taskphp框架:
 ``` php
-composer require taskphp/taskphp dev-master
+composer require taskphp/taskphp
 ```
 ## 命令操作
 ``` php
