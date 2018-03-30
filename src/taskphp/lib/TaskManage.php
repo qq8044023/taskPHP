@@ -28,8 +28,8 @@ class TaskManage{
 	    foreach ($task_list as $key=>$value){
 	        //设置任务
 	        $worker= new Worker($key,new $key());
-	        if(is_string($value['timer'])){
-	            $crontab = Crontab::string_to_crontab($value['timer']);
+	        if(is_string($value['crontab'])){
+	            $crontab = Crontab::string_to_crontab($value['crontab']);
 	        }
 	        $worker->set_crontab($crontab);
 	        $this->set_worker($worker);

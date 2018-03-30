@@ -11,7 +11,7 @@ return [
             //任务的进程数 系统默认1
             'worker_count'=>1,
             //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/5 * * * * * *',
+            'crontab'     =>'/5 * * * * * *',
         ], 
         'examples\\Demo2'=>[
             //指定任务进程最大内存  系统默认为512M
@@ -21,7 +21,7 @@ return [
             //任务的进程数 系统默认1
             'worker_count'=>1,
             //crontad格式 :秒 分 时 天 月 年 周
-            'timer'     =>'/20 * * * * * *',
+            'crontab'     =>'/20 * * * * * *',
         ],
     ],
     'db'=>[
