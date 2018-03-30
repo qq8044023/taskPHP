@@ -6,7 +6,7 @@
  * @license    https://gitee.com/cqcqphper/taskPHP
  */
 //版本号
-define('TASKPHP_VERSION', '2.1');
+define('TASKPHP_VERSION', '3.0');
 //设置中国的时区
 date_default_timezone_set('Asia/Chongqing');
 //开始时间记录

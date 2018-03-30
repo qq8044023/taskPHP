@@ -1,8 +1,9 @@
-taskPHP 2.1 —— 你值得信赖的PHP定时计划任务框架
+taskPHP 3.0 —— 你值得信赖的PHP定时计划任务框架
 ===============
 
 ## 历史版本
--->[taskPHP1.0](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/1.0)<br>
+-->[taskPHP1.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/1.0)<br>
+-->[taskPHP2.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/2.1)<br>
 
 ## taskPHP
 taskPHP基于php开发的定时计划任务框架,利用多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
@@ -14,30 +15,11 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 如感兴趣请加QQ群 一起探讨、完善。越多人支持,就越有动力去更新,喜欢记得右上角star哈。<br>
 <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=2a8520f5c1518df3a796e71d8c993b2f00856a035d59ca46285c4e325116ba4d"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="taskPHP框架交流群" title="taskPHP框架交流群">taskPHP ①群:375841535（空）</a>
 
-## 框架概况
-框架目录结构:
-``` php
-taskPHP					根目录
-|-- taskphp				框架系统目录
-|   |-- base.php			框架引导文件
-|   |-- Lib			框架核心类库目录
-|	|	 |...			框架核心类库文件
-|-- docs				开发文档存放目录
-|-- tasks				用户任务目录
-|   |-- logs				日志目录
-|   |-- demo				demo任务
-|	|	|-- Lib		        demo任务的扩展目录
-|	|	|-- demo.php	        demo任务类文件
-|	|	...			更多任务
-|   |-- config.php			全局配置文件
-|-- main.php				项目入口文件
-|-- windows.cmd				windows快速启动文件
-``` 
 框架说明
 1. 任务多进程运行模式。
 2. 任务多线程模式,需要安装pthreads扩展(可选)。
 3. 多种进程通信方式堵塞式消息队列。
-4. 任务派发及具体任务执行不在同个进程[distribute]和[worker],windows和linux下启用入口文件[main.php],windows下可运行[windows_single.cmd]快速启动。
+4. 任务派发及具体任务执行不在同个进程[distribute]和[worker],windows和linux下启用入口文件[start.php],windows下可运行[windows_start.cmd]快速启动。
 5. 执行时间语法跟crontab类似,且支持秒设置。
 ``` php
    * * * * * * *    //格式 :秒 分 时 天 月 年 周
@@ -59,10 +41,10 @@ taskPHP					根目录
 5. 在windows下路径不能有空格，否则会导致进程启动不起来。
 
 ## 文档列表
--->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./docs/db.md)<br>
--->[windows下安装php多线程扩展pthreads教程](./docs/thread_windows.md)<br>
--->[工具类Utils使用说明](./docs/utils.md)<br>
--->[BUG记录文档](./docs/bugs.md)<br>
+-->[数据库类使用教程 支持(Mysql,Mongo,Oracle,Pgsql,Sqlsrv,Sqllite)](./src/docs/db.md)<br>
+-->[windows下安装php多线程扩展pthreads教程](./src/docs/thread_windows.md)<br>
+-->[工具类Utils使用说明](./src/docs/utils.md)<br>
+-->[BUG记录文档](./src/docs/bugs.md)<br>
 
 
 ## 使用说明
@@ -78,79 +60,23 @@ main.php  close all 结束框架  必带参数all
 
 ```
 
-
-### Windows调试启动程序
-```
-Active code page: 65001
-E:\wamp\www\taskPHP>php main.php start
-[16:58:00][taskPHP]:distribute start success
-[16:58:00][taskPHP]:demo start success
-------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.5.12
-license1:https://github.com/qq8044023/taskPHP
-license2:https://gitee.com/cqcqphper/taskPHP
-startTime:2017-10-20 16:58:00
-------------------------- taskPHP Manage  ----------------------
-http://ServerIp:8082
-http://127.0.0.1:8082
-------------------------- taskPHP PROCESS ----------------------
-listen                      processes                     status
-distribute                     1                          [success]
-tasks\demo                  1                          [success]
-----------------------------------------------------------------
-Press Ctrl-C to quit. Start success.
-
-```
-
-### Liunx调试启动程序
+### 启动程序
 ``` php
-[root@FX-DEBUG taskphps]# php ./main.php start
-[16:58:00][taskPHP]:distribute start success
-[16:58:00][taskPHP]:demo start success
+[root@FX-DEBUG taskphps]# php ./start.php start
 ------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.5.12
+taskPHP version:3.0      PHP version:5.5.38
 license1:https://github.com/qq8044023/taskPHP
 license2:https://gitee.com/cqcqphper/taskPHP
-startTime:2017-10-20 16:58:00
+startTime:2018-03-30 11:38:08
 ------------------------- taskPHP Manage  ----------------------
 http://ServerIp:8082
 http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
 distribute                    1                          [success]
-tasks\demo                 1                          [success]
+examples\Demo1                1                          [success]
+examples\Demo2                1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
+
 ``` 
-### Liunx后台启动程序
-
-``` php
-[root@FX-DEBUG taskphps]# php ./main.php start &
-[16:58:00][taskPHP]:distribute start success
-[16:58:00][taskPHP]:demo start success
-------------------------- taskPHP ------------------------------
-taskPHP version:2.0      PHP version:5.5.12
-license1:https://github.com/qq8044023/taskPHP
-license2:https://gitee.com/cqcqphper/taskPHP
-startTime:2017-10-20 16:58:00
-------------------------- taskPHP Manage  ----------------------
-http://ServerIp:8082
-http://127.0.0.1:8082
-------------------------- taskPHP PROCESS ----------------------
-listen                      processes                     status
-distribute                    1                          [success]
-tasks\demo                 1                          [success]
-----------------------------------------------------------------
-Press Ctrl-C to quit. Start success.
-```
-## 开发者列表
-
-### 内核开发
-cqcqphper(小草)cqcqphper@qq.com<br>
-### 2.0开发者
-cqcqphper(小草)cqcqphper@qq.com<br>
-村长(村长)8044023@qq.com<br>
-### 文档编写
-hey丶(张志鸿)1270996380@qq.com<br>
-空气(空气)1925757357@qq.com<br>
-
