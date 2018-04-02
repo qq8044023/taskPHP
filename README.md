@@ -33,6 +33,8 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 ## 环境要求
 1. php版本>= 5.5<br>
 2. 开启socket扩展<br>
+3. 开启pdo扩展<br>
+4. 开启shmop扩展<br>
    
 ## 注意事项
 1. 由于任务存在派发时间，所以任务运行的时间可能会有1-2秒的误差。
