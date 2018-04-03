@@ -8,7 +8,7 @@
 
 第一步,安装最新的taskPHP
 ```
-composer require taskphp/taskphp
+composer require taskphp/taskphp dev-master
 ```
 如果下载不下来,可以尝试修改composer镜像地址:
 ``` php
