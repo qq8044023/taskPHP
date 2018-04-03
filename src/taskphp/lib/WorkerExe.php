@@ -53,9 +53,9 @@ class WorkerExe{
 			    continue;
 			}
 			if(extension_loaded('pthreads') && $config['worker_pthreads']){//多线程模式
-			    Pthread::call($taskManage,$this->_worker);
+			    Pthread::call($taskManage,$config['callback']);
 			}else{//单线程模式
-			    $taskManage->run_task($this->_worker);
+			    $taskManage->run_task($config['callback']);
 			}
 		}
 	}

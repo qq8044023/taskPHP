@@ -27,7 +27,7 @@ class TaskManage{
 	    if(!$task_list)Ui::showLog('taskphp\TaskManage::load_worker task_list is empty');
 	    foreach ($task_list as $key=>$value){
 	        //设置任务
-	        $worker= new Worker($key,new $key());
+	        $worker= new Worker($key,$value);
 	        if(is_string($value['crontab'])){
 	            $crontab = Crontab::string_to_crontab($value['crontab']);
 	        }
@@ -69,28 +69,25 @@ class TaskManage{
 	}
 	/**
 	 * 运行任务
-	 * @param Task|string $task
+	 * @param array $callback
 	 * @return boolean
 	 */
-	public function run_task($task){
-	    if(!is_object($task)){
-	        return false;
-	    }
+	public function run_task($callback){
 		try{
 		    if(Utils::config('log')['debug']){
 		        Utils::statistics('begin');
-		        Utils::log(get_class($task).' [--START--]');
+		        Utils::log($callback[0].'::'.$callback[1].' [--START--]');
 		    }
 		    ob_start();
-		    $task->run();
+		    call_user_func($callback);
 		    $data=ob_get_contents();
 		    ob_end_clean();
 		    if(Utils::config('log')['debug']){
                 Utils::statistics('end');
-                Utils::log(get_class($task).' [--END--][RunTime:'.Utils::statistics('begin','end',6).'s]');
+                Utils::log($callback[0].'::'.$callback[1].' [--END--][RunTime:'.Utils::statistics('begin','end',6).'s]');
             }
 		}catch(Exception $e){
-		    Utils::log([$task,$e->getMessage()],-1);
+		    Utils::log([$callback[0].'::'.$callback[1],$e->getMessage()],-1);
 		}
 		unset($data);
 	}

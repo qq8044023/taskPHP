@@ -20,10 +20,9 @@ class Worker{
 	public function __construct($name,$task){
 		$this->_skip=true;
 		$this->_name=$name;
-		if (is_object($task)){
+		if (!is_string($task)){
 		    $this->_task=$task;
 		}else{
-		    //$this->_worker_str=strval($this->_task);
 		    $this->_worker_str=serialize($this->_task);
 		}
 	}

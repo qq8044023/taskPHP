@@ -69,7 +69,7 @@ class App{
             self::shutdown_function();
         });
         foreach (self::$_process_list as $key=>$val){
-            self::$_process_list[$key]['pid'][]=popen('php '.Command::$_cmd.' '.self::$_process_list[$key]['process_name'], 'r');
+            self::$_process_list[$key]['pid'][]=popen(self::get_path().' '.Command::$_cmd.' '.self::$_process_list[$key]['process_name'], 'r');
         }  
         if($value==='all'){
             $list=Utils::config('task_list');
@@ -85,7 +85,7 @@ class App{
                 Utils::cache('close_worker','false');
                 if(self::$_process_list[$key]['worker_count']){
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
-                        self::$_process_list[$key]['pid'][] = popen('php '.Command::$_cmd.' worker '.$key, 'r');
+                        self::$_process_list[$key]['pid'][] = popen(self::get_path().' '.Command::$_cmd.' worker '.$key, 'r');
                     }
                 }
             }
@@ -125,7 +125,7 @@ class App{
                     Utils::cache('listen'.$key,'true');
                     Utils::cache('close_worker','false');
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
-                        self::$_process_list[$key]['pid'][] = popen('php '.Command::$_cmd.' worker '.$key, 'r');
+                        self::$_process_list[$key]['pid'][] = popen(self::get_path().' '.Command::$_cmd.' worker '.$key, 'r');
                     }
                 }
                 Ui::showLog($key.' start success');
@@ -436,6 +436,23 @@ class App{
     private static function worker(){
         WorkerExe::instance()->listen(Command::$_cmd_value);
     }
+    
+    private static function get_path(){
+        $php_path='php';
+        if(isset($_SERVER['Path'])){
+            $path_arr=explode(';', $_SERVER['Path']);
+            foreach ($path_arr as $item){
+                if(strpos($item, 'php')!==false){
+                    $php_path=$item.DS.'php';
+                    continue;
+                }
+            }
+        }elseif(isset($_SERVER['_'])){
+            $php_path=$_SERVER['_'];
+        }
+        return $php_path;
+    }
+    
     public static function shutdown_function(){
         Utils::log('taskPHP daemon pid:'.getmypid().' Stop');
         foreach (self::$_process_list as $key=>$val){

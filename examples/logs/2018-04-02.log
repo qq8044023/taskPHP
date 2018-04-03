@@ -1,0 +1,12 @@
+[2018-04-02 17:27:52.71466800][WARNING]:fopen(D:\phpStudy\wwwroot\os_taskphp\examples\logs\queue.db): failed to open stream: No such file or directory in D:\phpStudy\wwwroot\os_taskphp\src\taskphp\lib\queue\drives\Sqlite.php on line 40
+[2018-04-02 17:27:52.71466800][DEBUG]:create D:\phpStudy\wwwroot\os_taskphp\examples\logs\queue.db error
+[2018-04-02 17:27:52.71466800][WARNING]:fclose() expects parameter 1 to be resource, boolean given in D:\phpStudy\wwwroot\os_taskphp\src\taskphp\lib\queue\drives\Sqlite.php on line 41
+[2018-04-02 17:27:53.10569100][DEBUG]:worker_listen daemon pid:4488 Start
+[2018-04-02 17:27:53.54271600][DEBUG]:distribute_listen daemon pid:10908 Start
+[2018-04-02 17:27:54.08774700][DEBUG]:worker_listen daemon pid:10040 Start
+[2018-04-02 17:27:57.99997100][DEBUG]:examples\Demo1 [--START--]
+[2018-04-02 17:27:57.99997100][DEBUG]:this is Demo1
+[2018-04-02 17:27:58.02397200][DEBUG]:examples\Demo1 [--END--][RunTime:0.000000s]
+[2018-04-02 17:28:03.17626700][DEBUG]:examples\Demo1 [--START--]
+[2018-04-02 17:28:03.17626700][DEBUG]:this is Demo1
+[2018-04-02 17:28:03.17626700][DEBUG]:examples\Demo1 [--END--][RunTime:0.001000s]
