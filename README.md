@@ -78,8 +78,8 @@ http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
 distribute                    1                          [success]
-examples\Demo1                1                          [success]
-examples\Demo2                1                          [success]
+demo1                        1                          [success]
+demo2                        1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
 
