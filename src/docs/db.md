@@ -43,7 +43,7 @@ use taskphp\Utils;
 	     
 	    /* //方法三
 	     $res=Utils::db()->table("user")->alias("a")->join("user_third AS b ON a.uid=b.uid","LEFT")->where("a.status=1")->limit(2)->order("a.uid DESC")->select();
-	     Utils::log(); */
+	     Utils::log($res); */
 	     
 	    //Utils::db()->table("user")->getSql()  打印sql语句
 	     

@@ -68,14 +68,23 @@ class App{
         register_shutdown_function(function(){
             self::shutdown_function();
         });
-        foreach (self::$_process_list as $key=>$val){
-            self::$_process_list[$key]['pid'][]=popen(self::get_path().' '.Command::$_cmd.' '.self::$_process_list[$key]['process_name'], 'r');
-        }  
+        Ui::statusUI();
+        
         if($value==='all'){
             $list=Utils::config('task_list');
         }else{
             $list=[$value=>Utils::config('task_list.'.$value)];
-        }
+        } 
+        $progress=0;
+        $progress_count=self::compute_process_count($list);
+        printf("progress: [%-50s] %d%%\r", str_repeat('#',$progress/$progress_count*50), $progress/$progress_count*100);
+        sleep(1);
+        foreach (self::$_process_list as $key=>$val){
+            self::$_process_list[$key]['pid'][]=popen(self::get_path().' '.Command::$_cmd.' '.self::$_process_list[$key]['process_name'], 'r');
+            $progress++;
+            printf("progress: [%-50s] %d%%\r", str_repeat('#',$progress/$progress_count*50), $progress/$progress_count*100);
+            sleep(1);
+        }  
         if(is_array($list) && count($list)){
             foreach ($list as $key=>$val){
                 self::$_process_list[$key]=$list[$key];
@@ -86,11 +95,13 @@ class App{
                 if(self::$_process_list[$key]['worker_count']){
                     for($i=1;$i<=self::$_process_list[$key]['worker_count'];$i++){
                         self::$_process_list[$key]['pid'][] = popen(self::get_path().' '.Command::$_cmd.' worker '.$key, 'r');
+                        $progress++;
+                        printf("progress: [%-50s] %d%%\r", str_repeat('#',$progress/$progress_count*50), $progress/$progress_count*100);
+                        sleep(1);
                     }
                 }
             }
         }
-        Ui::statusUI();
         Ui::statusProcess(self::$_process_list);
         //运行web服务器
         self::init_server();
@@ -438,21 +449,43 @@ class App{
     }
     
     private static function get_path(){
-        $php_path='php';
-        if(isset($_SERVER['Path'])){
-            $path_arr=explode(';', $_SERVER['Path']);
-            foreach ($path_arr as $item){
-                if(strpos($item, 'php')!==false){
-                    $php_path=$item.DS.'php';
-                    continue;
+        $php_path=Utils::config('php_path');
+        if(!$php_path){
+            $php_path='php';
+            if(isset($_SERVER['Path'])){
+                $path_arr=explode(';', $_SERVER['Path']);
+                foreach ($path_arr as $item){
+                    if(strpos($item, 'php')!==false){
+                        if(DS=='\\'){//win
+                            $filename=$item.DS.'php.exe';
+                        }else{
+                            $filename=$item.DS.'php';
+                        }
+                        if(!is_file($filename)){
+                            continue;
+                        }
+                        if(strpos($filename, ' ')!==false){
+                            $text='php path cannot have space';
+                            Ui::displayUI($text);
+                        }
+                        $php_path=$item.DS.'php';
+                        continue;
+                    }
                 }
+            }elseif(isset($_SERVER['_'])){
+                $php_path=$_SERVER['_'];
             }
-        }elseif(isset($_SERVER['_'])){
-            $php_path=$_SERVER['_'];
         }
         return $php_path;
     }
     
+    public static function compute_process_count($list){
+        $process_count=1;
+        foreach ($list as $task){
+            $process_count+=$task['worker_count'];
+        }
+        return $process_count;
+    }
     public static function shutdown_function(){
         Utils::log('taskPHP daemon pid:'.getmypid().' Stop');
         foreach (self::$_process_list as $key=>$val){

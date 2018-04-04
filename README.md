@@ -41,7 +41,7 @@ gitee地址: https://gitee.com/cqcqphper/taskPHP<br>
 2. 编写任务有问题或调用exit将导致后台脚本停止,需要通过远控管理器重启进程。
 3. 多线程模式运行一段时间后报错,pthreads has detected that the taskphp\Pthread could not be started, the system lacks the necessary resources or the system-imposed limit would be exceeded in xxx
 4. 后台任务数量多或者任务运行时间很密集导致数据库链接过多没有释放,需要再任务结尾处执行数据库链接对象的close方法来关闭链接。
-5. 在windows下路径不能有空格，否则会导致进程启动不起来。
+5. 在windows下代码存放路径不能有空格，否则会导致进程启动不起来。php的环境变量也最好也不要有空格，如果有空格可在框架配置中定义数组项php_path='php'。
 
 ## 文档列表
 -->[数据库类使用教程](./src/docs/db.md)<br>
@@ -71,16 +71,15 @@ start.php  close all 结束框架  必带参数all
 taskPHP version:3.0      PHP version:5.5.38
 license1:https://github.com/qq8044023/taskPHP
 license2:https://gitee.com/cqcqphper/taskPHP
-startTime:2018-03-30 11:38:08
+startTime:2018-04-04 10:00:50
 ------------------------- taskPHP Manage  ----------------------
 http://ServerIp:8082
 http://127.0.0.1:8082
 ------------------------- taskPHP PROCESS ----------------------
 listen                      processes                     status
 distribute                    1                          [success]
-demo1                        1                          [success]
-demo2                        1                          [success]
+demo1                         1                          [success]
+demo2                         1                          [success]
 ----------------------------------------------------------------
 Press Ctrl-C to quit. Start success.
-
 ``` 

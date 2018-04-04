@@ -20,6 +20,7 @@ return [
             'crontab'     =>'/20 * * * * * *',//crontad格式 :秒 分 时 天 月 年 周
         ],
     ],
+    //'php_path'=>'php',//可手动为php设置环境变量
     'db'=>[
         'type'          =>  'mysql',
         'username'      =>  'root',
