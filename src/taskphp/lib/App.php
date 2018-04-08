@@ -68,6 +68,9 @@ class App{
         register_shutdown_function(function(){
             self::shutdown_function();
         });
+        if(!function_exists('popen')){
+            Ui::showLog('ERROR: function popen is disabled');die;
+        }
         Ui::statusUI();
         
         if($value==='all'){
