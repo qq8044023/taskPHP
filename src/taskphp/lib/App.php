@@ -48,7 +48,11 @@ class App{
      */
     public static function run(){
         $argv=$_SERVER['argv'];
-        $argv[0]=START_PATH.DS.$_SERVER['PHP_SELF'];
+        if(strpos($_SERVER['PHP_SELF'], DS)!==false){
+            $argv[0]=$_SERVER['PHP_SELF'];
+        }else{
+            $argv[0]=START_PATH.DS.$_SERVER['PHP_SELF'];
+        }
         Command::setArgv($argv);
         Command::analysis();
         if(!isset(Command::$_cmd_list[Command::$_cmd_key]) || !method_exists(new static,Command::$_cmd_key)){
