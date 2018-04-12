@@ -10,11 +10,11 @@
 // | Author: 村长 <8044023@qq.com> 
 // +----------------------------------------------------------------------
 namespace taskphp;
-class db extends sql{
+class db extends Sql{
     protected static $DB;
     function __construct($table=null){
         if(!extension_loaded('pdo')){
-            Ui::showLog('ERROR:pdo module has not been opened');die;
+            Console::log('ERROR:pdo module has not been opened');die;
         }
         if(!Utils::global_var('pdo_object')) Utils::global_var('pdo_object',self::InitPDO());
         self::$DB = Utils::global_var('pdo_object');

@@ -37,7 +37,7 @@ class Mysql{
      */
     public function __construct(array $options){
         if(!extension_loaded('pdo')){
-            \taskphp\Ui::showLog('ERROR:pdo module has not been opened');die;
+            \taskphp\Console::log('ERROR:pdo module has not been opened');die;
         }
         $this->_options = array_merge($this->_options,$options);
         if(!isset($this->_options['host']) || !isset($this->_options['name']) || !isset($this->_options['port']) || !isset($this->_options['charset']) || !isset($this->_options['username']) || !isset($this->_options['password'])){

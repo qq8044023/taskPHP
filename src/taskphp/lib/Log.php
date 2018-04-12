@@ -24,8 +24,7 @@ class Log{
      * @param int $type 日志等级 -1:无等级  0:DEBUG调试 1:INFO正常  2:WARN警告 3:ERROR错误 4:FATAL致命错误   默认0
      */
     public static function input($data,$type=0){
-        $log_path=Utils::config('log.path');
-        $log_path=$log_path?:START_PATH.DS.'logs';
+        $log_path=Utils::config('log.path')?:(START_PATH.DS.'logs');
         $filename=date("Y-m-d").'.log';
         self::initDir($log_path);
         if(!isset(self::$_handle[$log_path.DS.$filename])){

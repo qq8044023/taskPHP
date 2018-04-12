@@ -7,7 +7,7 @@
  */
 namespace taskphp;
 /**
- * 定时器类
+ * 定时命令类
  * @author cqcqphper 小草<cqcqphper@163.com>
  *
  */

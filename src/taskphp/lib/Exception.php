@@ -71,7 +71,7 @@ class Exception extends \Exception {
      * @param unknown $line
      */
 	public function handler($error_level,$error_message, $file,  $line) {
-	    if(Utils::config('log')['error']){
+	    if(Utils::config('log.error')){
 	        $message=sprintf("[%s]:%s in %s on line %d",$this->errorType($error_level), trim($error_message),  $file, $line);
 	        Utils::log($message,-1);
 	    }

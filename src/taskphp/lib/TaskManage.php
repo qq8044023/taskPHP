@@ -24,7 +24,7 @@ class TaskManage{
 	 */
 	public function load_worker(){
 	    $task_list=Config::get('task_list');
-	    if(!$task_list)Ui::showLog('taskphp\TaskManage::load_worker task_list is empty');
+	    if(!$task_list)Console::log('taskphp\TaskManage::load_worker task_list is empty');
 	    foreach ($task_list as $key=>$value){
 	        //设置任务
 	        $worker= new Worker($key,$value);

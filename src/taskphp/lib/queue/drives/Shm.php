@@ -25,7 +25,7 @@ class Shm{
     
     public function __construct(array $options){
         if(!extension_loaded('shmop')){
-            \taskphp\Ui::showLog('ERROR:shmop module has not been opened');die;
+            \taskphp\Console::log('ERROR:shmop module has not been opened');die;
         }
         $this->_options = array_merge($this->_options,$options);
         if(!isset($this->_options['temp'])){

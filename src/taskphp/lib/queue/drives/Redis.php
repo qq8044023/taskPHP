@@ -6,7 +6,6 @@
  * @license    https://gitee.com/cqcqphper/taskPHP
  */
 namespace taskphp\queue\drives;
-use PDO;
 
 /**
  * 队列驱动-Redis
@@ -40,7 +39,7 @@ class Redis{
      */
     public function __construct(array $options = []){
         if(!extension_loaded('redis')){
-            \taskphp\Ui::showLog('ERROR:redis module has not been opened');die;
+            \taskphp\Console::log('ERROR:redis module has not been opened');die;
         }
         $this->_options = array_merge($this->_options,$options);
         $this->redis = new \Redis();

@@ -30,7 +30,7 @@ class Sqlite{
     
     public function __construct(array $options){
         if(!extension_loaded('pdo')){
-            \taskphp\Ui::showLog('ERROR:pdo module has not been opened');die;
+            \taskphp\Console::log('ERROR:pdo module has not been opened');die;
         }
         $this->_options = array_merge($this->_options,$options);
         if(!isset($this->_options['dsn'])){

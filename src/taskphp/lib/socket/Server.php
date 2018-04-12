@@ -6,7 +6,6 @@
  * @license    https://gitee.com/cqcqphper/taskPHP
  */
 namespace taskphp\socket;
-use taskphp\Ui;
 /**
  * socket服务端
  * @author cqcqphper 小草<cqcqphper@163.com>
@@ -41,7 +40,7 @@ class Server {
      */
     public function __construct($host, $port){
         if(!extension_loaded('sockets')){
-            \taskphp\Ui::showLog('ERROR:sockets module has not been opened');die;
+            \taskphp\Console::log('ERROR:sockets module has not been opened');die;
         }
         $this->_host = $host;
         $this->_port = $port;
@@ -52,23 +51,23 @@ class Server {
      */
     public function listen(){
         if (!($this->_listenFD = socket_create(AF_INET, SOCK_STREAM, SOL_TCP))) {
-            Ui::showLog("socket_create err:".socket_strerror(socket_last_error()));
+            \taskphp\Console::log("socket_create err:".socket_strerror(socket_last_error()));
         }
         //在修改源码后重启启动总是提示bind: Address already in use,使用tcpreuse解决
         if (!socket_set_option($this->_listenFD, SOL_SOCKET, SO_REUSEADDR, 1)) {
-            Ui::showLog("socket_set_option err:".socket_strerror(socket_last_error()));
+            \taskphp\Console::log("socket_set_option err:".socket_strerror(socket_last_error()));
         }
         //阻塞模式
         if (!socket_set_block($this->_listenFD)) {
-            Ui::showLog("socket_set_block err:".socket_strerror(socket_last_error()));
+            \taskphp\Console::log("socket_set_block err:".socket_strerror(socket_last_error()));
         }
         //绑定到socket端口
         if (!socket_bind($this->_listenFD, $this->_host, $this->_port)) {
-            Ui::showLog("socket_bind err:".socket_strerror(socket_last_error()));
+            \taskphp\Console::log("socket_bind err:".socket_strerror(socket_last_error()));
         }
         //开始监听
         if (!socket_listen($this->_listenFD, 5)) {
-            Ui::showLog("socket_listen err:".socket_strerror(socket_last_error()));
+            \taskphp\Console::log("socket_listen err:".socket_strerror(socket_last_error()));
         }
     }
 
@@ -77,12 +76,12 @@ class Server {
      */
     public function accept(){
         if (!$this->_listenFD) {
-            Ui::displayUI('no socket handler for accept.',false);
+            \taskphp\Console::log('no socket handler for accept.');
             return false;
         }
         //它接收连接请求并调用一个子连接Socket来处理客户端和服务器间的信息
         if (!($this->_connectFD = socket_accept($this->_listenFD))) {
-            Ui::displayUI("socket_accept err:".socket_strerror(socket_last_error()),false);
+            \taskphp\Console::log("socket_accept err:".socket_strerror(socket_last_error()));
             return false;
         }
     }
@@ -93,7 +92,7 @@ class Server {
      */
     public function readLine(){
         if (!$this->_connectFD) {
-            Ui::displayUI('no connfd for write.',false);
+            \taskphp\Console::log('no connfd for write.');
             return false;
         }
         /* PHP_NORMAL_READ碰到\r,\n,\0就停止 */
@@ -110,7 +109,7 @@ class Server {
      */
     public function read($bytes){
         if (!$this->_connectFD) {
-            Ui::displayUI('no connfd for write.',false);
+            \taskphp\Console::log('no connfd for write.');
             return false;
         }
         return socket_read($this->_connectFD, $bytes);
@@ -121,10 +120,10 @@ class Server {
      */
     public function write($data){
         if (!$this->_connectFD) {
-            Ui::displayUI('no connfd for write.',false);
+            \taskphp\Console::log('no connfd for write.');
         }
         if (!socket_write($this->_connectFD, $data, strlen($data))) {
-            Ui::displayUI("socket_write err:".socket_strerror(socket_last_error()),false);
+            \taskphp\Console::log("socket_write err:".socket_strerror(socket_last_error()));
         }
     }
 
