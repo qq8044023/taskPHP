@@ -10,7 +10,7 @@
 // | Author: 村长 <8044023@qq.com> 
 // +----------------------------------------------------------------------
 namespace taskphp;
-class db extends Sql{
+class Db extends Sql{
     protected static $DB;
     function __construct($table=null){
         if(!extension_loaded('pdo')){
