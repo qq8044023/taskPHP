@@ -54,8 +54,8 @@ class Redis{
      */
     public function get($name = false) {
         $value    = $this->redis->get($this->_options['prefix'] . $name);
-        $jsonData = json_decode($value, true);
-        return (null === $jsonData) ? $value : $jsonData; //检测是否为JSON数据 true 返回JSON解析数组, false返回源数据
+        $value=unserialize($value);
+        return $value;
     }
     
     /**
@@ -67,8 +67,7 @@ class Redis{
      */
     public function set($name, $value) {
         $name = $this->_options['prefix'] . $name;
-        //对数组/对象数据进行缓存处理，保证数据完整性
-        $value = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
+        $value=serialize($value);
         $result = $this->redis->set($name, $value);
         return $result;
     }
@@ -79,7 +78,7 @@ class Redis{
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public static function rm($name) {
+    public function rm($name) {
         return $this->redis->delete($this->options['prefix'] . $name);
     }
     

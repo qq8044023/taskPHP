@@ -16,7 +16,8 @@ class Config{
     private static $_config = [
         //系统队列配置
         'queue'=>[
-            'drive'         => 'Sqlite',//驱动类型 Sqlite|Redis|Mysql|Shm
+            //驱动类型 Shm|Redis|Sqlite|Mysql 生产环境推荐使用Shm或者Redis驱动 由于Mysql和Sqlite有I/O 相对来说Mysql和Sqlite性能比较差
+            'drive'         => 'Sqlite',
         ],
         //系统日志配置
         'log'=>[

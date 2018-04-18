@@ -87,7 +87,7 @@ class Shm{
      * @param string $name 缓存变量名
      * @return boolen
      */
-    public static function rm($name) {
+    public function rm($name) {
         $lh = $this->_lock();
         $val = $this->get();
         if (!is_array($val)) $val = array();
