@@ -40,21 +40,15 @@ class Mysql{
             \taskphp\Console::log('ERROR:pdo module has not been opened');die;
         }
         $this->_options = array_merge($this->_options,$options);
-        if(!isset($this->_options['host']) || !isset($this->_options['name']) || !isset($this->_options['port']) || !isset($this->_options['charset']) || !isset($this->_options['username']) || !isset($this->_options['password'])){
-            $this->_options = array_merge($this->_options,Utils::config('db'));
-        }
         try {
-            $this->_db = new PDO(
-            sprintf(
+            $dsn=sprintf(
                 "mysql:host=%s;dbname=%s;port=%s;charset=%s;",
                 $this->_options['host'],
                 $this->_options['name'],
                 $this->_options['port'],
                 $this->_options['charset']
-            ),
-            $this->_options['username'],
-            $this->_options['password']
             );
+            $this->_db = new PDO($dsn,$this->_options['username'],$this->_options['password']);
         }catch (\PDOException $e){
             Utils::log($e->getMessage());
         }
@@ -77,7 +71,7 @@ class Mysql{
      */
     public function get($name) {
         $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=$this->_db->prepare($sql)->fetch(PDO::FETCH_ASSOC);
+        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
             $content=$res['content'];
             return unserialize($content);
@@ -94,8 +88,9 @@ class Mysql{
      */
     public function set($name, $value) {
         $value = serialize($value);
+        $value=addslashes($value);
         $sql    = 'SELECT content FROM ' . $this->_options['table'] . ' WHERE name=\'' . $name . '\' LIMIT 1';
-        $res=$this->_db->prepare($sql)->fetch(PDO::FETCH_ASSOC);
+        $res=$this->_db->query($sql)->fetch(PDO::FETCH_ASSOC);
         if(is_array($res) && count($res)){
             $sql='UPDATE '.$this->_options['table'].'
               SET content = \''.$value.'\'
@@ -106,6 +101,7 @@ class Mysql{
                   VALUES
                 (\''.$name.'\', \''.$value.'\')';
         }
+        
         $res=$res=$this->_db->exec($sql);
         return $res;
     }

@@ -37,7 +37,7 @@ class Queue {
      * [
      *     'drive' => 'Mysql',
      *     'options'    => [
-     *        'dbname' => 'taskphp',
+     *        'name' => 'taskphp',
      *        'host'        => '127.0.0.1',//主机
      *        'port'        => '3306',//端口
      *        'username'      => 'root',//用户名
@@ -50,9 +50,9 @@ class Queue {
      * [
      *     'drive' => 'Redis',
      *     'options'    => [
-     *         'host'   => '', //主机
-     *         'port'   => '', //端口
-     *         'prefix' => '', //list前缀
+     *         'host'   => '127.0.0.1', //主机
+     *         'port'   => '6379', //端口
+     *         'prefix' => 'queue', //list前缀
      *     ']
      * ]
      *

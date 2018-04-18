@@ -53,7 +53,7 @@ class Redis{
      * @return mixed
      */
     public function get($name = false) {
-        $value    = $this->handler->get($this->_options['prefix'] . $name);
+        $value    = $this->redis->get($this->_options['prefix'] . $name);
         $jsonData = json_decode($value, true);
         return (null === $jsonData) ? $value : $jsonData; //检测是否为JSON数据 true 返回JSON解析数组, false返回源数据
     }
