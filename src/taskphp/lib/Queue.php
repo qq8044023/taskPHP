@@ -53,6 +53,7 @@ class Queue {
      *         'host'   => '127.0.0.1', //主机
      *         'port'   => '6379', //端口
      *         'prefix' => 'queue', //list前缀
+     *         'password'   => '',//密码
      *     ']
      * ]
      *

@@ -74,7 +74,7 @@ class App{
             self::shutdown_function();
         });
         if(!function_exists('popen')){
-            Console::showLog('ERROR: function popen is disabled');die;
+            Console::log('ERROR: function popen is disabled');die;
         }
         Console::hreader();
         

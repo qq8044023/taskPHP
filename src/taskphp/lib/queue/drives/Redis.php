@@ -26,6 +26,7 @@ class Redis{
         'prefix'=>'queue',
         'host'=>'127.0.0.1',
         'port'=>'6379',
+        'password'   => '',
     ];
     
     /**
@@ -44,6 +45,9 @@ class Redis{
         $this->_options = array_merge($this->_options,$options);
         $this->redis = new \Redis();
         $this->redis->connect($this->_options['host'],$this->_options['port']);
+        if ('' != $this->_options['password']) {
+            $this->redis->auth($this->_options['password']);
+        }
     }
     
     /**
