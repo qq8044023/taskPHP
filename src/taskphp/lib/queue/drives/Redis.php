@@ -17,7 +17,7 @@ namespace taskphp\queue\drives;
  * 1 环境中有redis，业务不需要ack
  */
 class Redis{
-    
+
     /**
      * 设置属性
      * @var array
@@ -28,7 +28,7 @@ class Redis{
         'port'=>'6379',
         'password'   => '',
     ];
-    
+
     /**
      * @var \Redis
      */
@@ -49,7 +49,7 @@ class Redis{
             $this->redis->auth($this->_options['password']);
         }
     }
-    
+
     /**
      * 读取缓存
      * @access public
@@ -61,7 +61,7 @@ class Redis{
         $value=unserialize($value);
         return $value;
     }
-    
+
     /**
      * 写入缓存
      * @access public
@@ -75,7 +75,7 @@ class Redis{
         $result = $this->redis->set($name, $value);
         return $result;
     }
-    
+
     /**
      * 删除缓存
      * @access public
@@ -83,9 +83,9 @@ class Redis{
      * @return boolen
      */
     public function rm($name) {
-        return $this->redis->delete($this->options['prefix'] . $name);
+        return $this->redis->delete($this->_options['prefix'] . $name);
     }
-    
+
     /**
      * 加入
      * @param string $key 表头
@@ -113,7 +113,7 @@ class Redis{
                 $wh=false;
                 break;
             }
-    
+
             if($timeout==0){
                 sleep(1);
             }elseif($timeout>0 && $second<$timeout){
@@ -125,7 +125,7 @@ class Redis{
         }
         return $res;
     }
-    
+
     /**
      * 删除 key 集合中的子集
      * @param unknown $key
@@ -145,7 +145,7 @@ class Redis{
         unset($data[$son_key]);
         return $this->set($key, $data);
     }
-    
+
     /**
      * 清除缓存
      * @access public
