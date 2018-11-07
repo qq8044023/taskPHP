@@ -12,6 +12,7 @@ namespace taskphp\socket;
  */
 class Server {
     /**
+	 * 
      * @var Resource
      */
     public $_listenFD = null;
@@ -84,21 +85,22 @@ class Server {
             \taskphp\Console::log("socket_accept err:".socket_strerror(socket_last_error()));
             return false;
         }
+		return $this->_connectFD;
     }
 
     /**
      * 从socket中读取一行数据
      * @return string
      */
-    public function readLine(){
-        if (!$this->_connectFD) {
+    public function readLine($connect){
+        if (!$connect) {
             \taskphp\Console::log('no connfd for write.');
             return false;
         }
         /* PHP_NORMAL_READ碰到\r,\n,\0就停止 */
-        $buf = trim(socket_read($this->_connectFD, 1024, PHP_NORMAL_READ)); //trim去掉末尾的\r
+        $buf = trim(socket_read($connect, 1024, PHP_NORMAL_READ)); //trim去掉末尾的\r
         /* 读取\n */
-        socket_read($this->_connectFD, 1);
+        socket_read($connect, 1);
         return $buf;
     }
 
@@ -107,22 +109,22 @@ class Server {
      * @param $bytes
      * @return string
      */
-    public function read($bytes){
-        if (!$this->_connectFD) {
+    public function read($connect,$bytes){
+        if (!$connect) {
             \taskphp\Console::log('no connfd for write.');
             return false;
         }
-        return socket_read($this->_connectFD, $bytes);
+        return socket_read($connect, $bytes);
     }
 
     /**
      * @param $data
      */
-    public function write($data){
-        if (!$this->_connectFD) {
+    public function write($connect,$data){
+        if (!$connect) {
             \taskphp\Console::log('no connfd for write.');
         }
-        if (!socket_write($this->_connectFD, $data, strlen($data))) {
+        if (!socket_write($connect, $data, strlen($data))) {
             \taskphp\Console::log("socket_write err:".socket_strerror(socket_last_error()));
         }
     }
@@ -133,9 +135,9 @@ class Server {
         }
     }
 
-    public function closeConnectFD(){
-        if ($this->_connectFD) {
-            socket_close($this->_connectFD);
+    public function closeConnectFD($connect){
+        if ($connect) {
+            socket_close($connect);
         }
     }
 }

@@ -198,17 +198,52 @@ class App{
         self::$_socket = new SocketServer(Utils::config('web_manage.address'), Utils::config('web_manage.port'));
         //监听
         self::$_socket->listen();
+		/* 要监听的三个sockets数组 */
+		$read_socks = [];
+		$write_socks = [];
+		$except_socks = [];  // 注意 php 不支持直接将NULL作为引用传参，所以这里定义一个变量
+		$read_socks[] = self::$_socket->_listenFD;
+
         while(true){
-            //连接
-            self::$_socket->accept();
-            //处理请求
-            self::acceptRequest();
+			/* 这两个数组会被改变，所以用两个临时变量 */
+			$tmp_reads = $read_socks;
+			$tmp_writes = $write_socks;
+			$count = socket_select($tmp_reads, $tmp_writes, $except_socks, NULL);  // timeout 传 NULL 会一直阻塞直到有结果返回
+			foreach ($tmp_reads as $read){
+				if ($read == self::$_socket->_listenFD){
+					//连接
+					$connsock=self::$_socket->accept();
+					if ($connsock){
+						// 把新的连接sokcet加入监听
+						$read_socks[] = $connsock;
+						$write_socks[] = $connsock;
+						\taskphp\Console::log('new client connect server');
+					}
+				}else{
+					$line = self::$_socket->readLine($read);
+					if ($line){
+						if (in_array($read, $tmp_writes)){
+							//处理请求
+							self::acceptRequest($read,$line);
+						}
+					}else{
+						self::$_socket->closeConnectFD($read);
+					}
+					//移除对该 socket 监听
+					foreach ($read_socks as $key => $val){
+						if ($val == $read) unset($read_socks[$key]);
+					}
+					foreach ($write_socks as $key => $val){
+						if ($val == $read) unset($write_socks[$key]);
+					}
+					\taskphp\Console::log('client close');
+				}
+			}
         }
         self::$_socket->closeListenFD();
     }
-    private static function acceptRequest(){
+    private static function acceptRequest($connect,$line){
         //根据请求状态行解析出method,query_string,filename
-        $line = self::$_socket->readLine();
         $statusLineArr = explode(' ', trim($line));
         if (!is_array($statusLineArr) || count($statusLineArr) !== 3) {
             Console::log('parse request status line err');
@@ -225,14 +260,14 @@ class App{
     
         //只支持GET和POST方法
         if (self::$_method !== 'POST' && self::$_method !== 'GET') {
-            self::headers();
-            self::$_socket->write('Only support GET and POST methods');
-            self::$_socket->closeConnectFD();
+            self::headers($connect);
+            self::$_socket->write($connect,'Only support GET and POST methods');
+            self::$_socket->closeConnectFD($connect);
             return ;
         }
     
         //解析缓冲区剩余数据,GET就丢弃header头,POST则解析请求体
-        self::parseQueryEntity();
+        self::parseQueryEntity($connect);
     
         /* 获取get和post的值  */
         //解析post 的数据
@@ -290,21 +325,21 @@ class App{
                 $html=file_get_contents(TASKPHP_PATH.DS.'tpl'.DS.'web_manage_html.tpl');
             }
         }
-        self::headers();
-        self::$_socket->write($html);
+        self::headers($connect);
+        self::$_socket->write($connect,$html);
     
-        self::$_socket->closeConnectFD();
+        self::$_socket->closeConnectFD($connect);
     }
     
-    private static function parseQueryEntity(){
+    private static function parseQueryEntity($connect){
         $contentLength=0;
         if (self::$_method == 'GET') {
             do {
-                $line = self::$_socket->readLine();
+                $line = self::$_socket->readLine($connect);
             } while (!empty($line)); // \r\n返回空
         } else {
             do {
-                $line = self::$_socket->readLine();
+                $line = self::$_socket->readLine($connect);
                 if (strpos($line, 'Content-Length:') !== false) {
                     $contentLength = intval(trim(str_replace('Content-Length:', '', $line)));
                 }
@@ -320,16 +355,16 @@ class App{
             }
     
             //读取消息体
-            self::$_queryEntity = self::$_socket->read($contentLength);
+            self::$_queryEntity = self::$_socket->read($connect,$contentLength);
         }
     }
     
-    private static function headers(){
+    private static function headers($connect){
         $response = "HTTP/1.1 200 OK".PHP_EOL;
         $response .= 'Server: lzx-tiny-httpd/0.1.0'.PHP_EOL;
         $response .= (self::$_method == 'POST' || !empty(self::$_queryString)) ? 'Content-Type: application/json;charset=utf-8'.PHP_EOL : 'Content-Type: text/html'.PHP_EOL;
         $response .= PHP_EOL;
-        self::$_socket->write($response);
+        self::$_socket->write($connect,$response);
     }
     /**
      * 后台进程是否在运行
