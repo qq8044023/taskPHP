@@ -6,7 +6,7 @@ taskPHP 3.0 —— 你值得信赖的PHP定时计划任务框架
 -->[taskPHP2.x](https://gitee.com/cqcqphper/taskPHP/tree/taskPHP/2.1)<br>
 > 所有分支 [查看所有分支](https://gitee.com/cqcqphper/taskPHP/branches)
 
-## taskPHP
+## taskPHP 
 taskPHP基于php开发的定时计划任务框架,多进程实现任务的分配和运行,多种进程间通信驱动支持,支持多线程模式需要安装pthreads扩展(可选),支持linux和windows。有较好的伸缩性、扩展性、健壮稳定性而被多家公司使用，同时也希望开源爱好者一起贡献。<br>
 ## 项目地址
 github地址: https://github.com/qq8044023/taskPHP<br>
