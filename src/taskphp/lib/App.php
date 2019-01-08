@@ -195,7 +195,12 @@ class App{
     }
     
     private static function init_server(){
-        self::$_socket = new SocketServer(Utils::config('web_manage.address'), Utils::config('web_manage.port'));
+        $address=Utils::config('web_manage.address');
+        $port=Utils::config('web_manage.port');
+        if(empty($address) || empty($port)){
+            return false;
+        }
+        self::$_socket = new SocketServer($address, $port);
         //监听
         self::$_socket->listen();
 		/* 要监听的三个sockets数组 */

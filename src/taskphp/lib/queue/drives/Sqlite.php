@@ -44,6 +44,7 @@ class Sqlite{
             $this->_db->exec($sql);
         }else{
             $this->_db = new PDO('sqlite:'.$this->_options['dsn']);
+			$this->delete_vacuum();
         }
         
     }
@@ -171,4 +172,14 @@ class Sqlite{
         $res=$this->_db->exec($sql);
         return $res;
     }
+	/**
+     * 清除空白数据 解决数据库文件容量大的问题
+     * @access public
+     * @return boolean
+     */
+	private function delete_vacuum(){
+		$sql='VACUUM';
+		$res=$this->_db->exec($sql);
+        return $res;
+	}
 }

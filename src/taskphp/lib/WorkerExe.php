@@ -33,6 +33,7 @@ class WorkerExe{
 	 * @param Worker $worker
 	 */
 	public function exec(Worker $worker){
+	    Queue::rm(static::$_worker_exec.$worker->get_name());
 	    if(Utils::cache('listen'.$worker->get_name())=='true'){
 	        Queue::push(static::$_worker_exec.$worker->get_name(),$worker->get_worker());//加入队列
 	    }
