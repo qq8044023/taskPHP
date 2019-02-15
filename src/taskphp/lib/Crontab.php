@@ -289,7 +289,7 @@ class Crontab implements \Serializable{
 	        if ($n==true){
 	            $nt=strtotime("+ {$next} day",$now_time);
 	            $_y=date("Y",strtotime("+ {$next} day",$now_time));
-	            $__y=$this->_val_find($y, $_y);
+	            $__y=self::_val_find($y, $_y);
 	            if ($__y!=$_y&&$y!==self::LOOP){//跨过年
 	                $_y=$__y;
 	                if ($_y===false) return false;//没下一年
