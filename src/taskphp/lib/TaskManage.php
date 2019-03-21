@@ -79,7 +79,14 @@ class TaskManage{
 		        Utils::log($callback[0].'::'.$callback[1].' [--START--]');
 		    }
 		    ob_start();
-		    call_user_func($callback);
+		    if (count($callback) > 2){
+		        $a = array_chunk($callback, 2);
+		        $callbackFunc = $a[0];
+		        $params = $a[1][0];
+		        call_user_func($callbackFunc, $params);
+		    } else {
+		    	call_user_func($callback);
+		    }
 		    $data=ob_get_contents();
 		    ob_end_clean();
 		    if(Utils::config('log')['debug']){
